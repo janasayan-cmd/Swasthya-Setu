@@ -41,7 +41,7 @@ class HealthResponse(BaseModel):
 class ReadinessChecks(BaseModel):
     """Individual readiness dependency checks."""
 
-    database: str = Field(description="Status of database connectivity ('ok' or 'unavailable')")
+    database: str = Field(description="Status of database connectivity ('available', 'ok', or 'unavailable')")
 
 
 class ReadinessResponse(BaseModel):

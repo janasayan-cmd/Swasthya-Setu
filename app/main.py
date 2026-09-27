@@ -125,7 +125,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         if not is_ok:
             response.status_code = 503
             return {"status": "not_ready", "checks": {"database": "unavailable"}}
-        return {"status": "ready", "checks": {"database": "ok"}}
+        return {"status": "ready", "checks": {"database": "available"}}
 
     return application
 

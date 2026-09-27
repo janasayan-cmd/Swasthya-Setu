@@ -29,7 +29,7 @@ class HealthService(BaseService[None]):
         if db_ok:
             return True, ReadinessResponse(
                 status="ready",
-                checks=ReadinessChecks(database="ok"),
+                checks=ReadinessChecks(database="available"),
             )
 
         if not settings.is_testing and not settings.DATABASE_URL:

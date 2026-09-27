@@ -62,29 +62,31 @@ async def login(
     """Verify credentials and issue access and refresh tokens."""
     clean_id = payload.identifier.strip().lower()
 
-    # Sync from persistent user profile store if user registered on another device/session
-    stored_profile = get_user_profile(clean_id)
-    if stored_profile:
-        pwd = payload.password or "StrongP@ssw0rd123!"
-        role_enum = UserRole.PATIENT
-        if stored_profile.get("role") == "doctor":
-            role_enum = UserRole.DOCTOR
-        elif stored_profile.get("role") == "hospital":
-            role_enum = UserRole.ADMIN
+    # Sync from persistent user profile store if user registered on another device/session and not yet in repo
+    existing_user = await auth_service.user_repo.get_by_identifier(clean_id)
+    if not existing_user:
+        stored_profile = get_user_profile(clean_id)
+        if stored_profile:
+            pwd = payload.password or "StrongP@ssw0rd123!"
+            role_enum = UserRole.PATIENT
+            if stored_profile.get("role") == "doctor":
+                role_enum = UserRole.DOCTOR
+            elif stored_profile.get("role") == "hospital":
+                role_enum = UserRole.ADMIN
 
-        u_rec = UserRecord(
-            id=stored_profile["id"],
-            identifier=stored_profile.get("email") or clean_id,
-            password_hash=hash_password(pwd),
-            role=role_enum,
-            status=AccountStatus.ACTIVE,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
-        )
-        auth_service.user_repo.register_in_memory_user(u_rec)
-        auth_service.user_repo._local_users[stored_profile["id"].lower()] = u_rec
-        if stored_profile.get("email"):
-            auth_service.user_repo._local_users[stored_profile["email"].lower()] = u_rec
+            u_rec = UserRecord(
+                id=stored_profile["id"],
+                identifier=stored_profile.get("email") or clean_id,
+                password_hash=hash_password(pwd),
+                role=role_enum,
+                status=AccountStatus.ACTIVE,
+                created_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc),
+            )
+            auth_service.user_repo.register_in_memory_user(u_rec)
+            auth_service.user_repo._local_users[stored_profile["id"].lower()] = u_rec
+            if stored_profile.get("email"):
+                auth_service.user_repo._local_users[stored_profile["email"].lower()] = u_rec
 
     token_data = await auth_service.authenticate(
         identifier=payload.identifier,

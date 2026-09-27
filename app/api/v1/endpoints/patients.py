@@ -1,6 +1,6 @@
 """Patient profile and clinical summary endpoints."""
 
-from typing import Annotated
+from typing import Annotated, Any
 from fastapi import APIRouter, Depends, Request, status
 
 from app.api.deps import (

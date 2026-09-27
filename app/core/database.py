@@ -42,9 +42,11 @@ def get_engine() -> AsyncEngine | None:
         _engine = create_async_engine(
             settings.DATABASE_URL,
             echo=settings.DEBUG and not settings.is_production,
-            pool_pre_ping=True,
-            pool_size=10,
-            max_overflow=20,
+            pool_pre_ping=settings.DB_POOL_PRE_PING,
+            pool_size=settings.DB_POOL_SIZE,
+            max_overflow=settings.DB_MAX_OVERFLOW,
+            pool_timeout=settings.DB_POOL_TIMEOUT,
+            pool_recycle=settings.DB_POOL_RECYCLE,
             future=True,
         )
         _session_factory = async_sessionmaker(

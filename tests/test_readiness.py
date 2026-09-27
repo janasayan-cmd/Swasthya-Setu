@@ -14,7 +14,7 @@ async def test_readiness_when_database_available(async_client: AsyncClient):
 
         data = response.json()
         assert data["status"] == "ready"
-        assert data["checks"]["database"] == "ok"
+        assert data["checks"]["database"] in ("available", "ok")
 
 
 @pytest.mark.asyncio

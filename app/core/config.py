@@ -55,6 +55,28 @@ class Settings(BaseSettings):
         description="Async PostgreSQL connection URL (e.g., postgresql+asyncpg://user:pass@host:5432/db)",
     )
 
+    # Database Connection Pooling Configuration (Phase 17)
+    DB_POOL_SIZE: int = Field(
+        default=10,
+        description="SQLAlchemy asyncpg connection pool size",
+    )
+    DB_MAX_OVERFLOW: int = Field(
+        default=20,
+        description="Maximum connection pool overflow allowed above pool_size",
+    )
+    DB_POOL_TIMEOUT: float = Field(
+        default=30.0,
+        description="Connection pool timeout in seconds waiting for an available connection",
+    )
+    DB_POOL_RECYCLE: int = Field(
+        default=1800,
+        description="Recycle stale pool connections after seconds (30 mins recommended for cloud DB)",
+    )
+    DB_POOL_PRE_PING: bool = Field(
+        default=True,
+        description="Issue health check probe on checkout to detect stale/dropped connections",
+    )
+
     # CORS Configuration (accepts comma-separated string, JSON array, or list)
     CORS_ALLOWED_ORIGINS: Any = Field(
         default=[
@@ -62,6 +84,8 @@ class Settings(BaseSettings):
             "http://127.0.0.1:3000",
             "http://localhost:5173",
             "http://127.0.0.1:5173",
+            "https://healthsetu.com",
+            "https://www.healthsetu.com",
             "https://health-setu-giaa.vercel.app",
         ],
         description="Allowed CORS origins (comma-separated, single string, or list)",
