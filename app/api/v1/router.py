@@ -19,6 +19,7 @@ from app.api.v1.endpoints import (
     interoperability,
     medications,
     medication_safety,
+    metrics,
     organization,
     patients,
     prescriptions,
@@ -85,3 +86,6 @@ v1_router.include_router(interoperability.router)
 
 # Register Phase 14 AI Intelligence Layer endpoints
 v1_router.include_router(ai.router)
+
+# Register Phase 18 Observability & Metrics endpoint
+v1_router.include_router(metrics.router)

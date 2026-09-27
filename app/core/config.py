@@ -517,6 +517,44 @@ class Settings(BaseSettings):
         description="Flag enabling HSTS (Strict-Transport-Security) header in production",
     )
 
+    # Phase 18: Observability, Monitoring & Incident Telemetry
+    OBSERVABILITY_ENABLED: bool = Field(
+        default=True,
+        description="Master toggle for application observability layer",
+    )
+    METRICS_ENABLED: bool = Field(
+        default=True,
+        description="Enable in-memory metrics collection and telemetry exporter",
+    )
+    TRACING_ENABLED: bool = Field(
+        default=False,
+        description="Enable distributed tracing integration",
+    )
+    TRACING_SAMPLE_RATE: float = Field(
+        default=0.05,
+        description="Trace sampling probability for production requests",
+    )
+    ERROR_TRACKING_ENABLED: bool = Field(
+        default=True,
+        description="Enable centralized error telemetry tracking",
+    )
+    SLOW_REQUEST_THRESHOLD_MS: int = Field(
+        default=2000,
+        description="Execution latency threshold in milliseconds to flag a request as slow",
+    )
+    HEALTH_MONITORING_ENABLED: bool = Field(
+        default=True,
+        description="Enable operational health and dependency readiness probing",
+    )
+    PROVIDER_MONITORING_ENABLED: bool = Field(
+        default=True,
+        description="Enable individual telemetry tracking for external service providers",
+    )
+    PHI_LOG_REDACTION_ENABLED: bool = Field(
+        default=True,
+        description="Enforce strict centralized PHI and credential masking on log output",
+    )
+
     @property
     def max_document_size_bytes(self) -> int:
         """Maximum allowed document upload size in bytes."""

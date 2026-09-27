@@ -63,11 +63,16 @@ class StructuredJsonFormatter(logging.Formatter):
         if req_id:
             log_data["request_id"] = req_id
 
-        # Attach HTTP context and security event metadata if provided in record
-        for attr in ("method", "path", "status_code", "duration_ms", "user_id", "organization_id", "event_type", "outcome"):
-            val = getattr(record, attr, None)
-            if val is not None:
-                log_data[attr] = val
+        # Attach HTTP context, security event metadata, and extra attributes
+        _STANDARD_ATTRS = {
+            "name", "msg", "args", "levelname", "levelno", "pathname", "filename",
+            "module", "exc_info", "exc_text", "stack_info", "lineno", "funcName",
+            "created", "msecs", "relativeCreated", "thread", "threadName",
+            "processName", "process", "message", "asctime", "taskName",
+        }
+        for key, val in record.__dict__.items():
+            if key not in _STANDARD_ATTRS and key not in log_data:
+                log_data[key] = val
 
         # Handle exception information safely
         if record.exc_info and not record.exc_text:

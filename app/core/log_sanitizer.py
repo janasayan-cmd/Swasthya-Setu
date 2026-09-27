@@ -69,6 +69,18 @@ _EXACT_SENSITIVE_KEYS: frozenset[str] = frozenset(
         "date_of_birth",
         "dob",
         "birth_date",
+        "patient_name",
+        "full_name",
+        "first_name",
+        "last_name",
+        "address",
+        "phone",
+        "phone_number",
+        "mobile",
+        "email",
+        "database_url",
+        "db_url",
+        "connection_string",
         # PHI — clinical content
         "diagnosis",
         "diagnoses",
@@ -101,6 +113,7 @@ _EXACT_SENSITIVE_KEYS: frozenset[str] = frozenset(
         "extracted_text",
         "ocr_result",
         "ocr_text",
+        "ocr_output",
         # PHI — AI
         "prompt",
         "prompt_text",
@@ -159,8 +172,15 @@ _SENSITIVE_SUBSTRINGS: tuple[str, ...] = (
     "document_content",
     "prescription_text",
     "patient_data",
+    "patient_name",
+    "database_url",
     "ai_prompt",
     "ai_output",
+    "ai_response",
+    "ocr_output",
+    "diagnosis",
+    "medication",
+    "medical_history",
 )
 
 # ---------------------------------------------------------------------------
@@ -174,6 +194,10 @@ _VALUE_PATTERNS: list[re.Pattern[str]] = [
     re.compile(r"Bearer\s+[A-Za-z0-9\-_.~+/]+=*", re.IGNORECASE),
     # Generic API keys (long alphanumeric strings starting with common prefixes)
     re.compile(r"\b(?:sk|pk|rk|ak)-[A-Za-z0-9]{20,}\b"),
+    # Synthetic test patient tokens
+    re.compile(r"TEST_PATIENT_[A-Za-z0-9_]+", re.IGNORECASE),
+    # Database connection URLs with credentials
+    re.compile(r"postgres(?:ql)?(?:\+[a-z0-9]+)?://[^@\s]+@[^\s/]+/[^\s]+", re.IGNORECASE),
 ]
 
 _REDACTED = "[REDACTED]"

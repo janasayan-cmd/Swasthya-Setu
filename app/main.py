@@ -127,6 +127,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             return {"status": "not_ready", "checks": {"database": "unavailable"}}
         return {"status": "ready", "checks": {"database": "available"}}
 
+    @application.get("/metrics", include_in_schema=False)
+    async def root_metrics():
+        from fastapi.responses import PlainTextResponse
+        from app.core.metrics import metrics
+        return PlainTextResponse(
+            content=metrics.to_prometheus_text(),
+            media_type="text/plain; version=0.0.4; charset=utf-8",
+        )
+
     return application
 
 
