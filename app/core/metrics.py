@@ -590,3 +590,76 @@ class MetricsCollector:
 
 # Global singleton collector
 metrics = MetricsCollector()
+
+
+# ---------------------------------------------------------------------------
+# Phase 25 Metric Counters (Prometheus-style .labels(...).inc())
+# ---------------------------------------------------------------------------
+
+class MetricCounter:
+    """Lightweight thread-safe metric counter supporting Prometheus-style labels(...).inc()."""
+
+    def __init__(self, name: str, description: str, label_names: tuple[str, ...] = ()) -> None:
+        self.name = name
+        self.description = description
+        self.label_names = label_names
+        self._counts: dict[tuple[str, ...], int] = defaultdict(int)
+        self._lock = threading.Lock()
+
+    def labels(self, **kwargs: str) -> _BoundMetricCounter:
+        key = tuple(str(kwargs.get(k, "")) for k in self.label_names)
+        return _BoundMetricCounter(self, key)
+
+    def inc(self, amount: int = 1) -> None:
+        with self._lock:
+            self._counts[()] += amount
+
+    def get(self, **kwargs: str) -> int:
+        key = tuple(str(kwargs.get(k, "")) for k in self.label_names)
+        with self._lock:
+            return self._counts.get(key, 0)
+
+    @property
+    def total(self) -> int:
+        with self._lock:
+            return sum(self._counts.values())
+
+
+class _BoundMetricCounter:
+    def __init__(self, parent: MetricCounter, key: tuple[str, ...]) -> None:
+        self._parent = parent
+        self._key = key
+
+    def inc(self, amount: int = 1) -> None:
+        with self._parent._lock:
+            self._parent._counts[self._key] += amount
+
+
+FEATURE_FLAG_EVALUATIONS_COUNTER = MetricCounter(
+    "healthsetu_feature_flag_evaluations_total", "Total feature flag evaluations", ("flag_name",)
+)
+FEATURE_FLAG_ENABLED_COUNTER = MetricCounter(
+    "healthsetu_feature_flag_enabled_total", "Total evaluations returning enabled", ("flag_name",)
+)
+FEATURE_FLAG_DISABLED_COUNTER = MetricCounter(
+    "healthsetu_feature_flag_disabled_total", "Total evaluations returning disabled", ("flag_name",)
+)
+FEATURE_FLAG_EVALUATION_ERRORS_COUNTER = MetricCounter(
+    "healthsetu_feature_flag_evaluation_errors_total", "Total feature evaluation errors", ("flag_name",)
+)
+KILL_SWITCH_ACTIVATIONS_COUNTER = MetricCounter(
+    "healthsetu_kill_switch_activations_total", "Total operational kill switch state changes", ("switch_name",)
+)
+CONFIGURATION_VALIDATION_FAILURES_COUNTER = MetricCounter(
+    "healthsetu_configuration_validation_failures_total", "Total configuration validation failures", ("environment", "severity")
+)
+CONFIGURATION_DRIFT_COUNTER = MetricCounter(
+    "healthsetu_configuration_drift_detected_total", "Total configuration drift events detected", ("environment",)
+)
+CONFIGURATION_CACHE_REFRESHES_COUNTER = MetricCounter(
+    "healthsetu_configuration_cache_refreshes_total", "Total configuration cache invalidations or refreshes", ()
+)
+PROVIDER_CONFIGURATION_ERRORS_COUNTER = MetricCounter(
+    "healthsetu_provider_configuration_errors_total", "Total provider configuration errors", ("provider_name",)
+)
+

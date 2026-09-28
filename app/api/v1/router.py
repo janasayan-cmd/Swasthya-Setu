@@ -8,6 +8,7 @@ from app.api.v1.endpoints import (
     care_plans,
     clinical_history,
     clinical_workflow,
+    configuration,
     consents,
     department,
     discharge,
@@ -97,3 +98,7 @@ v1_router.include_router(jobs.router)
 
 # Register Phase 24 Privacy, Retention & Data Governance endpoints
 v1_router.include_router(privacy.router)
+
+# Register Phase 25 Feature Flags & Configuration Governance endpoints
+v1_router.include_router(configuration.router)
+

@@ -608,6 +608,41 @@ class Settings(BaseSettings):
     PSEUDONYMIZATION_SALT: str = Field(default="healthsetu-governance-salt-v1", description="Cryptographic salt for pseudonymization")
     EXPORT_MAX_FILE_SIZE_MB: int = Field(default=50, description="Maximum export payload size limit in MB")
 
+    # Phase 25: Feature Flags, Configuration Governance & Controlled Rollout
+    FEATURE_FLAGS_ENABLED: bool = Field(default=True, description="Enable runtime feature-flag evaluation")
+    CONFIG_CACHE_TTL_SECONDS: int = Field(default=60, description="In-memory feature flag cache TTL in seconds")
+    CONFIG_GOVERNANCE_STRICT_MODE: bool = Field(default=False, description="Fail fast on missing conditional dependencies during startup")
+    CONFIG_DRIFT_DETECTION_ENABLED: bool = Field(default=True, description="Enable configuration drift analysis across environments")
+
+    # Feature availability flags (TRD Sec 17)
+    DOCUMENT_PROCESSING_ENABLED: bool = Field(default=True, description="Feature flag for document OCR and extraction")
+    MEDICATION_NORMALIZATION_ENABLED: bool = Field(default=True, description="Feature flag for RxNorm / drug normalization")
+    MEDICATION_SAFETY_ENABLED: bool = Field(default=True, description="Feature flag for medication interaction and allergy checks")
+    TRIAGE_ENABLED: bool = Field(default=True, description="Feature flag for emergency triage assessment engine")
+    SBAR_ENABLED: bool = Field(default=True, description="Feature flag for SBAR clinical handoff note generation")
+    CARE_PLAN_GENERATION_ENABLED: bool = Field(default=True, description="Feature flag for discharge care plan generation")
+    CLINICAL_WORKSPACE_ENABLED: bool = Field(default=True, description="Feature flag for doctor clinical workspace & note signing")
+    FACILITY_DISCOVERY_ENABLED: bool = Field(default=True, description="Feature flag for inter-facility discovery and transfers")
+    TRANSFER_ENABLED: bool = Field(default=True, description="Feature flag for patient transfer workflows")
+    AI_PROCESSING_ENABLED: bool = Field(default=True, description="Feature flag for generative AI clinical assistance")
+    CLINICAL_AI_ASSISTANCE_ENABLED: bool = Field(default=True, description="Feature flag for clinician copilot features")
+    ASYNC_PROCESSING_ENABLED: bool = Field(default=True, description="Feature flag for background task execution engine")
+
+    # Operational safety kill switches (TRD Sec 23)
+    AI_PROCESSING_KILL_SWITCH: bool = Field(default=False, description="Emergency operational kill switch halting AI processing")
+    MEDICATION_SAFETY_PROVIDER_KILL_SWITCH: bool = Field(default=False, description="Emergency operational kill switch halting medication safety provider calls")
+    DOCUMENT_PROCESSING_KILL_SWITCH: bool = Field(default=False, description="Emergency operational kill switch halting document extraction")
+    INTEROPERABILITY_KILL_SWITCH: bool = Field(default=False, description="Emergency operational kill switch halting FHIR/HL7 interop")
+
+    # Provider configurations (TRD Sec 12)
+    MEDICATION_SAFETY_PROVIDER: str = Field(default="mock", description="Active medication safety engine ('mock', 'licensed_provider')")
+    MEDICATION_SAFETY_API_KEY: str = Field(default="", description="API key for licensed medication safety provider")
+    AI_PROVIDER: str = Field(default="mock", description="Active AI provider ('mock', 'openai', 'gemini')")
+    AI_API_KEY: str = Field(default="", description="API key for external AI provider")
+    AI_BASE_URL: str = Field(default="", description="Base URL for external AI provider API")
+    OCR_PROVIDER: str = Field(default="mock", description="Document OCR engine ('mock', 'tesseract', 'google_vision')")
+    TRIAGE_RULE_SET_VERSION: str = Field(default="v1.0.0", description="Validated clinical triage protocol rule set version")
+
     @property
     def max_document_size_bytes(self) -> int:
         """Maximum allowed document upload size in bytes."""

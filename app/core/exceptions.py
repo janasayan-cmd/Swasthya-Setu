@@ -178,6 +178,15 @@ class ErrorCode(str, Enum):
     DEIDENTIFICATION_FAILED = "DEIDENTIFICATION_FAILED"
     PSEUDONYMIZATION_FAILED = "PSEUDONYMIZATION_FAILED"
 
+    # Phase 25: Feature Flags, Configuration Governance & Rollout Error Codes
+    FEATURE_DISABLED = "FEATURE_DISABLED"
+    KILL_SWITCH_ACTIVE = "KILL_SWITCH_ACTIVE"
+    CONFIGURATION_INVALID = "CONFIGURATION_INVALID"
+    CONFIGURATION_NOT_FOUND = "CONFIGURATION_NOT_FOUND"
+    CONFIGURATION_DRIFT_DETECTED = "CONFIGURATION_DRIFT_DETECTED"
+    ROLLOUT_EVALUATION_FAILED = "ROLLOUT_EVALUATION_FAILED"
+    UNAUTHORIZED_CONFIGURATION_ACCESS = "UNAUTHORIZED_CONFIGURATION_ACCESS"
+
 
 class AppException(Exception):
     """Base application exception for all domain and operational errors."""
@@ -1390,6 +1399,82 @@ class DeidentificationFailedException(AppException):
             code=ErrorCode.DEIDENTIFICATION_FAILED,
             message=message,
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            details=details,
+        )
+
+
+class FeatureDisabledException(AppException):
+    """Requested feature or clinical workflow is currently disabled (HTTP 403 or 503)."""
+
+    def __init__(
+        self,
+        feature_name: str,
+        message: str | None = None,
+        status_code: int = status.HTTP_503_SERVICE_UNAVAILABLE,
+        details: Any = None,
+    ) -> None:
+        msg = message or f"Feature '{feature_name}' is currently disabled or unavailable."
+        detail_payload = {"feature": feature_name}
+        if details and isinstance(details, dict):
+            detail_payload.update(details)
+        super().__init__(
+            code=ErrorCode.FEATURE_DISABLED,
+            message=msg,
+            status_code=status_code,
+            details=detail_payload,
+        )
+
+
+class KillSwitchActiveException(AppException):
+    """Operational safety kill switch is actively preventing processing (HTTP 503)."""
+
+    def __init__(
+        self,
+        kill_switch: str,
+        message: str | None = None,
+        reason: str | None = None,
+    ) -> None:
+        msg = message or f"Operational kill switch '{kill_switch}' is active. Processing is temporarily halted."
+        super().__init__(
+            code=ErrorCode.KILL_SWITCH_ACTIVE,
+            message=msg,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            details={"kill_switch": kill_switch, "reason": reason or "Emergency operational halt"},
+        )
+
+
+class ConfigurationInvalidException(AppException):
+    """Configuration fails schema, environment or conditional dependency validation (HTTP 422)."""
+
+    def __init__(self, message: str = "Configuration validation failed.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.CONFIGURATION_INVALID,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details=details,
+        )
+
+
+class ConfigurationNotFoundException(AppException):
+    """Configuration key or feature flag not found (HTTP 404)."""
+
+    def __init__(self, key: str) -> None:
+        super().__init__(
+            code=ErrorCode.CONFIGURATION_NOT_FOUND,
+            message=f"Configuration key or feature flag '{key}' was not found.",
+            status_code=status.HTTP_404_NOT_FOUND,
+            details={"key": key},
+        )
+
+
+class ConfigurationDriftException(AppException):
+    """Detected configuration drift between runtime settings and approved baseline (HTTP 409)."""
+
+    def __init__(self, message: str = "Configuration drift detected.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.CONFIGURATION_DRIFT_DETECTED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
             details=details,
         )
 

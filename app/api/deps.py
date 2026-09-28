@@ -144,6 +144,10 @@ from app.services.data_export_service import DataExportService
 from app.services.deidentification_service import DeidentificationService
 from app.services.pseudonymization_service import PseudonymizationService
 
+# Phase 25: Feature Flags, Configuration Governance & Rollout imports
+from app.services.feature_flag_service import FeatureFlagService
+from app.services.configuration_service import ConfigurationService
+
 # ---------------------------------------------------------------------------
 # HTTP Bearer scheme
 # ---------------------------------------------------------------------------
@@ -286,6 +290,15 @@ _global_data_export_service = DataExportService(
 )
 _global_deidentification_service = DeidentificationService(audit_repository=_global_audit_repo)
 _global_pseudonymization_service = PseudonymizationService(audit_repository=_global_audit_repo)
+
+# ---------------------------------------------------------------------------
+# Phase 25: Feature Flags & Configuration Governance global singletons
+# ---------------------------------------------------------------------------
+_global_feature_flag_service = FeatureFlagService(audit_repo=_global_audit_repo)
+_global_configuration_service = ConfigurationService(
+    feature_flag_service=_global_feature_flag_service,
+    audit_repo=_global_audit_repo,
+)
 
 
 
@@ -1433,3 +1446,18 @@ def get_deidentification_service() -> DeidentificationService:
 def get_pseudonymization_service() -> PseudonymizationService:
     """Dependency provider for PseudonymizationService."""
     return _global_pseudonymization_service
+
+
+# ---------------------------------------------------------------------------
+# Phase 25: Feature Flags & Configuration Governance dependency providers
+# ---------------------------------------------------------------------------
+
+def get_feature_flag_service() -> FeatureFlagService:
+    """Dependency provider for FeatureFlagService."""
+    return _global_feature_flag_service
+
+
+def get_configuration_service() -> ConfigurationService:
+    """Dependency provider for ConfigurationService."""
+    return _global_configuration_service
+

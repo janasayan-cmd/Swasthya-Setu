@@ -36,6 +36,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # Validate production security constraints & configuration (fail-closed in production)
     enforce_security_config(settings)
 
+    # Phase 25: Validate configuration governance & conditional dependencies
+    from app.services.configuration_service import ConfigurationService
+    ConfigurationService(settings=settings).validate_configuration(
+        fail_fast=(settings.is_production and settings.CONFIG_GOVERNANCE_STRICT_MODE)
+    )
+
     # Establish database engine boundary (resilient to unavailable DB)
     if not settings.is_testing and settings.DATABASE_URL:
         from app.core.database import check_database_health

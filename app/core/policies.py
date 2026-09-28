@@ -157,6 +157,13 @@ class Permission(str, Enum):
     DEIDENTIFICATION_EXECUTE = "deidentification:execute"
     PSEUDONYMIZATION_EXECUTE = "pseudonymization:execute"
 
+    # ---- Phase 25: Feature Flags, Configuration Governance & Rollout ----
+    CONFIGURATION_READ = "configuration:read"
+    CONFIGURATION_MANAGE = "configuration:manage"
+    FEATURE_FLAG_READ = "feature_flag:read"
+    FEATURE_FLAG_MANAGE = "feature_flag:manage"
+    KILL_SWITCH_MANAGE = "kill_switch:manage"
+
 
 # ---------------------------------------------------------------------------
 # Role-to-Permission Mapping
@@ -228,6 +235,8 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.DATA_EXPORT_READ,
         Permission.DATA_EXPORT_DOWNLOAD,
         Permission.PRIVACY_POLICY_READ,
+        # Phase 25: Feature Flags & Configuration
+        Permission.FEATURE_FLAG_READ,
     }),
     "DOCTOR": frozenset({
         Permission.PATIENT_READ_SELF,         # can read patient profile in context
@@ -304,6 +313,9 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         # Phase 24: Advanced Data Privacy
         Permission.PRIVACY_POLICY_READ,
         Permission.DATA_EXPORT_READ,
+        # Phase 25: Feature Flags & Configuration
+        Permission.FEATURE_FLAG_READ,
+        Permission.CONFIGURATION_READ,
     }),
     "ADMIN": frozenset({
         # Administrative capabilities ONLY — no automatic clinical data access
@@ -333,6 +345,12 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.DEIDENTIFICATION_EXECUTE,
         Permission.PSEUDONYMIZATION_EXECUTE,
         Permission.DATA_EXPORT_READ,
+        # Phase 25: Feature Flags, Configuration Governance & Rollout
+        Permission.CONFIGURATION_READ,
+        Permission.CONFIGURATION_MANAGE,
+        Permission.FEATURE_FLAG_READ,
+        Permission.FEATURE_FLAG_MANAGE,
+        Permission.KILL_SWITCH_MANAGE,
     }),
 }
 
@@ -453,6 +471,12 @@ ACTION_PERMISSION_MAP: dict[tuple[str, str], Permission] = {
     ("deletion", "manage"):              Permission.DELETION_MANAGE,
     ("deidentification", "execute"):     Permission.DEIDENTIFICATION_EXECUTE,
     ("pseudonymization", "execute"):     Permission.PSEUDONYMIZATION_EXECUTE,
+    # Phase 25: Configuration & Feature Flags
+    ("configuration", "read"):           Permission.CONFIGURATION_READ,
+    ("configuration", "manage"):         Permission.CONFIGURATION_MANAGE,
+    ("feature_flag", "read"):            Permission.FEATURE_FLAG_READ,
+    ("feature_flag", "manage"):          Permission.FEATURE_FLAG_MANAGE,
+    ("kill_switch", "manage"):           Permission.KILL_SWITCH_MANAGE,
 }
 
 
