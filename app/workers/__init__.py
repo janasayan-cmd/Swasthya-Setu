@@ -11,6 +11,9 @@ from app.workers.tasks import (
     interoperability,
     medication_normalization,
     medication_safety,
+    data_export,
+    retention,
+    deidentification,
 )
 from app.workers.worker import AsyncWorkerPool
 

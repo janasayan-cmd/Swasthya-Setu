@@ -145,6 +145,18 @@ class MetricsCollector:
             self.events_published_total: int = 0
             self.events_consumed_total: int = 0
 
+            # Phase 24 Data Privacy & Governance telemetry
+            self.privacy_policy_evaluations_total: int = 0
+            self.privacy_policy_denials_total: int = 0
+            self.data_export_requests_total: int = 0
+            self.data_export_completed_total: int = 0
+            self.data_export_failed_total: int = 0
+            self.retention_evaluations_total: int = 0
+            self.retention_archives_total: int = 0
+            self.retention_deletions_total: int = 0
+            self.deidentification_operations_total: int = 0
+            self.pseudonymization_operations_total: int = 0
+
     # -------------------------------------------------------------------------
     # HTTP Instrumentation
     # -------------------------------------------------------------------------
@@ -297,6 +309,42 @@ class MetricsCollector:
         with self._lock:
             if hasattr(self, name):
                 setattr(self, name, getattr(self, name) + count)
+
+    def record_privacy_evaluation(self, allowed: bool) -> None:
+        """Record privacy access evaluation and optional denial."""
+        with self._lock:
+            self.privacy_policy_evaluations_total += 1
+            if not allowed:
+                self.privacy_policy_denials_total += 1
+
+    def record_data_export(self, status: str) -> None:
+        """Record data export request and terminal state."""
+        with self._lock:
+            self.data_export_requests_total += 1
+            if status in ("COMPLETED", "READY"):
+                self.data_export_completed_total += 1
+            elif status == "FAILED":
+                self.data_export_failed_total += 1
+
+    def record_retention_action(self, action: str) -> None:
+        """Record retention archival or deletion action."""
+        with self._lock:
+            self.retention_evaluations_total += 1
+            if action == "ARCHIVE":
+                self.retention_archives_total += 1
+            elif action == "DELETE":
+                self.retention_deletions_total += 1
+
+    def record_deidentification(self) -> None:
+        """Record batch de-identification operation."""
+        with self._lock:
+            self.deidentification_operations_total += 1
+
+    def record_pseudonymization(self) -> None:
+        """Record cryptographic pseudonymization operation."""
+        with self._lock:
+            self.pseudonymization_operations_total += 1
+
     # Aggregations & Reporting
     # -------------------------------------------------------------------------
 
@@ -503,6 +551,38 @@ class MetricsCollector:
                 f"# HELP events_consumed_total Total domain events consumed",
                 f"# TYPE events_consumed_total counter",
                 f"events_consumed_total {self.events_consumed_total}",
+
+                # Phase 24 Data Privacy & Governance
+                f"# HELP privacy_policy_evaluations_total Total privacy policy access evaluations",
+                f"# TYPE privacy_policy_evaluations_total counter",
+                f"privacy_policy_evaluations_total {self.privacy_policy_evaluations_total}",
+                f"# HELP privacy_policy_denials_total Total access denials under privacy and data governance",
+                f"# TYPE privacy_policy_denials_total counter",
+                f"privacy_policy_denials_total {self.privacy_policy_denials_total}",
+                f"# HELP data_export_requests_total Total patient data export requests initiated",
+                f"# TYPE data_export_requests_total counter",
+                f"data_export_requests_total {self.data_export_requests_total}",
+                f"# HELP data_export_completed_total Total patient data exports successfully generated",
+                f"# TYPE data_export_completed_total counter",
+                f"data_export_completed_total {self.data_export_completed_total}",
+                f"# HELP data_export_failed_total Total patient data export failures",
+                f"# TYPE data_export_failed_total counter",
+                f"data_export_failed_total {self.data_export_failed_total}",
+                f"# HELP retention_evaluations_total Total retention policy evaluations executed",
+                f"# TYPE retention_evaluations_total counter",
+                f"retention_evaluations_total {self.retention_evaluations_total}",
+                f"# HELP retention_archives_total Total resources transitioned to archived state",
+                f"# TYPE retention_archives_total counter",
+                f"retention_archives_total {self.retention_archives_total}",
+                f"# HELP retention_deletions_total Total resources safely deleted under approved policy",
+                f"# TYPE retention_deletions_total counter",
+                f"retention_deletions_total {self.retention_deletions_total}",
+                f"# HELP deidentification_operations_total Total non-production de-identification batches executed",
+                f"# TYPE deidentification_operations_total counter",
+                f"deidentification_operations_total {self.deidentification_operations_total}",
+                f"# HELP pseudonymization_operations_total Total cryptographic pseudonymization operations executed",
+                f"# TYPE pseudonymization_operations_total counter",
+                f"pseudonymization_operations_total {self.pseudonymization_operations_total}",
             ])
 
             return "\n".join(lines) + "\n"

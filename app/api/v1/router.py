@@ -24,6 +24,7 @@ from app.api.v1.endpoints import (
     organization,
     patients,
     prescriptions,
+    privacy,
     sbar,
     symptoms,
     transfers,
@@ -93,3 +94,6 @@ v1_router.include_router(metrics.router)
 
 # Register Phase 22 Asynchronous Job Orchestration endpoints
 v1_router.include_router(jobs.router)
+
+# Register Phase 24 Privacy, Retention & Data Governance endpoints
+v1_router.include_router(privacy.router)

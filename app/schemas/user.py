@@ -1,5 +1,6 @@
 """Pydantic schemas for user identity and context representation."""
 
+from typing import Any
 from pydantic import BaseModel, Field
 from app.schemas.auth import AccountStatus, UserRole
 
@@ -18,9 +19,19 @@ class AuthenticatedUserContext(BaseModel):
     IMPORTANT: Contains NO clinical data (diagnoses, prescriptions, history).
     """
 
-    user_id: str
+    user_id: str = Field(default="", description="Unique user identifier")
     role: UserRole
-    account_status: AccountStatus
+    account_status: AccountStatus = Field(default=AccountStatus.ACTIVE)
+
+    def __init__(self, **data: Any) -> None:
+        if "id" in data and "user_id" not in data:
+            data["user_id"] = data["id"]
+        super().__init__(**data)
+
+    @property
+    def id(self) -> str:
+        """Alias for user_id for convenience."""
+        return self.user_id
 
     @property
     def is_active(self) -> bool:

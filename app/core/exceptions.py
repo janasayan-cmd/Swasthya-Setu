@@ -160,6 +160,24 @@ class ErrorCode(str, Enum):
     WORKFLOW_INVALID_STATE = "WORKFLOW_INVALID_STATE"
     IDEMPOTENCY_CONFLICT = "IDEMPOTENCY_CONFLICT"
 
+    # Phase 24: Advanced Data Privacy, PHI Lifecycle & Data Governance Error Codes
+    PRIVACY_POLICY_DENIED = "PRIVACY_POLICY_DENIED"
+    PRIVACY_PURPOSE_REQUIRED = "PRIVACY_PURPOSE_REQUIRED"
+    PRIVACY_PURPOSE_INVALID = "PRIVACY_PURPOSE_INVALID"
+    RETENTION_POLICY_NOT_FOUND = "RETENTION_POLICY_NOT_FOUND"
+    RETENTION_NOT_ELIGIBLE = "RETENTION_NOT_ELIGIBLE"
+    DELETION_HELD_BY_LEGAL_HOLD = "DELETION_HELD_BY_LEGAL_HOLD"
+    DELETION_DEPENDENCY_CONFLICT = "DELETION_DEPENDENCY_CONFLICT"
+    DELETION_UNCERTAIN_POLICY = "DELETION_UNCERTAIN_POLICY"
+    DELETION_FAILED = "DELETION_FAILED"
+    DATA_EXPORT_NOT_FOUND = "DATA_EXPORT_NOT_FOUND"
+    DATA_EXPORT_EXPIRED = "DATA_EXPORT_EXPIRED"
+    DATA_EXPORT_FAILED = "DATA_EXPORT_FAILED"
+    DATA_EXPORT_INVALID_SCOPE = "DATA_EXPORT_INVALID_SCOPE"
+    DATA_EXPORT_SCOPE_UNAUTHORIZED = "DATA_EXPORT_SCOPE_UNAUTHORIZED"
+    DEIDENTIFICATION_FAILED = "DEIDENTIFICATION_FAILED"
+    PSEUDONYMIZATION_FAILED = "PSEUDONYMIZATION_FAILED"
+
 
 class AppException(Exception):
     """Base application exception for all domain and operational errors."""
@@ -1238,6 +1256,141 @@ class IdempotencyConflictException(AppException):
             message=message or f"Concurrent request already in progress for idempotency key '{idempotency_key}'.",
             status_code=status.HTTP_409_CONFLICT,
             details={"idempotency_key": idempotency_key},
+        )
+
+
+# ---------------------------------------------------------------------------
+# Phase 24: Advanced Data Privacy, Retention & Governance Exceptions
+# ---------------------------------------------------------------------------
+
+class PrivacyPolicyDeniedException(AppException):
+    """Access denied due to privacy policy, consent limitation, or classification boundary (HTTP 403)."""
+
+    def __init__(self, message: str = "Access denied by privacy and data governance policy.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.PRIVACY_POLICY_DENIED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class PrivacyPurposeRequiredException(AppException):
+    """Processing purpose missing or invalid for sensitive data access (HTTP 400)."""
+
+    def __init__(self, message: str = "An authorized processing purpose is required for this operation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.PRIVACY_PURPOSE_REQUIRED,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class RetentionPolicyNotFoundException(AppException):
+    """No active retention policy found for target resource or data classification (HTTP 404)."""
+
+    def __init__(self, resource_type: str, message: str | None = None) -> None:
+        super().__init__(
+            code=ErrorCode.RETENTION_POLICY_NOT_FOUND,
+            message=message or f"No retention policy configured for resource type '{resource_type}'.",
+            status_code=status.HTTP_404_NOT_FOUND,
+            details={"resource_type": resource_type},
+        )
+
+
+class RetentionNotEligibleException(AppException):
+    """Resource is not currently eligible for retention archival or deletion (HTTP 400)."""
+
+    def __init__(self, resource_id: str, reason: str) -> None:
+        super().__init__(
+            code=ErrorCode.RETENTION_NOT_ELIGIBLE,
+            message=f"Resource '{resource_id}' is not eligible for lifecycle transition: {reason}",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details={"resource_id": resource_id, "reason": reason},
+        )
+
+
+class LegalHoldActiveException(AppException):
+    """Deletion or modification blocked due to active legal, investigation, or audit hold (HTTP 409)."""
+
+    def __init__(self, resource_id: str, hold_ids: list[str]) -> None:
+        super().__init__(
+            code=ErrorCode.DELETION_HELD_BY_LEGAL_HOLD,
+            message=f"Resource '{resource_id}' cannot be deleted because one or more active holds exist.",
+            status_code=status.HTTP_409_CONFLICT,
+            details={"resource_id": resource_id, "active_holds": hold_ids},
+        )
+
+
+class DeletionDependencyConflictException(AppException):
+    """Deletion cannot proceed due to unresolved child clinical dependencies (HTTP 409)."""
+
+    def __init__(self, resource_id: str, dependent_types: list[str]) -> None:
+        super().__init__(
+            code=ErrorCode.DELETION_DEPENDENCY_CONFLICT,
+            message=f"Resource '{resource_id}' has dependent records that must be resolved first: {', '.join(dependent_types)}",
+            status_code=status.HTTP_409_CONFLICT,
+            details={"resource_id": resource_id, "dependent_types": dependent_types},
+        )
+
+
+class DeletionUncertainPolicyException(AppException):
+    """Deletion refused under fail-closed privacy invariant when policy is uncertain or missing (HTTP 400)."""
+
+    def __init__(self, resource_id: str, message: str = "Deletion refused: privacy retention policy is uncertain or undefined.") -> None:
+        super().__init__(
+            code=ErrorCode.DELETION_UNCERTAIN_POLICY,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details={"resource_id": resource_id},
+        )
+
+
+class DataExportNotFoundException(AppException):
+    """Patient data export job or artifact not found (HTTP 404)."""
+
+    def __init__(self, export_id: str) -> None:
+        super().__init__(
+            code=ErrorCode.DATA_EXPORT_NOT_FOUND,
+            message=f"Data export '{export_id}' was not found.",
+            status_code=status.HTTP_404_NOT_FOUND,
+            details={"export_id": export_id},
+        )
+
+
+class DataExportExpiredException(AppException):
+    """Patient data export download token or artifact has expired (HTTP 410)."""
+
+    def __init__(self, export_id: str) -> None:
+        super().__init__(
+            code=ErrorCode.DATA_EXPORT_EXPIRED,
+            message=f"Data export '{export_id}' has expired and is no longer available for download.",
+            status_code=status.HTTP_410_GONE,
+            details={"export_id": export_id},
+        )
+
+
+class DataExportUnauthorizedException(AppException):
+    """Unauthorized attempt to access or initiate patient data export (HTTP 403)."""
+
+    def __init__(self, message: str = "Not authorized to export data for this patient.") -> None:
+        super().__init__(
+            code=ErrorCode.DATA_EXPORT_SCOPE_UNAUTHORIZED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+        )
+
+
+class DeidentificationFailedException(AppException):
+    """De-identification transformation failed (HTTP 500)."""
+
+    def __init__(self, message: str = "De-identification operation failed.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.DEIDENTIFICATION_FAILED,
+            message=message,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            details=details,
         )
 
 

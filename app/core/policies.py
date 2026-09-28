@@ -145,6 +145,18 @@ class Permission(str, Enum):
     ADMIN_USER_MANAGE = "admin:user_manage"
     ADMIN_AUDIT_READ = "admin:audit_read"
 
+    # ---- Phase 24: Advanced Data Privacy, Retention & Governance ----
+    DATA_EXPORT_REQUEST = "data_export:request"
+    DATA_EXPORT_READ = "data_export:read"
+    DATA_EXPORT_DOWNLOAD = "data_export:download"
+    PRIVACY_POLICY_READ = "privacy_policy:read"
+    PRIVACY_ADMIN = "privacy:admin"
+    RETENTION_MANAGE = "retention:manage"
+    RETENTION_READ = "retention:read"
+    DELETION_MANAGE = "deletion:manage"
+    DEIDENTIFICATION_EXECUTE = "deidentification:execute"
+    PSEUDONYMIZATION_EXECUTE = "pseudonymization:execute"
+
 
 # ---------------------------------------------------------------------------
 # Role-to-Permission Mapping
@@ -211,6 +223,11 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         # Phase 14: AI & Intelligence Layer
         Permission.AI_EXECUTE,
         Permission.AI_READ,
+        # Phase 24: Advanced Data Privacy
+        Permission.DATA_EXPORT_REQUEST,
+        Permission.DATA_EXPORT_READ,
+        Permission.DATA_EXPORT_DOWNLOAD,
+        Permission.PRIVACY_POLICY_READ,
     }),
     "DOCTOR": frozenset({
         Permission.PATIENT_READ_SELF,         # can read patient profile in context
@@ -284,6 +301,9 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.AI_EXECUTE,
         Permission.AI_READ,
         Permission.AI_VERIFY,
+        # Phase 24: Advanced Data Privacy
+        Permission.PRIVACY_POLICY_READ,
+        Permission.DATA_EXPORT_READ,
     }),
     "ADMIN": frozenset({
         # Administrative capabilities ONLY — no automatic clinical data access
@@ -304,6 +324,15 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.INTEROPERABILITY_READ,
         # Phase 14: AI & Intelligence Layer
         Permission.AI_READ,
+        # Phase 24: Advanced Data Privacy & Governance
+        Permission.PRIVACY_POLICY_READ,
+        Permission.PRIVACY_ADMIN,
+        Permission.RETENTION_MANAGE,
+        Permission.RETENTION_READ,
+        Permission.DELETION_MANAGE,
+        Permission.DEIDENTIFICATION_EXECUTE,
+        Permission.PSEUDONYMIZATION_EXECUTE,
+        Permission.DATA_EXPORT_READ,
     }),
 }
 
@@ -413,6 +442,17 @@ ACTION_PERMISSION_MAP: dict[tuple[str, str], Permission] = {
     ("ai_task", "create"):                Permission.AI_EXECUTE,
     ("ai_task", "read"):                  Permission.AI_READ,
     ("ai_task", "verify"):                Permission.AI_VERIFY,
+    # Phase 24: Privacy, Retention & Governance
+    ("data_export", "request"):          Permission.DATA_EXPORT_REQUEST,
+    ("data_export", "read"):             Permission.DATA_EXPORT_READ,
+    ("data_export", "download"):         Permission.DATA_EXPORT_DOWNLOAD,
+    ("privacy_policy", "read"):          Permission.PRIVACY_POLICY_READ,
+    ("privacy", "admin"):                Permission.PRIVACY_ADMIN,
+    ("retention", "manage"):             Permission.RETENTION_MANAGE,
+    ("retention", "read"):               Permission.RETENTION_READ,
+    ("deletion", "manage"):              Permission.DELETION_MANAGE,
+    ("deidentification", "execute"):     Permission.DEIDENTIFICATION_EXECUTE,
+    ("pseudonymization", "execute"):     Permission.PSEUDONYMIZATION_EXECUTE,
 }
 
 

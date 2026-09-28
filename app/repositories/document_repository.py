@@ -133,6 +133,13 @@ class DocumentRepository(BaseRepository[Any]):
         """Fetch all extractions for document."""
         return self._extractions.get(document_id, [])
 
+    async def get_latest_extraction(self, document_id: str) -> ExtractionRecord | None:
+        """Fetch the most recent extraction record for a document."""
+        extractions = self._extractions.get(document_id, [])
+        if not extractions:
+            return None
+        return extractions[-1]
+
     async def list_documents_by_patient(
         self, patient_id: str, include_archived: bool = False
     ) -> list[DocumentRecord]:
@@ -196,10 +203,27 @@ class DocumentRepository(BaseRepository[Any]):
         self._extractions[record.document_id].append(record)
         return record
 
-    async def get_latest_extraction(self, document_id: str) -> ExtractionRecord | None:
-        """Retrieve most recent extraction result for document."""
-        exts = self._extractions.get(document_id, [])
-        return exts[-1] if exts else None
+    list_by_patient_id = list_documents_by_patient
+
+    async def set_archived(self, document_id: str, is_archived: bool = True) -> DocumentRecord | None:
+        """Set archival status of document."""
+        if is_archived:
+            return await self.archive_document(document_id)
+        doc = self._documents.get(document_id)
+        if not doc:
+            return None
+        updated = replace(
+            doc,
+            is_archived=False,
+            lifecycle_state=DocumentLifecycleState.UPLOADED,
+            updated_at=datetime.now(timezone.utc),
+        )
+        self._documents[document_id] = updated
+        return updated
+
+    async def delete(self, document_id: str) -> bool:
+        """Delete document record."""
+        return bool(self._documents.pop(document_id, None))
 
     def clear(self) -> None:
         """Clear all in-memory records (used in tests)."""

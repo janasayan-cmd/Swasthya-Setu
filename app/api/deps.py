@@ -137,6 +137,13 @@ from app.services.event_service import EventService
 from app.services.job_service import JobService
 from app.services.workflow_service import WorkflowService
 
+# Phase 24: Advanced Data Privacy & Data Governance imports
+from app.services.privacy_service import PrivacyService
+from app.services.retention_service import RetentionService
+from app.services.data_export_service import DataExportService
+from app.services.deidentification_service import DeidentificationService
+from app.services.pseudonymization_service import PseudonymizationService
+
 # ---------------------------------------------------------------------------
 # HTTP Bearer scheme
 # ---------------------------------------------------------------------------
@@ -246,6 +253,39 @@ _global_job_repo = JobRepository()
 _global_workflow_repo = WorkflowRepository()
 _global_event_repo = EventRepository()
 _global_idempotency_repo = IdempotencyRepository()
+
+# ---------------------------------------------------------------------------
+# Phase 24: Advanced Data Privacy & Governance global singletons
+# ---------------------------------------------------------------------------
+_global_privacy_service = PrivacyService(
+    audit_repository=_global_audit_repo,
+    consent_repository=_global_consent_repo,
+    patient_repository=_global_patient_repo,
+)
+_global_retention_service = RetentionService(
+    audit_repository=_global_audit_repo,
+    document_repository=_global_document_repo,
+    patient_repository=_global_patient_repo,
+    storage_adapter=_global_document_storage,
+)
+_global_data_export_service = DataExportService(
+    audit_repository=_global_audit_repo,
+    patient_repository=_global_patient_repo,
+    document_repository=_global_document_repo,
+    allergy_repository=_global_allergy_repo,
+    clinical_history_repository=_global_history_repo,
+    encounter_repository=_global_encounter_repo,
+    vitals_repository=_global_vitals_repo,
+    medication_repository=_global_medication_repo,
+    prescription_repository=_global_prescription_repo,
+    triage_repository=_global_triage_repo,
+    care_plan_repository=_global_care_plan_repo,
+    interoperability_repository=_global_interoperability_repo,
+    consent_repository=_global_consent_repo,
+    storage_adapter=_global_document_storage,
+)
+_global_deidentification_service = DeidentificationService(audit_repository=_global_audit_repo)
+_global_pseudonymization_service = PseudonymizationService(audit_repository=_global_audit_repo)
 
 
 
@@ -1364,3 +1404,32 @@ def get_workflow_service(
 ) -> WorkflowService:
     """Dependency provider for WorkflowService."""
     return WorkflowService(repository=repo, audit_service=audit_service)
+
+
+# ---------------------------------------------------------------------------
+# Phase 24: Advanced Data Privacy & Governance dependency providers
+# ---------------------------------------------------------------------------
+
+def get_privacy_service() -> PrivacyService:
+    """Dependency provider for PrivacyService."""
+    return _global_privacy_service
+
+
+def get_retention_service() -> RetentionService:
+    """Dependency provider for RetentionService."""
+    return _global_retention_service
+
+
+def get_data_export_service() -> DataExportService:
+    """Dependency provider for DataExportService."""
+    return _global_data_export_service
+
+
+def get_deidentification_service() -> DeidentificationService:
+    """Dependency provider for DeidentificationService."""
+    return _global_deidentification_service
+
+
+def get_pseudonymization_service() -> PseudonymizationService:
+    """Dependency provider for PseudonymizationService."""
+    return _global_pseudonymization_service

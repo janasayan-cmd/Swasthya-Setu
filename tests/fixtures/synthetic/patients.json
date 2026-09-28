@@ -1,0 +1,28 @@
+{
+  "patients": [
+    {
+      "id": "syn-pat-001",
+      "user_id": "usr-pat-001",
+      "first_name": "Synthetic_John",
+      "last_name": "Test_Doe",
+      "date_of_birth": "1985-04-12",
+      "sex": "MALE",
+      "phone": "+1-555-0100",
+      "email": "synthetic.patient1@example.internal",
+      "address": "123 Mockingbird Lane, Synthetic City",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "syn-pat-002",
+      "user_id": "usr-pat-002",
+      "first_name": "Synthetic_Jane",
+      "last_name": "Test_Smith",
+      "date_of_birth": "1992-09-28",
+      "sex": "FEMALE",
+      "phone": "+1-555-0101",
+      "email": "synthetic.patient2@example.internal",
+      "address": "456 Test Boulevard, Demo Town",
+      "status": "ACTIVE"
+    }
+  ]
+}

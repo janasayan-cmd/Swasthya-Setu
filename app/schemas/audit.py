@@ -192,6 +192,25 @@ class AuditEventType(str, Enum):
     WORKFLOW_COMPLETED = "WORKFLOW_COMPLETED"
     WORKFLOW_FAILED = "WORKFLOW_FAILED"
 
+    # Advanced Data Privacy, Lifecycle & Governance events (Phase 24)
+    PRIVACY_POLICY_CHECKED = "PRIVACY_POLICY_CHECKED"
+    SENSITIVE_DATA_ACCESSED = "SENSITIVE_DATA_ACCESSED"
+    DATA_EXPORT_REQUESTED = "DATA_EXPORT_REQUESTED"
+    DATA_EXPORT_COMPLETED = "DATA_EXPORT_COMPLETED"
+    DATA_EXPORT_FAILED = "DATA_EXPORT_FAILED"
+    DATA_EXPORT_DOWNLOADED = "DATA_EXPORT_DOWNLOADED"
+    DATA_EXPORT_EXPIRED = "DATA_EXPORT_EXPIRED"
+    RETENTION_EVALUATED = "RETENTION_EVALUATED"
+    RESOURCE_ARCHIVE_STARTED = "RESOURCE_ARCHIVE_STARTED"
+    RESOURCE_ARCHIVED = "RESOURCE_ARCHIVED"
+    RESOURCE_DELETION_REQUESTED = "RESOURCE_DELETION_REQUESTED"
+    RESOURCE_DELETION_COMPLETED = "RESOURCE_DELETION_COMPLETED"
+    RESOURCE_DELETION_FAILED = "RESOURCE_DELETION_FAILED"
+    DEIDENTIFICATION_STARTED = "DEIDENTIFICATION_STARTED"
+    DEIDENTIFICATION_COMPLETED = "DEIDENTIFICATION_COMPLETED"
+    PSEUDONYMIZATION_COMPLETED = "PSEUDONYMIZATION_COMPLETED"
+    PRIVACY_POLICY_DENIED = "PRIVACY_POLICY_DENIED"
+
 
 class AuditEventRecord(BaseModel):
     """Immutable audit event record for persistence and structured logging.
@@ -200,13 +219,16 @@ class AuditEventRecord(BaseModel):
     Clinical payload content is NEVER included.
     """
 
-    model_config = ConfigDict(frozen=True)
+    model_config = ConfigDict(frozen=True, populate_by_name=True, extra="ignore")
 
+    id: str | None = None
     event_type: AuditEventType
     actor_id: str | None = Field(
         default=None,
         description="User ID of the requester/actor. None for unauthenticated requests.",
     )
+    user_id: str | None = None
+    patient_id: str | None = None
     action: str | None = Field(
         default=None,
         description="The action attempted (e.g., 'clinical_record:read')",
@@ -241,3 +263,6 @@ class AuditEventRecord(BaseModel):
     def details(self) -> dict | None:
         """Alias for metadata for backwards compatibility."""
         return self.metadata
+
+
+AuditRecord = AuditEventRecord

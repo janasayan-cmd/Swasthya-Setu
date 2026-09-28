@@ -1,0 +1,84 @@
+{
+  "prescriptions": [
+    {
+      "id": "syn-rx-001",
+      "patient_id": "syn-pat-001",
+      "doctor_id": "doc-001",
+      "medication_name": "Amoxicillin",
+      "dosage": "500mg",
+      "frequency": "Three times daily",
+      "duration_days": 10,
+      "status": "ACTIVE"
+    },
+    {
+      "id": "syn-rx-002",
+      "patient_id": "syn-pat-002",
+      "doctor_id": "doc-002",
+      "medication_name": "Lisinopril",
+      "dosage": "10mg",
+      "frequency": "Once daily",
+      "duration_days": 30,
+      "status": "ACTIVE"
+    }
+  ],
+  "documents": [
+    {
+      "id": "syn-doc-001",
+      "patient_id": "syn-pat-001",
+      "filename": "synthetic_lab_report.pdf",
+      "document_type": "LAB_REPORT",
+      "size_bytes": 102400,
+      "storage_key": "documents/syn-pat-001/syn-doc-001.pdf"
+    }
+  ],
+  "medications": [
+    {
+      "id": "syn-med-001",
+      "code": "RxNorm:12345",
+      "name": "Amoxicillin",
+      "dosage": "500mg"
+    }
+  ],
+  "encounters": [
+    {
+      "id": "syn-enc-001",
+      "patient_id": "syn-pat-001",
+      "encounter_type": "OUTPATIENT",
+      "facility_id": "fac-001",
+      "status": "COMPLETED"
+    }
+  ],
+  "clinicians": [
+    {
+      "id": "doc-001",
+      "first_name": "Dr_Synthetic",
+      "last_name": "Physician",
+      "specialty": "Internal Medicine",
+      "license_number": "MD-TEST-9999"
+    }
+  ],
+  "facilities": [
+    {
+      "id": "fac-001",
+      "name": "Synthetic Metro General Hospital",
+      "type": "GENERAL_ACUTE",
+      "capacity": 250
+    }
+  ],
+  "triage_cases": [
+    {
+      "id": "syn-triage-001",
+      "patient_id": "syn-pat-001",
+      "urgency_level": "URGENT",
+      "chief_complaint": "Acute moderate fever and productive cough"
+    }
+  ],
+  "discharge_cases": [
+    {
+      "id": "syn-discharge-001",
+      "patient_id": "syn-pat-001",
+      "summary": "Patient discharged in stable condition. Continue oral antibiotics.",
+      "follow_up_days": 14
+    }
+  ]
+}

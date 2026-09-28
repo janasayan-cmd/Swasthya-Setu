@@ -92,6 +92,10 @@ class AuditRepository(BaseRepository[Any]):
         # Also store in memory for test assertions
         self._events.append(event)
 
+    async def create(self, event: Any) -> None:
+        """Alias for append to satisfy repository contract."""
+        await self.append(event)
+
     async def get_recent_events(
         self,
         actor_id: str | None = None,

@@ -594,6 +594,20 @@ class Settings(BaseSettings):
     WORKER_SHUTDOWN_TIMEOUT_SECONDS: float = Field(default=30.0, description="Graceful shutdown drain timeout for in-flight tasks")
     DEAD_LETTER_ENABLED: bool = Field(default=True, description="Persist permanently failed jobs to dead-letter queue")
 
+    # Phase 24: Advanced Data Privacy, PHI Lifecycle & Data Governance
+    PRIVACY_CONTROLS_ENABLED: bool = Field(default=True, description="Enforce centralized data privacy and classification controls")
+    DATA_EXPORT_ENABLED: bool = Field(default=True, description="Enable controlled patient data export workflows")
+    RETENTION_PROCESSING_ENABLED: bool = Field(default=True, description="Enable retention evaluation and lifecycle processing")
+    DEIDENTIFICATION_ENABLED: bool = Field(default=True, description="Enable de-identification transformations for non-production use")
+    PSEUDONYMIZATION_ENABLED: bool = Field(default=True, description="Enable cryptographic pseudonymization services")
+    TEMPORARY_DATA_CLEANUP_ENABLED: bool = Field(default=True, description="Enable automated purging of temporary files and expired exports")
+    PRIVACY_JOB_MAX_RETRIES: int = Field(default=3, description="Maximum retries for privacy background jobs (destructive jobs fail closed)")
+    EXPORT_EXPIRATION_SECONDS: int = Field(default=86400, description="Expiration TTL in seconds for generated patient export artifacts (24h)")
+    TEMPORARY_DATA_TTL_SECONDS: int = Field(default=3600, description="Maximum lifespan in seconds for temporary files")
+    RETENTION_EVALUATION_INTERVAL_SECONDS: int = Field(default=86400, description="Periodic interval for retention policy evaluations")
+    PSEUDONYMIZATION_SALT: str = Field(default="healthsetu-governance-salt-v1", description="Cryptographic salt for pseudonymization")
+    EXPORT_MAX_FILE_SIZE_MB: int = Field(default=50, description="Maximum export payload size limit in MB")
+
     @property
     def max_document_size_bytes(self) -> int:
         """Maximum allowed document upload size in bytes."""
