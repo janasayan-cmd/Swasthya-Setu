@@ -12,7 +12,7 @@ async def test_openapi_schema_available(async_client: AsyncClient):
 
     schema = response.json()
     assert schema["info"]["title"] == "HealthSetu API"
-    assert schema["info"]["version"] == "0.1.0"
+    assert schema["info"]["version"] == "1.0.0"
     assert "/api/v1/health" in schema["paths"]
     assert "/api/v1/ready" in schema["paths"]
     assert "/api/v1/auth/login" in schema["paths"]

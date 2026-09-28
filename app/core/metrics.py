@@ -64,6 +64,7 @@ def normalize_route_path(path: str) -> str:
     clean_path = re.sub(r"/exports/[^/]+", "/exports/{export_id}", clean_path)
     clean_path = re.sub(r"/care-plans/[^/]+", "/care-plans/{care_plan_id}", clean_path)
     clean_path = re.sub(r"/clinical-notes/[^/]+", "/clinical-notes/{note_id}", clean_path)
+    clean_path = re.sub(r"/jobs/[^/]+", "/jobs/{job_id}", clean_path)
     clean_path = re.sub(r"/users/[^/]+", "/users/{user_id}", clean_path)
 
     # Replace any leftover UUIDs or entity tokens
@@ -118,6 +119,31 @@ class MetricsCollector:
             # Background jobs telemetry
             self.background_job_total: dict[tuple[str, str], int] = defaultdict(int)
             self.background_job_failures_total: dict[str, int] = defaultdict(int)
+
+            # Disaster Recovery & Business Continuity telemetry (Phase 19)
+            self.recovery_attempts_total: dict[str, int] = defaultdict(int)
+            self.recovery_success_total: dict[str, int] = defaultdict(int)
+            self.recovery_failure_total: dict[str, int] = defaultdict(int)
+            self.recovery_duration_seconds: dict[str, float] = {}
+            self.database_restore_duration_seconds: float = 0.0
+            self.deployment_rollback_total: int = 0
+            self.provider_recovery_total: dict[str, int] = defaultdict(int)
+
+            # Scalability, Performance & High-Availability telemetry (Phase 21)
+            self.load_shedding_rejected_total: int = 0
+            self.circuit_breaker_trips_total: dict[str, int] = defaultdict(int)
+            self.cache_hits_total: dict[str, int] = defaultdict(int)
+            self.cache_misses_total: dict[str, int] = defaultdict(int)
+
+            # Asynchronous Workflows & Events (Phase 22)
+            self.jobs_created_total: int = 0
+            self.jobs_queued_total: int = 0
+            self.jobs_completed_total: int = 0
+            self.jobs_failed_total: int = 0
+            self.jobs_retried_total: int = 0
+            self.jobs_cancelled_total: int = 0
+            self.events_published_total: int = 0
+            self.events_consumed_total: int = 0
 
     # -------------------------------------------------------------------------
     # HTTP Instrumentation
@@ -221,6 +247,56 @@ class MetricsCollector:
                 self.background_job_failures_total[clean_type] += 1
 
     # -------------------------------------------------------------------------
+    # Disaster Recovery & Business Continuity Telemetry (Phase 19)
+    # -------------------------------------------------------------------------
+
+    def record_recovery_attempt(self, subsystem: str = "general") -> None:
+        """Record initiation of a disaster recovery or rollback procedure."""
+        clean_subsystem = subsystem.lower().strip()
+        with self._lock:
+            self.recovery_attempts_total[clean_subsystem] += 1
+
+    def record_recovery_result(
+        self,
+        subsystem: str = "general",
+        success: bool = True,
+        duration_seconds: float = 0.0,
+    ) -> None:
+        """Record completion of a disaster recovery procedure."""
+        clean_subsystem = subsystem.lower().strip()
+        with self._lock:
+            if success:
+                self.recovery_success_total[clean_subsystem] += 1
+            else:
+                self.recovery_failure_total[clean_subsystem] += 1
+            if duration_seconds > 0:
+                self.recovery_duration_seconds[clean_subsystem] = round(duration_seconds, 3)
+
+    def record_database_restore(self, duration_seconds: float) -> None:
+        """Record database restoration execution duration."""
+        with self._lock:
+            self.database_restore_duration_seconds = round(duration_seconds, 3)
+
+    def record_deployment_rollback(self) -> None:
+        """Record application deployment rollback event."""
+        with self._lock:
+            self.deployment_rollback_total += 1
+
+    def record_provider_recovery(self, provider: str) -> None:
+        """Record successful external provider recovery and probe validation."""
+        clean_provider = provider.lower().strip()
+        with self._lock:
+            self.provider_recovery_total[clean_provider] += 1
+
+    # -------------------------------------------------------------------------
+    # Generic Counter Increment Helper
+    # -------------------------------------------------------------------------
+
+    def increment(self, name: str, count: int = 1) -> None:
+        """Increment a registered integer counter metric."""
+        with self._lock:
+            if hasattr(self, name):
+                setattr(self, name, getattr(self, name) + count)
     # Aggregations & Reporting
     # -------------------------------------------------------------------------
 
@@ -283,6 +359,31 @@ class MetricsCollector:
                     "failures_total": sum(self.background_job_failures_total.values()),
                     "by_type": dict(self.background_job_failures_total),
                 },
+                "disaster_recovery": {
+                    "recovery_attempts_total": sum(self.recovery_attempts_total.values()),
+                    "recovery_success_total": sum(self.recovery_success_total.values()),
+                    "recovery_failure_total": sum(self.recovery_failure_total.values()),
+                    "recovery_duration_seconds": dict(self.recovery_duration_seconds),
+                    "database_restore_duration_seconds": self.database_restore_duration_seconds,
+                    "deployment_rollback_total": self.deployment_rollback_total,
+                    "provider_recovery_total": dict(self.provider_recovery_total),
+                },
+                "scalability": {
+                    "load_shedding_rejected_total": self.load_shedding_rejected_total,
+                    "circuit_breaker_trips": dict(self.circuit_breaker_trips_total),
+                    "cache_hits": dict(self.cache_hits_total),
+                    "cache_misses": dict(self.cache_misses_total),
+                },
+                "async_workflows": {
+                    "jobs_created": self.jobs_created_total,
+                    "jobs_queued": self.jobs_queued_total,
+                    "jobs_completed": self.jobs_completed_total,
+                    "jobs_failed": self.jobs_failed_total,
+                    "jobs_retried": self.jobs_retried_total,
+                    "jobs_cancelled": self.jobs_cancelled_total,
+                    "events_published": self.events_published_total,
+                    "events_consumed": self.events_consumed_total,
+                },
             }
 
     def to_prometheus_text(self) -> str:
@@ -333,6 +434,76 @@ class MetricsCollector:
             ])
             for job_type, count in sorted(self.background_job_failures_total.items()):
                 lines.append(f'background_job_failures_total{{job_type="{job_type}"}} {count}')
+
+            # Disaster Recovery & Business Continuity (Phase 19)
+            lines.extend([
+                "# HELP recovery_attempts_total Total disaster recovery attempts initiated",
+                "# TYPE recovery_attempts_total counter",
+            ])
+            for sub, count in sorted(self.recovery_attempts_total.items()):
+                lines.append(f'recovery_attempts_total{{subsystem="{sub}"}} {count}')
+
+            lines.extend([
+                "# HELP recovery_success_total Total successful disaster recovery procedures",
+                "# TYPE recovery_success_total counter",
+            ])
+            for sub, count in sorted(self.recovery_success_total.items()):
+                lines.append(f'recovery_success_total{{subsystem="{sub}"}} {count}')
+
+            lines.extend([
+                "# HELP recovery_failure_total Total failed disaster recovery procedures",
+                "# TYPE recovery_failure_total counter",
+            ])
+            for sub, count in sorted(self.recovery_failure_total.items()):
+                lines.append(f'recovery_failure_total{{subsystem="{sub}"}} {count}')
+
+            lines.extend([
+                "# HELP recovery_duration_seconds Most recent disaster recovery duration in seconds",
+                "# TYPE recovery_duration_seconds gauge",
+            ])
+            for sub, dur in sorted(self.recovery_duration_seconds.items()):
+                lines.append(f'recovery_duration_seconds{{subsystem="{sub}"}} {dur}')
+
+            lines.extend([
+                "# HELP database_restore_duration_seconds Most recent database restore duration in seconds",
+                "# TYPE database_restore_duration_seconds gauge",
+                f"database_restore_duration_seconds {self.database_restore_duration_seconds}",
+                "# HELP deployment_rollback_total Total deployment rollback actions executed",
+                "# TYPE deployment_rollback_total counter",
+                f"deployment_rollback_total {self.deployment_rollback_total}",
+            ])
+
+            lines.extend([
+                "# HELP provider_recovery_total Total external provider recovery validations",
+                "# TYPE provider_recovery_total counter",
+            ])
+            for prov, count in sorted(self.provider_recovery_total.items()):
+                lines.append(f'provider_recovery_total{{provider="{prov}"}} {count}')
+
+            # Phase 22 Async Jobs & Events
+            lines.extend([
+                f"# HELP jobs_created_total Total asynchronous jobs created",
+                f"# TYPE jobs_created_total counter",
+                f"jobs_created_total {self.jobs_created_total}",
+                f"# HELP jobs_completed_total Total asynchronous jobs completed successfully",
+                f"# TYPE jobs_completed_total counter",
+                f"jobs_completed_total {self.jobs_completed_total}",
+                f"# HELP jobs_failed_total Total asynchronous jobs failed permanently",
+                f"# TYPE jobs_failed_total counter",
+                f"jobs_failed_total {self.jobs_failed_total}",
+                f"# HELP jobs_retried_total Total asynchronous jobs scheduled for retry",
+                f"# TYPE jobs_retried_total counter",
+                f"jobs_retried_total {self.jobs_retried_total}",
+                f"# HELP jobs_cancelled_total Total asynchronous jobs cancelled",
+                f"# TYPE jobs_cancelled_total counter",
+                f"jobs_cancelled_total {self.jobs_cancelled_total}",
+                f"# HELP events_published_total Total domain events published",
+                f"# TYPE events_published_total counter",
+                f"events_published_total {self.events_published_total}",
+                f"# HELP events_consumed_total Total domain events consumed",
+                f"# TYPE events_consumed_total counter",
+                f"events_consumed_total {self.events_consumed_total}",
+            ])
 
             return "\n".join(lines) + "\n"
 

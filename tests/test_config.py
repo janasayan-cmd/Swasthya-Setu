@@ -8,7 +8,7 @@ def test_default_config():
     """Verify default configuration values."""
     settings = Settings()
     assert settings.APP_NAME == "HealthSetu"
-    assert settings.APP_VERSION == "0.1.0"
+    assert settings.APP_VERSION == "1.0.0"
     assert settings.PORT == 8000
     assert settings.REQUEST_ID_HEADER == "X-Request-ID"
     assert settings.API_PREFIX == "/api/v1"

@@ -15,7 +15,7 @@ Startup configuration validation (`enforce_security_config`) executes on contain
 | :--- | :--- | :--- |
 | `APP_NAME` | `healthsetu-backend` | Identifier for service logs and diagnostics |
 | `APP_ENV` | `production` | Enables strict security guardrails |
-| `APP_VERSION` | `0.1.0` | Semantic release version |
+| `APP_VERSION` | `1.0.0` | Semantic release version |
 | `DEBUG` | `false` | Must be false in production (prevents traceback leaks) |
 | `HOST` | `0.0.0.0` | Server binding address |
 | `PORT` | Dynamic | Injected by Railway runtime |

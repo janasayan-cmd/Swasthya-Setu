@@ -1,7 +1,7 @@
 """Medical document management and processing endpoints."""
 
 from typing import Annotated
-from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, Request, UploadFile, status
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, Query, Request, UploadFile, status
 
 from app.api.deps import (
     get_audit_service,
@@ -134,13 +134,15 @@ async def list_documents(
     request: Request,
     patient_id: str,
     include_archived: bool = False,
+    limit: Annotated[int, Query(ge=1, le=100, description="Page size limit (max 100)")] = 25,
+    offset: Annotated[int, Query(ge=0, description="Page offset")] = 0,
     current_user: Annotated[AuthenticatedUserContext, Depends(get_current_user)] = None,
     patient_service: Annotated[PatientService, Depends(get_patient_service)] = None,
     document_service: Annotated[DocumentService, Depends(get_document_service)] = None,
     authz_service: Annotated[AuthorizationService, Depends(get_authorization_service)] = None,
     audit_service: Annotated[AuditService, Depends(get_audit_service)] = None,
 ) -> StandardSuccessResponse[DocumentListResponse]:
-    """List documents for patient."""
+    """List documents for patient with bounded pagination."""
     await verify_patient_access(
         patient_id=patient_id,
         current_user=current_user,
@@ -155,8 +157,9 @@ async def list_documents(
         patient_id=patient_id,
         resource_type="document",
     )
+    paginated_items = items[offset : offset + limit]
     return StandardSuccessResponse(
-        data=DocumentListResponse(items=items, total=len(items)),
+        data=DocumentListResponse(items=paginated_items, total=len(items)),
         request_id=_req_id(request),
     )
 

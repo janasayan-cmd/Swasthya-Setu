@@ -140,6 +140,26 @@ class ErrorCode(str, Enum):
     INTERNAL_SECURITY_ERROR = "INTERNAL_SECURITY_ERROR"
     PATH_TRAVERSAL_DETECTED = "PATH_TRAVERSAL_DETECTED"
 
+    # Phase 22: Asynchronous Workflow & Event-Driven Error Codes
+    JOB_NOT_FOUND = "JOB_NOT_FOUND"
+    JOB_NOT_AUTHORIZED = "JOB_NOT_AUTHORIZED"
+    JOB_ALREADY_COMPLETED = "JOB_ALREADY_COMPLETED"
+    JOB_ALREADY_CANCELLED = "JOB_ALREADY_CANCELLED"
+    JOB_NOT_RETRYABLE = "JOB_NOT_RETRYABLE"
+    JOB_RETRY_LIMIT_REACHED = "JOB_RETRY_LIMIT_REACHED"
+    JOB_PROCESSING_TIMEOUT = "JOB_PROCESSING_TIMEOUT"
+    JOB_VALIDATION_FAILED = "JOB_VALIDATION_FAILED"
+    JOB_EXECUTION_FAILED = "JOB_EXECUTION_FAILED"
+    EVENT_INVALID = "EVENT_INVALID"
+    EVENT_VERSION_UNSUPPORTED = "EVENT_VERSION_UNSUPPORTED"
+    EVENT_DUPLICATE = "EVENT_DUPLICATE"
+    EVENT_PUBLICATION_FAILED = "EVENT_PUBLICATION_FAILED"
+    EVENT_CONSUMPTION_FAILED = "EVENT_CONSUMPTION_FAILED"
+    WORKFLOW_NOT_FOUND = "WORKFLOW_NOT_FOUND"
+    WORKFLOW_FAILED = "WORKFLOW_FAILED"
+    WORKFLOW_INVALID_STATE = "WORKFLOW_INVALID_STATE"
+    IDEMPOTENCY_CONFLICT = "IDEMPOTENCY_CONFLICT"
+
 
 class AppException(Exception):
     """Base application exception for all domain and operational errors."""
@@ -1097,6 +1117,127 @@ class PathTraversalDetectedException(AppException):
             message=message,
             status_code=400,
             details=details,
+        )
+
+
+# Phase 22: Asynchronous Workflow & Job Exceptions
+class JobNotFoundException(AppException):
+    """Job record not found (HTTP 404)."""
+
+    def __init__(self, job_id: str, message: str | None = None) -> None:
+        super().__init__(
+            code=ErrorCode.JOB_NOT_FOUND,
+            message=message or f"Asynchronous job '{job_id}' not found.",
+            status_code=status.HTTP_404_NOT_FOUND,
+            details={"job_id": job_id},
+        )
+
+
+class JobNotAuthorizedException(AppException):
+    """User not authorized to access or modify this job (HTTP 403)."""
+
+    def __init__(self, message: str = "Access to requested job is forbidden.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.JOB_NOT_AUTHORIZED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class JobAlreadyCompletedException(AppException):
+    """Attempted to cancel or mutate a job that is already completed (HTTP 409)."""
+
+    def __init__(self, job_id: str, message: str | None = None) -> None:
+        super().__init__(
+            code=ErrorCode.JOB_ALREADY_COMPLETED,
+            message=message or f"Job '{job_id}' has already completed and cannot be modified.",
+            status_code=status.HTTP_409_CONFLICT,
+            details={"job_id": job_id},
+        )
+
+
+class JobAlreadyCancelledException(AppException):
+    """Attempted to cancel or run a job that is already cancelled (HTTP 409)."""
+
+    def __init__(self, job_id: str, message: str | None = None) -> None:
+        super().__init__(
+            code=ErrorCode.JOB_ALREADY_CANCELLED,
+            message=message or f"Job '{job_id}' is already cancelled.",
+            status_code=status.HTTP_409_CONFLICT,
+            details={"job_id": job_id},
+        )
+
+
+class JobExecutionException(AppException):
+    """Unrecoverable failure during background job execution (HTTP 500)."""
+
+    def __init__(self, job_id: str, message: str = "Background job execution failed.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.JOB_EXECUTION_FAILED,
+            message=message,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            details=details or {"job_id": job_id},
+        )
+
+
+class JobProcessingTimeoutException(AppException):
+    """Job processing runtime exceeded configured timeout limit (HTTP 504)."""
+
+    def __init__(self, job_id: str, timeout_seconds: float) -> None:
+        super().__init__(
+            code=ErrorCode.JOB_PROCESSING_TIMEOUT,
+            message=f"Job '{job_id}' timed out after {timeout_seconds}s.",
+            status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+            details={"job_id": job_id, "timeout_seconds": timeout_seconds},
+        )
+
+
+class WorkflowNotFoundException(AppException):
+    """Multi-step workflow not found (HTTP 404)."""
+
+    def __init__(self, workflow_id: str, message: str | None = None) -> None:
+        super().__init__(
+            code=ErrorCode.WORKFLOW_NOT_FOUND,
+            message=message or f"Workflow '{workflow_id}' not found.",
+            status_code=status.HTTP_404_NOT_FOUND,
+            details={"workflow_id": workflow_id},
+        )
+
+
+class WorkflowInvalidStateException(AppException):
+    """Workflow state transition is illegal or invalid (HTTP 409)."""
+
+    def __init__(self, workflow_id: str, current_state: str, attempted_action: str) -> None:
+        super().__init__(
+            code=ErrorCode.WORKFLOW_INVALID_STATE,
+            message=f"Cannot perform '{attempted_action}' on workflow '{workflow_id}' in state '{current_state}'.",
+            status_code=status.HTTP_409_CONFLICT,
+            details={"workflow_id": workflow_id, "current_state": current_state},
+        )
+
+
+class EventValidationException(AppException):
+    """Domain event contract or version schema violation (HTTP 422)."""
+
+    def __init__(self, message: str = "Invalid domain event contract or unsupported event version.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.EVENT_INVALID,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details=details,
+        )
+
+
+class IdempotencyConflictException(AppException):
+    """Duplicate concurrent operation detected under same idempotency key (HTTP 409)."""
+
+    def __init__(self, idempotency_key: str, message: str | None = None) -> None:
+        super().__init__(
+            code=ErrorCode.IDEMPOTENCY_CONFLICT,
+            message=message or f"Concurrent request already in progress for idempotency key '{idempotency_key}'.",
+            status_code=status.HTTP_409_CONFLICT,
+            details={"idempotency_key": idempotency_key},
         )
 
 

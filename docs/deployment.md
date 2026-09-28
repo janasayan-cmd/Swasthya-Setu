@@ -1,9 +1,8 @@
-# HealthSetu — Production Deployment Guide (Phase 17)
+# HealthSetu — Production Deployment Guide (Phase 20 Go-Live)
 
 ## 1. Overview & Architecture
 
 HealthSetu utilizes a containerized FastAPI backend deployed on **Railway** connected securely via TLS to an existing **Supabase PostgreSQL** instance, serving API requests to the frontend at `https://healthsetu.com` through the production API domain:
-
 ```
 [ INTERNET ]
      |
@@ -55,7 +54,7 @@ exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
   {
     "status": "ok",
     "service": "healthsetu-backend",
-    "version": "0.1.0"
+    "version": "1.0.0"
   }
   ```
 

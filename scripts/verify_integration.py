@@ -1,4 +1,10 @@
 import asyncio
+import os
+import sys
+
+# Ensure workspace root is in sys.path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from httpx import AsyncClient, ASGITransport
 from app.main import app
 from app.core.demo_seed import seed_demo_data

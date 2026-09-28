@@ -13,7 +13,7 @@ services:
     environment:
       - APP_NAME=HealthSetu
       - APP_ENV=development
-      - APP_VERSION=0.1.0
+      - APP_VERSION=1.0.0
       - DEBUG=true
       - HOST=0.0.0.0
       - PORT=8000

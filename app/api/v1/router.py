@@ -17,6 +17,7 @@ from app.api.v1.endpoints import (
     facility_discovery,
     health,
     interoperability,
+    jobs,
     medications,
     medication_safety,
     metrics,
@@ -89,3 +90,6 @@ v1_router.include_router(ai.router)
 
 # Register Phase 18 Observability & Metrics endpoint
 v1_router.include_router(metrics.router)
+
+# Register Phase 22 Asynchronous Job Orchestration endpoints
+v1_router.include_router(jobs.router)

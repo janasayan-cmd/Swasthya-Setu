@@ -123,6 +123,20 @@ from app.services.ai_validation_service import AIValidationService
 from app.services.ai_provenance_service import AIProvenanceService
 from app.services.ai_usage_service import AIUsageService
 
+# Phase 22: Asynchronous Workflow & Event-Driven execution imports
+from app.repositories.job_repository import JobRepository
+from app.repositories.workflow_repository import WorkflowRepository
+from app.repositories.event_repository import EventRepository
+from app.repositories.idempotency_repository import IdempotencyRepository
+from app.integrations.queue.base import JobQueueProvider
+from app.integrations.queue.provider import get_job_queue_provider
+from app.integrations.events.base import EventTransport
+from app.integrations.events.provider import get_event_transport
+from app.services.idempotency_service import IdempotencyService
+from app.services.event_service import EventService
+from app.services.job_service import JobService
+from app.services.workflow_service import WorkflowService
+
 # ---------------------------------------------------------------------------
 # HTTP Bearer scheme
 # ---------------------------------------------------------------------------
@@ -224,6 +238,14 @@ _global_authz_service = AuthorizationService(
 # Phase 14: AI Intelligence Layer global repositories
 # ---------------------------------------------------------------------------
 _global_ai_repo = AIRepository()
+
+# ---------------------------------------------------------------------------
+# Phase 22: Asynchronous Workflow & Event-Driven global repositories
+# ---------------------------------------------------------------------------
+_global_job_repo = JobRepository()
+_global_workflow_repo = WorkflowRepository()
+_global_event_repo = EventRepository()
+_global_idempotency_repo = IdempotencyRepository()
 
 
 
@@ -1269,3 +1291,76 @@ def get_ai_service(
         provenance_service=provenance_service,
         usage_service=usage_service,
     )
+
+
+# ---------------------------------------------------------------------------
+# Phase 22: Asynchronous Workflow & Event-Driven service providers
+# ---------------------------------------------------------------------------
+
+def get_job_repository() -> JobRepository:
+    """Dependency provider for JobRepository."""
+    return _global_job_repo
+
+
+def get_workflow_repository() -> WorkflowRepository:
+    """Dependency provider for WorkflowRepository."""
+    return _global_workflow_repo
+
+
+def get_event_repository() -> EventRepository:
+    """Dependency provider for EventRepository."""
+    return _global_event_repo
+
+
+def get_idempotency_repository() -> IdempotencyRepository:
+    """Dependency provider for IdempotencyRepository."""
+    return _global_idempotency_repo
+
+
+def get_job_queue() -> JobQueueProvider:
+    """Dependency provider for JobQueueProvider."""
+    return get_job_queue_provider()
+
+
+def get_event_bus() -> EventTransport:
+    """Dependency provider for EventTransport."""
+    return get_event_transport()
+
+
+def get_idempotency_service(
+    repo: Annotated[IdempotencyRepository, Depends(get_idempotency_repository)],
+) -> IdempotencyService:
+    """Dependency provider for IdempotencyService."""
+    return IdempotencyService(repository=repo)
+
+
+def get_event_service(
+    repo: Annotated[EventRepository, Depends(get_event_repository)],
+    transport: Annotated[EventTransport, Depends(get_event_bus)],
+    audit_service: Annotated[AuditService, Depends(get_audit_service)],
+) -> EventService:
+    """Dependency provider for EventService."""
+    return EventService(repository=repo, transport=transport, audit_service=audit_service)
+
+
+def get_job_service(
+    repo: Annotated[JobRepository, Depends(get_job_repository)],
+    queue: Annotated[JobQueueProvider, Depends(get_job_queue)],
+    idempotency_service: Annotated[IdempotencyService, Depends(get_idempotency_service)],
+    audit_service: Annotated[AuditService, Depends(get_audit_service)],
+) -> JobService:
+    """Dependency provider for JobService."""
+    return JobService(
+        repository=repo,
+        queue_provider=queue,
+        idempotency_service=idempotency_service,
+        audit_service=audit_service,
+    )
+
+
+def get_workflow_service(
+    repo: Annotated[WorkflowRepository, Depends(get_workflow_repository)],
+    audit_service: Annotated[AuditService, Depends(get_audit_service)],
+) -> WorkflowService:
+    """Dependency provider for WorkflowService."""
+    return WorkflowService(repository=repo, audit_service=audit_service)

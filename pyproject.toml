@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "healthsetu-backend"
-version = "0.1.0"
-description = "HealthSetu Backend - Phase 1 Foundation"
+version = "1.0.0"
+description = "HealthSetu Backend - Unified Healthcare Interoperability & Clinical Safety Platform"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

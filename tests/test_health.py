@@ -14,7 +14,7 @@ async def test_health_endpoint(async_client: AsyncClient):
     assert data["status"] == "ok"
     assert data["service"] == "healthsetu-backend"
     assert "version" in data
-    assert data["version"] == "0.1.0"
+    assert data["version"] == "1.0.0"
 
 
 @pytest.mark.asyncio

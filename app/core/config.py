@@ -40,7 +40,7 @@ class Settings(BaseSettings):
         default="development",
         description="Application environment (development, testing, production)",
     )
-    APP_VERSION: str = Field(default="0.1.0", description="Semantic version of application")
+    APP_VERSION: str = Field(default="1.0.0", description="Semantic version of application")
     DEBUG: bool = Field(default=False, description="Debug mode flag")
     HOST: str = Field(default="0.0.0.0", description="Host to bind server")
     PORT: int = Field(default=8000, description="Port to bind server")
@@ -554,6 +554,45 @@ class Settings(BaseSettings):
         default=True,
         description="Enforce strict centralized PHI and credential masking on log output",
     )
+
+    # Phase 21: Scalability, Performance & High-Availability Engineering
+    DEFAULT_PAGE_SIZE: int = Field(default=25, description="Default pagination page size")
+    MAX_PAGE_SIZE: int = Field(default=100, description="Strict maximum allowed pagination limit")
+    CIRCUIT_BREAKER_ENABLED: bool = Field(default=True, description="Enable circuit breaker for external providers")
+    CIRCUIT_BREAKER_FAILURE_THRESHOLD: int = Field(default=5, description="Consecutive failure threshold before opening circuit")
+    CIRCUIT_BREAKER_RECOVERY_TIMEOUT_SECONDS: float = Field(default=30.0, description="Cooldown seconds before attempting half-open probe")
+    CIRCUIT_BREAKER_HALF_OPEN_MAX_CALLS: int = Field(default=2, description="Trial calls permitted during half-open recovery")
+    AI_MAX_CONCURRENCY: int = Field(default=4, description="Bounded concurrency limit for external AI inference requests")
+    OCR_MAX_CONCURRENCY: int = Field(default=3, description="Bounded concurrency limit for CPU/memory-heavy OCR extraction")
+    MED_SAFETY_MAX_CONCURRENCY: int = Field(default=10, description="Bounded concurrency limit for medication safety provider calls")
+    BACKGROUND_WORKER_CONCURRENCY: int = Field(default=5, description="Maximum concurrent workers for background task processing")
+    BACKGROUND_QUEUE_MAX_DEPTH: int = Field(default=500, description="Maximum background queue depth before rejecting non-critical jobs")
+    BACKGROUND_JOB_TIMEOUT_SECONDS: float = Field(default=60.0, description="Maximum runtime allowed for a background job")
+    CACHE_ENABLED: bool = Field(default=True, description="Enable bounded in-memory caching for reference & terminology data")
+    CACHE_TTL_REFERENCE_SECONDS: int = Field(default=3600, description="TTL in seconds for static organization/facility metadata")
+    CACHE_TTL_TERMINOLOGY_SECONDS: int = Field(default=86400, description="TTL in seconds for validated RxNorm terminology matches")
+    CACHE_TTL_SAFETY_SECONDS: int = Field(default=300, description="TTL in seconds for context-sensitive medication safety evaluations")
+    LOAD_SHEDDING_ENABLED: bool = Field(default=True, description="Enable automatic load shedding during resource saturation")
+    LOAD_SHEDDING_MAX_CONCURRENT_REQUESTS: int = Field(default=100, description="Concurrent request threshold triggering load shedding")
+
+    # Phase 22: Asynchronous Workflow Orchestration & Event-Driven Backend
+    ASYNC_PROCESSING_ENABLED: bool = Field(default=True, description="Enable asynchronous job and workflow processing")
+    JOB_QUEUE_PROVIDER: str = Field(default="memory", description="Active queue provider ('memory', 'redis', 'sqs')")
+    JOB_QUEUE_URL: str = Field(default="", description="Connection URL for external queue broker")
+    JOB_MAX_RETRIES: int = Field(default=3, description="Maximum automated retries for transient job failures")
+    JOB_RETRY_BASE_DELAY_SECONDS: float = Field(default=5.0, description="Base exponential retry delay in seconds")
+    JOB_RETRY_MAX_DELAY_SECONDS: float = Field(default=300.0, description="Maximum ceiling for exponential retry delay in seconds")
+    JOB_RETRY_JITTER_ENABLED: bool = Field(default=True, description="Add randomized jitter to retry intervals")
+    JOB_DEFAULT_TIMEOUT_SECONDS: float = Field(default=300.0, description="Default timeout in seconds for background jobs")
+    EVENT_PROCESSING_ENABLED: bool = Field(default=True, description="Enable event-driven publishing and consumption")
+    EVENT_PROVIDER: str = Field(default="memory", description="Event transport provider ('memory', 'kafka', 'sns')")
+    EVENT_PROVIDER_URL: str = Field(default="", description="Connection URL for event bus")
+    EVENT_MAX_RETRIES: int = Field(default=3, description="Maximum retries for failed event consumers")
+    OUTBOX_ENABLED: bool = Field(default=True, description="Enable transactional outbox for reliable event publishing")
+    WORKER_CONCURRENCY: int = Field(default=5, description="Concurrent task execution limit for async worker pool")
+    WORKER_MAX_TASKS: int = Field(default=100, description="Maximum in-memory pending tasks before queuing backpressure")
+    WORKER_SHUTDOWN_TIMEOUT_SECONDS: float = Field(default=30.0, description="Graceful shutdown drain timeout for in-flight tasks")
+    DEAD_LETTER_ENABLED: bool = Field(default=True, description="Persist permanently failed jobs to dead-letter queue")
 
     @property
     def max_document_size_bytes(self) -> int:
