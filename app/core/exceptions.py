@@ -187,6 +187,20 @@ class ErrorCode(str, Enum):
     ROLLOUT_EVALUATION_FAILED = "ROLLOUT_EVALUATION_FAILED"
     UNAUTHORIZED_CONFIGURATION_ACCESS = "UNAUTHORIZED_CONFIGURATION_ACCESS"
 
+    # Phase 26: Data Quality, Clinical Record Integrity & Reconciliation Error Codes
+    DATA_QUALITY_DISABLED = "DATA_QUALITY_DISABLED"
+    DATA_QUALITY_FINDING_NOT_FOUND = "DATA_QUALITY_FINDING_NOT_FOUND"
+    RECONCILIATION_NOT_FOUND = "RECONCILIATION_NOT_FOUND"
+    RECONCILIATION_FAILED = "RECONCILIATION_FAILED"
+    REVIEW_NOT_AUTHORIZED = "REVIEW_NOT_AUTHORIZED"
+    RESOLUTION_NOT_AUTHORIZED = "RESOLUTION_NOT_AUTHORIZED"
+    RESOURCE_VERSION_CONFLICT = "RESOURCE_VERSION_CONFLICT"
+    INVALID_RECONCILIATION_STATE = "INVALID_RECONCILIATION_STATE"
+    INVALID_RESOLUTION = "INVALID_RESOLUTION"
+    INSUFFICIENT_PROVENANCE = "INSUFFICIENT_PROVENANCE"
+    EXTERNAL_DATA_CONFLICT = "EXTERNAL_DATA_CONFLICT"
+    DUPLICATE_REVIEW_REQUIRED = "DUPLICATE_REVIEW_REQUIRED"
+
 
 class AppException(Exception):
     """Base application exception for all domain and operational errors."""
@@ -1476,6 +1490,81 @@ class ConfigurationDriftException(AppException):
             message=message,
             status_code=status.HTTP_409_CONFLICT,
             details=details,
+        )
+
+
+class DataQualityFindingNotFoundException(AppException):
+    """Data quality finding was not found (HTTP 404)."""
+
+    def __init__(self, finding_id: str) -> None:
+        super().__init__(
+            code=ErrorCode.DATA_QUALITY_FINDING_NOT_FOUND,
+            message=f"Data quality finding '{finding_id}' was not found.",
+            status_code=status.HTTP_404_NOT_FOUND,
+            details={"finding_id": finding_id},
+        )
+
+
+class ReconciliationNotFoundException(AppException):
+    """Reconciliation record was not found (HTTP 404)."""
+
+    def __init__(self, reconciliation_id: str) -> None:
+        super().__init__(
+            code=ErrorCode.RECONCILIATION_NOT_FOUND,
+            message=f"Reconciliation record '{reconciliation_id}' was not found.",
+            status_code=status.HTTP_404_NOT_FOUND,
+            details={"reconciliation_id": reconciliation_id},
+        )
+
+
+class ResourceVersionConflictException(AppException):
+    """Optimistic concurrency version conflict during review/resolution (HTTP 409)."""
+
+    def __init__(
+        self,
+        resource_type: str = "resource",
+        resource_id: str = "unknown",
+        expected_version: Any = None,
+        current_version: Any = None,
+        message: str | None = None,
+    ) -> None:
+        if message is None:
+            message = f"Underlying clinical resource '{resource_type}:{resource_id}' was modified concurrently."
+        super().__init__(
+            code=ErrorCode.RESOURCE_VERSION_CONFLICT,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details={
+                "resource_type": resource_type,
+                "resource_id": resource_id,
+                "expected_version": expected_version,
+                "current_version": current_version,
+            },
+        )
+
+
+
+class InvalidResolutionException(AppException):
+    """Provided resolution decision is invalid for current finding state (HTTP 422)."""
+
+    def __init__(self, message: str, details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INVALID_RESOLUTION,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details=details,
+        )
+
+
+class InsufficientProvenanceException(AppException):
+    """Clinical record lacks mandatory provenance metadata (HTTP 422)."""
+
+    def __init__(self, resource_type: str, resource_id: str, reason: str = "Missing source or verification metadata.") -> None:
+        super().__init__(
+            code=ErrorCode.INSUFFICIENT_PROVENANCE,
+            message=f"Clinical resource '{resource_type}:{resource_id}' lacks sufficient provenance: {reason}",
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"resource_type": resource_type, "resource_id": resource_id, "reason": reason},
         )
 
 

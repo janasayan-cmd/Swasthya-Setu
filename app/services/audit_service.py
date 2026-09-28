@@ -12,6 +12,7 @@ These MUST remain separate. Application log rotation or level changes
 must NOT affect the audit trail.
 """
 
+from typing import Any
 from app.core.logging import get_logger, request_id_ctx_var
 from app.repositories.audit_repository import AuditRepository
 from app.schemas.audit import AuditEventRecord, AuditEventType
@@ -1164,3 +1165,35 @@ class AuditService(BaseService[AuditRepository]):
 
     async def record_clinical_workspace_accessed(self, actor_id, patient_id, encounter_id=None):
         await self.record(event_type=AuditEventType.CLINICAL_WORKSPACE_ACCESSED, outcome="ALLOW", actor_id=actor_id, action="clinical_workspace:read", resource_type="clinical_workspace", resource_id=patient_id, metadata={"patient_id": patient_id, "encounter_id": encounter_id})
+
+    # Phase 26: Data Quality & Reconciliation Audit Event Logging
+    async def log_event(
+        self,
+        event_type: AuditEventType,
+        actor: Any = None,
+        patient_id: str | None = None,
+        resource_type: str | None = None,
+        resource_id: str | None = None,
+        severity: str | None = None,
+        description: str | None = None,
+        payload: dict | None = None,
+        outcome: str = "ALLOW",
+    ) -> None:
+        actor_id = getattr(actor, "actor_id", None) or getattr(actor, "user_id", None) or (str(actor) if actor else None)
+        meta = {"patient_id": patient_id} if patient_id else {}
+        if description:
+            meta["description"] = description
+        if severity:
+            meta["severity"] = str(severity)
+        if payload:
+            meta.update(payload)
+
+        await self.record(
+            event_type=event_type,
+            outcome=outcome,
+            actor_id=actor_id,
+            action=str(event_type.value).lower(),
+            resource_type=resource_type,
+            resource_id=resource_id,
+            metadata=meta,
+        )

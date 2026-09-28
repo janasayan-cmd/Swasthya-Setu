@@ -643,6 +643,20 @@ class Settings(BaseSettings):
     OCR_PROVIDER: str = Field(default="mock", description="Document OCR engine ('mock', 'tesseract', 'google_vision')")
     TRIAGE_RULE_SET_VERSION: str = Field(default="v1.0.0", description="Validated clinical triage protocol rule set version")
 
+    # Phase 26: Data Quality, Clinical Record Integrity & Reconciliation
+    DATA_QUALITY_ENABLED: bool = Field(default=True, description="Enable automated data-quality and completeness analysis")
+    RECONCILIATION_ENABLED: bool = Field(default=True, description="Enable multi-source clinical record reconciliation")
+    DATA_QUALITY_ASYNC_ENABLED: bool = Field(default=True, description="Enable asynchronous batch data-quality and reconciliation jobs")
+    DATA_QUALITY_MAX_RETRIES: int = Field(default=3, description="Maximum retries for failed data quality background tasks")
+    DATA_QUALITY_TIMEOUT_SECONDS: float = Field(default=60.0, description="Execution timeout for quality evaluation checks")
+    DUPLICATE_DETECTION_ENABLED: bool = Field(default=True, description="Enable deterministic duplicate clinical record detection")
+    CONFLICT_DETECTION_ENABLED: bool = Field(default=True, description="Enable cross-source clinical conflict identification")
+    STALE_DATA_DETECTION_ENABLED: bool = Field(default=True, description="Enable stale clinical observation and contact flags")
+    PROVENANCE_VALIDATION_ENABLED: bool = Field(default=True, description="Enforce provenance verification and metadata integrity checks")
+    MEDICATION_RECONCILIATION_ENABLED: bool = Field(default=True, description="Enable cross-source medication discrepancy analysis")
+    EXTERNAL_DATA_RECONCILIATION_ENABLED: bool = Field(default=True, description="Enable reconciliation for external FHIR/HL7 imports")
+    STALE_DATA_THRESHOLD_DAYS: int = Field(default=365, description="Days after which un-reassessed observations are flagged as stale")
+
     @property
     def max_document_size_bytes(self) -> int:
         """Maximum allowed document upload size in bytes."""

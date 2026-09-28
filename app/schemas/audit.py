@@ -13,6 +13,7 @@ CRITICAL — Audit events must NEVER contain:
 
 from datetime import datetime, timezone
 from enum import Enum
+from typing import Any, Optional
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -223,6 +224,26 @@ class AuditEventType(str, Enum):
     KILL_SWITCH_DISABLED = "KILL_SWITCH_DISABLED"
     CONFIGURATION_VALIDATION_FAILED = "CONFIGURATION_VALIDATION_FAILED"
 
+    # Data Quality, Clinical Record Integrity & Reconciliation events (Phase 26)
+    DATA_QUALITY_CHECK_STARTED = "DATA_QUALITY_CHECK_STARTED"
+    DATA_QUALITY_CHECK_COMPLETED = "DATA_QUALITY_CHECK_COMPLETED"
+    DATA_QUALITY_CHECK_FAILED = "DATA_QUALITY_CHECK_FAILED"
+    DATA_QUALITY_FINDING_CREATED = "DATA_QUALITY_FINDING_CREATED"
+    DATA_QUALITY_FINDING_VIEWED = "DATA_QUALITY_FINDING_VIEWED"
+    DATA_QUALITY_REVIEW_STARTED = "DATA_QUALITY_REVIEW_STARTED"
+    DATA_QUALITY_FINDING_RESOLVED = "DATA_QUALITY_FINDING_RESOLVED"
+    DATA_QUALITY_FINDING_REJECTED = "DATA_QUALITY_FINDING_REJECTED"
+    DUPLICATE_DETECTED = "DUPLICATE_DETECTED"
+    DUPLICATE_CONFIRMED = "DUPLICATE_CONFIRMED"
+    DUPLICATE_REJECTED = "DUPLICATE_REJECTED"
+    RECONCILIATION_STARTED = "RECONCILIATION_STARTED"
+    RECONCILIATION_COMPLETED = "RECONCILIATION_COMPLETED"
+    RECONCILIATION_FAILED = "RECONCILIATION_FAILED"
+    RECONCILIATION_RESOLVED = "RECONCILIATION_RESOLVE"
+    CLINICAL_RECORD_CORRECTED = "CLINICAL_RECORD_CORRECTED"
+    CLINICAL_RECORD_SUPERSEDED = "CLINICAL_RECORD_SUPERSEDED"
+    EXTERNAL_DATA_CONFLICT_DETECTED = "EXTERNAL_DATA_CONFLICT_DETECTED"
+
 
 class AuditEventRecord(BaseModel):
     """Immutable audit event record for persistence and structured logging.
@@ -278,3 +299,19 @@ class AuditEventRecord(BaseModel):
 
 
 AuditRecord = AuditEventRecord
+
+
+class AuditSeverity(str, Enum):
+    INFO = "INFO"
+    WARNING = "WARNING"
+    ERROR = "ERROR"
+    CRITICAL = "CRITICAL"
+
+
+class AuditActor(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+
+    actor_id: str
+    role: Any = None
+    organization_id: Optional[str] = None
+    facility_id: Optional[str] = None

@@ -663,3 +663,25 @@ PROVIDER_CONFIGURATION_ERRORS_COUNTER = MetricCounter(
     "healthsetu_provider_configuration_errors_total", "Total provider configuration errors", ("provider_name",)
 )
 
+# ---------------------------------------------------------------------------
+# Phase 26: Data Quality & Reconciliation metrics
+# ---------------------------------------------------------------------------
+DATA_QUALITY_CHECKS_COUNTER = MetricCounter(
+    "healthsetu_data_quality_checks_total", "Total data quality checks executed", ("status",)
+)
+DATA_QUALITY_FINDINGS_CREATED_COUNTER = MetricCounter(
+    "healthsetu_data_quality_findings_created_total", "Total data quality findings created", ("finding_type", "severity")
+)
+DATA_QUALITY_FINDINGS_RESOLVED_COUNTER = MetricCounter(
+    "healthsetu_data_quality_findings_resolved_total", "Total data quality findings resolved", ("action",)
+)
+DUPLICATE_DETECTIONS_COUNTER = MetricCounter(
+    "healthsetu_duplicate_detections_total", "Total duplicates detected", ("resource_type",)
+)
+CONFLICT_DETECTIONS_COUNTER = MetricCounter(
+    "healthsetu_conflict_detections_total", "Total clinical conflicts detected", ("concept_type",)
+)
+RECONCILIATION_OPERATIONS_COUNTER = MetricCounter(
+    "healthsetu_reconciliation_operations_total", "Total clinical reconciliation operations", ("scope", "status")
+)
+

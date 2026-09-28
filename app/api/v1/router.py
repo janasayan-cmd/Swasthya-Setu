@@ -10,6 +10,7 @@ from app.api.v1.endpoints import (
     clinical_workflow,
     configuration,
     consents,
+    data_quality,
     department,
     discharge,
     documents,
@@ -101,4 +102,7 @@ v1_router.include_router(privacy.router)
 
 # Register Phase 25 Feature Flags & Configuration Governance endpoints
 v1_router.include_router(configuration.router)
+
+# Register Phase 26 Data Quality & Clinical Reconciliation endpoints
+v1_router.include_router(data_quality.router)
 

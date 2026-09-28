@@ -148,6 +148,13 @@ from app.services.pseudonymization_service import PseudonymizationService
 from app.services.feature_flag_service import FeatureFlagService
 from app.services.configuration_service import ConfigurationService
 
+# Phase 26: Data Quality, Clinical Record Integrity & Reconciliation imports
+from app.repositories.data_quality_repository import DataQualityRepository
+from app.repositories.reconciliation_repository import ReconciliationRepository
+from app.services.provenance_service import ProvenanceService
+from app.services.data_quality_service import DataQualityService
+from app.services.reconciliation_service import ReconciliationService
+
 # ---------------------------------------------------------------------------
 # HTTP Bearer scheme
 # ---------------------------------------------------------------------------
@@ -239,10 +246,11 @@ _global_fhir_validator = FHIRValidator()
 _global_fhir_mapper = FHIRMapper()
 _global_interoperability_provider = MockInteroperabilityProvider(name="MockProvider")
 
+_global_audit_service = AuditService(audit_repository=_global_audit_repo)
 _global_authz_service = AuthorizationService(
     permission_repository=_global_permission_repo,
     consent_service=ConsentService(consent_repository=_global_consent_repo),
-    audit_service=AuditService(audit_repository=_global_audit_repo),
+    audit_service=_global_audit_service,
 )
 
 # ---------------------------------------------------------------------------
@@ -298,6 +306,30 @@ _global_feature_flag_service = FeatureFlagService(audit_repo=_global_audit_repo)
 _global_configuration_service = ConfigurationService(
     feature_flag_service=_global_feature_flag_service,
     audit_repo=_global_audit_repo,
+)
+
+# ---------------------------------------------------------------------------
+# Phase 26: Data Quality & Reconciliation global singletons
+# ---------------------------------------------------------------------------
+_global_data_quality_repo = DataQualityRepository()
+_global_reconciliation_repo = ReconciliationRepository()
+_global_provenance_service = ProvenanceService()
+_global_data_quality_service = DataQualityService(
+    dq_repo=_global_data_quality_repo,
+    patient_repo=_global_patient_repo,
+    allergy_repo=_global_allergy_repo,
+    medication_repo=_global_patient_medication_repo,
+    document_repo=_global_document_repo,
+    provenance_service=_global_provenance_service,
+    audit_service=_global_audit_service,
+)
+_global_reconciliation_service = ReconciliationService(
+    reconciliation_repo=_global_reconciliation_repo,
+    allergy_repo=_global_allergy_repo,
+    medication_repo=_global_patient_medication_repo,
+    patient_repo=_global_patient_repo,
+    provenance_service=_global_provenance_service,
+    audit_service=_global_audit_service,
 )
 
 
@@ -1460,4 +1492,34 @@ def get_feature_flag_service() -> FeatureFlagService:
 def get_configuration_service() -> ConfigurationService:
     """Dependency provider for ConfigurationService."""
     return _global_configuration_service
+
+
+# ---------------------------------------------------------------------------
+# Phase 26: Data Quality & Reconciliation dependency providers
+# ---------------------------------------------------------------------------
+
+def get_data_quality_repository() -> DataQualityRepository:
+    """Dependency provider for DataQualityRepository."""
+    return _global_data_quality_repo
+
+
+def get_reconciliation_repository() -> ReconciliationRepository:
+    """Dependency provider for ReconciliationRepository."""
+    return _global_reconciliation_repo
+
+
+def get_provenance_service() -> ProvenanceService:
+    """Dependency provider for ProvenanceService."""
+    return _global_provenance_service
+
+
+def get_data_quality_service() -> DataQualityService:
+    """Dependency provider for DataQualityService."""
+    return _global_data_quality_service
+
+
+def get_reconciliation_service() -> ReconciliationService:
+    """Dependency provider for ReconciliationService."""
+    return _global_reconciliation_service
+
 

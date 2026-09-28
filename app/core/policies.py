@@ -164,6 +164,15 @@ class Permission(str, Enum):
     FEATURE_FLAG_MANAGE = "feature_flag:manage"
     KILL_SWITCH_MANAGE = "kill_switch:manage"
 
+    # ---- Phase 26: Data Quality, Clinical Record Integrity & Reconciliation ----
+    DATA_QUALITY_READ = "data_quality:read"
+    DATA_QUALITY_CHECK = "data_quality:check"
+    DATA_QUALITY_REVIEW = "data_quality:review"
+    DATA_QUALITY_RESOLVE = "data_quality:resolve"
+    RECONCILIATION_READ = "reconciliation:read"
+    RECONCILIATION_EXECUTE = "reconciliation:execute"
+    RECONCILIATION_RESOLVE = "reconciliation:resolve"
+
 
 # ---------------------------------------------------------------------------
 # Role-to-Permission Mapping
@@ -237,6 +246,9 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.PRIVACY_POLICY_READ,
         # Phase 25: Feature Flags & Configuration
         Permission.FEATURE_FLAG_READ,
+        # Phase 26: Data Quality & Reconciliation
+        Permission.DATA_QUALITY_READ,
+        Permission.RECONCILIATION_READ,
     }),
     "DOCTOR": frozenset({
         Permission.PATIENT_READ_SELF,         # can read patient profile in context
@@ -316,6 +328,14 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         # Phase 25: Feature Flags & Configuration
         Permission.FEATURE_FLAG_READ,
         Permission.CONFIGURATION_READ,
+        # Phase 26: Data Quality & Reconciliation
+        Permission.DATA_QUALITY_READ,
+        Permission.DATA_QUALITY_CHECK,
+        Permission.DATA_QUALITY_REVIEW,
+        Permission.DATA_QUALITY_RESOLVE,
+        Permission.RECONCILIATION_READ,
+        Permission.RECONCILIATION_EXECUTE,
+        Permission.RECONCILIATION_RESOLVE,
     }),
     "ADMIN": frozenset({
         # Administrative capabilities ONLY — no automatic clinical data access
@@ -351,6 +371,14 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.FEATURE_FLAG_READ,
         Permission.FEATURE_FLAG_MANAGE,
         Permission.KILL_SWITCH_MANAGE,
+        # Phase 26: Data Quality, Clinical Record Integrity & Reconciliation
+        Permission.DATA_QUALITY_READ,
+        Permission.DATA_QUALITY_CHECK,
+        Permission.DATA_QUALITY_REVIEW,
+        Permission.DATA_QUALITY_RESOLVE,
+        Permission.RECONCILIATION_READ,
+        Permission.RECONCILIATION_EXECUTE,
+        Permission.RECONCILIATION_RESOLVE,
     }),
 }
 
@@ -477,6 +505,14 @@ ACTION_PERMISSION_MAP: dict[tuple[str, str], Permission] = {
     ("feature_flag", "read"):            Permission.FEATURE_FLAG_READ,
     ("feature_flag", "manage"):          Permission.FEATURE_FLAG_MANAGE,
     ("kill_switch", "manage"):           Permission.KILL_SWITCH_MANAGE,
+    # Phase 26: Data Quality & Reconciliation
+    ("data_quality", "read"):            Permission.DATA_QUALITY_READ,
+    ("data_quality", "check"):           Permission.DATA_QUALITY_CHECK,
+    ("data_quality", "review"):          Permission.DATA_QUALITY_REVIEW,
+    ("data_quality", "resolve"):         Permission.DATA_QUALITY_RESOLVE,
+    ("reconciliation", "read"):          Permission.RECONCILIATION_READ,
+    ("reconciliation", "execute"):       Permission.RECONCILIATION_EXECUTE,
+    ("reconciliation", "resolve"):       Permission.RECONCILIATION_RESOLVE,
 }
 
 
