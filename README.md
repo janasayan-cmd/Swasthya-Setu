@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌐 Swasthya-Setu (HealthSetu / स्वास्थ्यसेतु)
+# 🌐 Swasthya-Setu 
 
 ### Sovereign Longitudinal Health Protocol • Real-Time Clinical Decision Support • Multi-Facility Emergency Bed Grid
 
