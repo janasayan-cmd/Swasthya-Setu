@@ -1,3 +1,4 @@
+
 """Tests for database boundary and connection handling."""
 
 import pytest

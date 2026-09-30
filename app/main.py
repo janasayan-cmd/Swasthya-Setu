@@ -27,7 +27,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application startup and shutdown lifecycle management."""
     settings = get_settings()
 
-    # 1. Startup phase
+
     setup_logging(log_level=settings.LOG_LEVEL, is_production=settings.is_production)
     logger.info(
         f"Starting {settings.APP_NAME} [env={settings.APP_ENV}, version={settings.APP_VERSION}]"
