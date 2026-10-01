@@ -683,6 +683,21 @@ class Settings(BaseSettings):
     ADMIN_OPERATION_MAX_RETRIES: int = Field(default=3, description="Maximum retries for admin operational actions")
     ADMIN_OPERATION_TIMEOUT_SECONDS: float = Field(default=30.0, description="Timeout in seconds for admin operational actions")
 
+    # Phase 28: API Analytics, Usage Governance & Operational Intelligence
+    ANALYTICS_ENABLED: bool = Field(default=True, description="Enable operational analytics and usage telemetry layer")
+    API_ANALYTICS_ENABLED: bool = Field(default=True, description="Enable API usage tracking and latency measurement")
+    FEATURE_ANALYTICS_ENABLED: bool = Field(default=True, description="Enable feature invocation measurement")
+    JOB_ANALYTICS_ENABLED: bool = Field(default=True, description="Enable background job analytics")
+    PROVIDER_ANALYTICS_ENABLED: bool = Field(default=True, description="Enable external provider telemetry and cost tracking")
+    COST_ANALYTICS_ENABLED: bool = Field(default=True, description="Enable cost and resource consumption tracking")
+    ANOMALY_DETECTION_ENABLED: bool = Field(default=True, description="Enable usage anomaly detection")
+    ORGANIZATION_ANALYTICS_ENABLED: bool = Field(default=True, description="Enable organization and facility level analytics")
+    ANALYTICS_RETENTION_DAYS: int = Field(default=90, description="Retention window for raw analytics events in days")
+    ANALYTICS_AGGREGATION_INTERVAL_SECONDS: int = Field(default=300, description="Aggregation window interval in seconds")
+    ANALYTICS_MAX_QUERY_RANGE_DAYS: int = Field(default=90, description="Maximum permitted date range for analytical queries")
+    ANALYTICS_EVENT_BATCH_SIZE: int = Field(default=100, description="Batch size for event flushing")
+    ANALYTICS_PROCESSING_ENABLED: bool = Field(default=True, description="Enable background analytics processing")
+
     @property
     def max_document_size_bytes(self) -> int:
         """Maximum allowed document upload size in bytes."""

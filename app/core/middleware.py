@@ -49,6 +49,23 @@ class RequestIdMiddleware(BaseHTTPMiddleware):
             metrics.dec_in_progress()
             metrics.record_http_request(request.method, request.url.path, 500, duration_ms)
             metrics.record_application_error("UNCAUGHT_EXCEPTION", request.url.path)
+            # Phase 28: Fail-safe Analytics Recording on Uncaught Exception
+            if getattr(settings, "ANALYTICS_ENABLED", False) and getattr(settings, "API_ANALYTICS_ENABLED", False):
+                try:
+                    from app.api.deps import _global_analytics_service
+                    from app.schemas.analytics import AnalyticsEventType
+                    _global_analytics_service.record_event(
+                        event_type=AnalyticsEventType.API_REQUEST_FAILED,
+                        endpoint=request.url.path,
+                        http_method=request.method,
+                        status=500,
+                        duration_ms=duration_ms,
+                        request_id=request_id,
+                        error_category="UNCAUGHT_EXCEPTION",
+                    )
+                except Exception:
+                    pass
+
             request_id_ctx_var.reset(token)
             # Uncaught exceptions are handled centrally without leaking internals
             from app.core.exceptions import unhandled_exception_handler
@@ -71,6 +88,61 @@ class RequestIdMiddleware(BaseHTTPMiddleware):
                 metrics.record_auth_failure()
             elif response.status_code == 403:
                 metrics.record_authz_denial()
+
+        # Phase 28: Operational API Analytics Telemetry (Fail-safe, non-blocking)
+        # Exclude administrative analytics queries and health check endpoints from polluting analytics metrics
+        is_telemetry_query = (
+            request.url.path.startswith("/api/v1/admin/analytics")
+            or request.url.path in ("/health", "/ready", "/metrics")
+        )
+        if (
+            getattr(settings, "ANALYTICS_ENABLED", False)
+            and getattr(settings, "API_ANALYTICS_ENABLED", False)
+            and not is_telemetry_query
+        ):
+            try:
+                from app.api.deps import _global_analytics_service
+                from app.schemas.analytics import AnalyticsEventType
+
+                ev_type = (
+                    AnalyticsEventType.API_REQUEST_COMPLETED
+                    if response.status_code < 400
+                    else AnalyticsEventType.API_REQUEST_FAILED
+                )
+                _global_analytics_service.record_event(
+                    event_type=ev_type,
+                    endpoint=request.url.path,
+                    http_method=request.method,
+                    status=response.status_code,
+                    duration_ms=duration_ms,
+                    request_id=request_id,
+                )
+                if response.status_code == 401:
+                    _global_analytics_service.record_event(
+                        event_type=AnalyticsEventType.AUTHENTICATION_FAILED,
+                        endpoint=request.url.path,
+                        http_method=request.method,
+                        status=401,
+                        request_id=request_id,
+                    )
+                elif response.status_code == 403:
+                    _global_analytics_service.record_event(
+                        event_type=AnalyticsEventType.AUTHORIZATION_FAILED,
+                        endpoint=request.url.path,
+                        http_method=request.method,
+                        status=403,
+                        request_id=request_id,
+                    )
+                elif response.status_code == 429:
+                    _global_analytics_service.record_event(
+                        event_type=AnalyticsEventType.RATE_LIMIT_TRIGGERED,
+                        endpoint=request.url.path,
+                        http_method=request.method,
+                        status=429,
+                        request_id=request_id,
+                    )
+            except Exception as _an_exc:
+                logger.debug("Failed recording request analytics: %s", _an_exc)
 
         # 5. Slow Request Detection (Phase 18 TRD Sec 21)
         if settings.OBSERVABILITY_ENABLED and duration_ms >= settings.SLOW_REQUEST_THRESHOLD_MS:

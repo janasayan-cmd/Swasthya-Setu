@@ -161,6 +161,10 @@ from app.services.incident_service import IncidentService
 from app.services.support_service import SupportService
 from app.services.admin_service import AdminService
 
+# Phase 28: API Analytics, Usage Governance & Operational Intelligence imports
+from app.repositories.analytics_repository import AnalyticsRepository
+from app.services.analytics_service import AnalyticsService
+
 # ---------------------------------------------------------------------------
 # HTTP Bearer scheme
 # ---------------------------------------------------------------------------
@@ -359,6 +363,15 @@ _global_admin_service = AdminService(
     incident_repo=_global_incident_repo,
     data_quality_repo=_global_data_quality_repo,
     reconciliation_repo=_global_reconciliation_repo,
+)
+
+# ---------------------------------------------------------------------------
+# Phase 28: API Analytics & Usage Governance global singletons
+# ---------------------------------------------------------------------------
+_global_analytics_repo = AnalyticsRepository()
+_global_analytics_service = AnalyticsService(
+    repository=_global_analytics_repo,
+    audit_repository=_global_audit_repo,
 )
 
 
@@ -1569,5 +1582,19 @@ def get_support_service() -> SupportService:
 def get_admin_service() -> AdminService:
     """Dependency provider for AdminService."""
     return _global_admin_service
+
+
+# ---------------------------------------------------------------------------
+# Phase 28: API Analytics, Usage Governance & Operational Intelligence providers
+# ---------------------------------------------------------------------------
+
+def get_analytics_repository() -> AnalyticsRepository:
+    """Dependency provider for AnalyticsRepository."""
+    return _global_analytics_repo
+
+
+def get_analytics_service() -> AnalyticsService:
+    """Dependency provider for AnalyticsService."""
+    return _global_analytics_service
 
 

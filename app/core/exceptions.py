@@ -221,6 +221,14 @@ class ErrorCode(str, Enum):
     SUPPORT_LOOKUP_NOT_ALLOWED = "SUPPORT_LOOKUP_NOT_ALLOWED"
     RESOURCE_ACCESS_DENIED = "RESOURCE_ACCESS_DENIED"
 
+    # Phase 28: API Analytics, Usage Governance & Operational Intelligence
+    ANALYTICS_DISABLED = "ANALYTICS_DISABLED"
+    ANALYTICS_NOT_FOUND = "ANALYTICS_NOT_FOUND"
+    ANALYTICS_QUERY_RANGE_EXCEEDED = "ANALYTICS_QUERY_RANGE_EXCEEDED"
+    ANALYTICS_UNAVAILABLE = "ANALYTICS_UNAVAILABLE"
+    ANALYTICS_ACCESS_DENIED = "ANALYTICS_ACCESS_DENIED"
+    ANOMALY_NOT_FOUND = "ANOMALY_NOT_FOUND"
+
 
 class AppException(Exception):
     """Base application exception for all domain and operational errors."""
@@ -1757,6 +1765,66 @@ class AuditAccessDeniedException(ForbiddenException):
     def __init__(self, message: str = "Administrative audit inspection requires AUDIT_OPERATOR or SYSTEM_ADMIN authorization.") -> None:
         super().__init__(message=message)
         self.code = ErrorCode.AUDIT_ACCESS_DENIED.value
+
+
+class AnalyticsDisabledException(AppException):
+    """Analytics layer is disabled by operational configuration (HTTP 503)."""
+
+    def __init__(self, message: str = "Analytics layer is currently disabled by configuration.") -> None:
+        super().__init__(
+            code=ErrorCode.ANALYTICS_DISABLED,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+
+class AnalyticsUnavailableException(AppException):
+    """Analytics service temporarily unavailable (HTTP 503)."""
+
+    def __init__(self, message: str = "Analytics service is temporarily unavailable.") -> None:
+        super().__init__(
+            code=ErrorCode.ANALYTICS_UNAVAILABLE,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+
+class AnalyticsNotFoundException(NotFoundException):
+    """Requested analytics resource not found (HTTP 404)."""
+
+    def __init__(self, message: str = "Analytics record or metrics not found.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.ANALYTICS_NOT_FOUND.value
+
+
+class AnalyticsQueryRangeExceededException(AppException):
+    """Analytics query range exceeds allowed historical window (HTTP 400)."""
+
+    def __init__(self, message: str = "Analytics query date range exceeds maximum allowed range.") -> None:
+        super().__init__(
+            code=ErrorCode.ANALYTICS_QUERY_RANGE_EXCEEDED,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class AnalyticsAccessDeniedException(ForbiddenException):
+    """Access to analytics data denied (HTTP 403)."""
+
+    def __init__(self, message: str = "Access to analytics data denied.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.ANALYTICS_ACCESS_DENIED.value
+
+
+class AnomalyNotFoundException(NotFoundException):
+    """Usage anomaly record not found (HTTP 404)."""
+
+    def __init__(self, anomaly_id: str) -> None:
+        super().__init__(
+            message=f"Usage anomaly '{anomaly_id}' was not found.",
+            details={"anomaly_id": anomaly_id},
+        )
+        self.code = ErrorCode.ANOMALY_NOT_FOUND.value
 
 
 def _get_request_id(request: Request) -> str:

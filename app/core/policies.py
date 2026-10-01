@@ -190,6 +190,11 @@ class Permission(str, Enum):
     ADMIN_SUPPORT_VIEW = "admin:support_view"
     ADMIN_SUPPORT_MANAGE = "admin:support_manage"
 
+    # ---- Phase 28: API Analytics, Usage Governance & Operational Intelligence ----
+    ADMIN_ANALYTICS_VIEW = "admin:analytics_view"
+    ORGANIZATION_ANALYTICS_VIEW = "organization:analytics_view"
+    FACILITY_ANALYTICS_VIEW = "facility:analytics_view"
+
 
 # ---------------------------------------------------------------------------
 # Role-to-Permission Mapping
@@ -353,6 +358,9 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.RECONCILIATION_READ,
         Permission.RECONCILIATION_EXECUTE,
         Permission.RECONCILIATION_RESOLVE,
+        # Phase 28: Analytics
+        Permission.ORGANIZATION_ANALYTICS_VIEW,
+        Permission.FACILITY_ANALYTICS_VIEW,
     }),
     "ADMIN": frozenset({
         # Administrative capabilities ONLY — no automatic clinical data access
@@ -412,6 +420,10 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.ADMIN_CONFIGURATION_MANAGE,
         Permission.ADMIN_SUPPORT_VIEW,
         Permission.ADMIN_SUPPORT_MANAGE,
+        # Phase 28: Analytics
+        Permission.ADMIN_ANALYTICS_VIEW,
+        Permission.ORGANIZATION_ANALYTICS_VIEW,
+        Permission.FACILITY_ANALYTICS_VIEW,
     }),
     "SYSTEM_ADMIN": frozenset({
         Permission.ADMIN_USER_MANAGE,
@@ -448,6 +460,10 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.ADMIN_CONFIGURATION_MANAGE,
         Permission.ADMIN_SUPPORT_VIEW,
         Permission.ADMIN_SUPPORT_MANAGE,
+        # Phase 28: Analytics
+        Permission.ADMIN_ANALYTICS_VIEW,
+        Permission.ORGANIZATION_ANALYTICS_VIEW,
+        Permission.FACILITY_ANALYTICS_VIEW,
     }),
     "OPERATIONS_ADMIN": frozenset({
         Permission.ADMIN_SYSTEM_VIEW,
@@ -461,6 +477,10 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.ADMIN_SUPPORT_MANAGE,
         Permission.DATA_QUALITY_READ,
         Permission.CONFIGURATION_READ,
+        # Phase 28: Analytics
+        Permission.ADMIN_ANALYTICS_VIEW,
+        Permission.ORGANIZATION_ANALYTICS_VIEW,
+        Permission.FACILITY_ANALYTICS_VIEW,
     }),
     "SUPPORT_OPERATOR": frozenset({
         Permission.ADMIN_SYSTEM_VIEW,
@@ -472,6 +492,8 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.ADMIN_INCIDENTS_MANAGE,
         Permission.ADMIN_INTEGRATIONS_VIEW,
         Permission.DATA_QUALITY_READ,
+        # Phase 28: Analytics
+        Permission.ADMIN_ANALYTICS_VIEW,
     }),
     "SECURITY_OPERATOR": frozenset({
         Permission.ADMIN_SYSTEM_VIEW,
