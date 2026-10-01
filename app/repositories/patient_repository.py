@@ -41,6 +41,8 @@ class PatientRecord:
     preferred_language: str | None = None
     phone: str | None = None
     email: str | None = None
+    sovereign_id: str | None = None
+    city: str | None = None
 
 
 class PatientRepository(BaseRepository[Any]):

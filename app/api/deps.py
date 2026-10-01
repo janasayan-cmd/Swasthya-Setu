@@ -155,6 +155,12 @@ from app.services.provenance_service import ProvenanceService
 from app.services.data_quality_service import DataQualityService
 from app.services.reconciliation_service import ReconciliationService
 
+# Phase 27: Administration, Support Operations & Controlled Backoffice imports
+from app.repositories.incident_repository import IncidentRepository
+from app.services.incident_service import IncidentService
+from app.services.support_service import SupportService
+from app.services.admin_service import AdminService
+
 # ---------------------------------------------------------------------------
 # HTTP Bearer scheme
 # ---------------------------------------------------------------------------
@@ -332,11 +338,29 @@ _global_reconciliation_service = ReconciliationService(
     audit_service=_global_audit_service,
 )
 
-
-
 # ---------------------------------------------------------------------------
-# Phase 1/2: Repository providers
+# Phase 27: Administration, Support Operations & Backoffice global singletons
 # ---------------------------------------------------------------------------
+_global_incident_repo = IncidentRepository()
+_global_incident_service = IncidentService(
+    incident_repo=_global_incident_repo,
+    audit_service=_global_audit_service,
+)
+_global_support_service = SupportService(
+    patient_repo=_global_patient_repo,
+    user_repo=_global_user_repo,
+    consent_repo=_global_consent_repo,
+    audit_service=_global_audit_service,
+)
+_global_admin_service = AdminService(
+    job_repo=_global_job_repo,
+    audit_repo=_global_audit_repo,
+    audit_service=_global_audit_service,
+    incident_repo=_global_incident_repo,
+    data_quality_repo=_global_data_quality_repo,
+    reconciliation_repo=_global_reconciliation_repo,
+)
+
 
 def get_user_repository() -> UserRepository:
     """Dependency provider for UserRepository."""
@@ -1521,5 +1545,29 @@ def get_data_quality_service() -> DataQualityService:
 def get_reconciliation_service() -> ReconciliationService:
     """Dependency provider for ReconciliationService."""
     return _global_reconciliation_service
+
+
+# ---------------------------------------------------------------------------
+# Phase 27: Administration, Support Operations & Backoffice dependency providers
+# ---------------------------------------------------------------------------
+
+def get_incident_repository() -> IncidentRepository:
+    """Dependency provider for IncidentRepository."""
+    return _global_incident_repo
+
+
+def get_incident_service() -> IncidentService:
+    """Dependency provider for IncidentService."""
+    return _global_incident_service
+
+
+def get_support_service() -> SupportService:
+    """Dependency provider for SupportService."""
+    return _global_support_service
+
+
+def get_admin_service() -> AdminService:
+    """Dependency provider for AdminService."""
+    return _global_admin_service
 
 

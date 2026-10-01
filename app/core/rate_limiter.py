@@ -76,12 +76,25 @@ RATE_LIMIT_CONFIGS: dict[str, RateLimitConfig] = {
     "transfer": RateLimitConfig(requests=30, window_seconds=60),
     # General API default
     "default": RateLimitConfig(requests=120, window_seconds=60),
+    # Phase 27: Administration, Support Operations & Backoffice
+    "admin": RateLimitConfig(requests=60, window_seconds=60),
+    "admin_retry": RateLimitConfig(requests=10, window_seconds=60),
+    "admin_test": RateLimitConfig(requests=10, window_seconds=60),
+    "admin_search": RateLimitConfig(requests=20, window_seconds=60),
 }
 
 
 def _get_endpoint_category(path: str) -> str:
     """Map request path to rate limit category."""
     p = path.lower()
+    if "/admin" in p:
+        if "/retry" in p:
+            return "admin_retry"
+        if "/test" in p:
+            return "admin_test"
+        if "/search" in p:
+            return "admin_search"
+        return "admin"
     if "/auth/" in p or "/login" in p or "/token" in p:
         return "auth"
     if "/ai/" in p:

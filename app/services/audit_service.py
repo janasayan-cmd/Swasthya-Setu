@@ -75,6 +75,10 @@ class AuditService(BaseService[AuditRepository]):
         )
         await self.audit_repo.append(event)
 
+    async def record_event(self, event: AuditEventRecord) -> None:
+        """Record an already constructed AuditEventRecord into the audit repository."""
+        await self.audit_repo.append(event)
+
     async def record_access_granted(
         self,
         actor_id: str,

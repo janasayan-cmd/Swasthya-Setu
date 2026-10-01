@@ -173,6 +173,23 @@ class Permission(str, Enum):
     RECONCILIATION_EXECUTE = "reconciliation:execute"
     RECONCILIATION_RESOLVE = "reconciliation:resolve"
 
+    # ---- Phase 27: Administration, Support Operations & Backoffice ----
+    ADMIN_SYSTEM_VIEW = "admin:system_view"
+    ADMIN_SYSTEM_MANAGE = "admin:system_manage"
+    ADMIN_USERS_VIEW = "admin:users_view"
+    ADMIN_USERS_MANAGE = "admin:users_manage"
+    ADMIN_JOBS_VIEW = "admin:jobs_view"
+    ADMIN_JOBS_MANAGE = "admin:jobs_manage"
+    ADMIN_INTEGRATIONS_VIEW = "admin:integrations_view"
+    ADMIN_INCIDENTS_VIEW = "admin:incidents_view"
+    ADMIN_INCIDENTS_MANAGE = "admin:incidents_manage"
+    ADMIN_AUDIT_VIEW = "admin:audit_view"
+    ADMIN_SECURITY_VIEW = "admin:security_view"
+    ADMIN_CONFIGURATION_VIEW = "admin:configuration_view"
+    ADMIN_CONFIGURATION_MANAGE = "admin:configuration_manage"
+    ADMIN_SUPPORT_VIEW = "admin:support_view"
+    ADMIN_SUPPORT_MANAGE = "admin:support_manage"
+
 
 # ---------------------------------------------------------------------------
 # Role-to-Permission Mapping
@@ -379,6 +396,104 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.RECONCILIATION_READ,
         Permission.RECONCILIATION_EXECUTE,
         Permission.RECONCILIATION_RESOLVE,
+        # Phase 27: Administration, Support Operations & Backoffice
+        Permission.ADMIN_SYSTEM_VIEW,
+        Permission.ADMIN_SYSTEM_MANAGE,
+        Permission.ADMIN_USERS_VIEW,
+        Permission.ADMIN_USERS_MANAGE,
+        Permission.ADMIN_JOBS_VIEW,
+        Permission.ADMIN_JOBS_MANAGE,
+        Permission.ADMIN_INTEGRATIONS_VIEW,
+        Permission.ADMIN_INCIDENTS_VIEW,
+        Permission.ADMIN_INCIDENTS_MANAGE,
+        Permission.ADMIN_AUDIT_VIEW,
+        Permission.ADMIN_SECURITY_VIEW,
+        Permission.ADMIN_CONFIGURATION_VIEW,
+        Permission.ADMIN_CONFIGURATION_MANAGE,
+        Permission.ADMIN_SUPPORT_VIEW,
+        Permission.ADMIN_SUPPORT_MANAGE,
+    }),
+    "SYSTEM_ADMIN": frozenset({
+        Permission.ADMIN_USER_MANAGE,
+        Permission.ADMIN_AUDIT_READ,
+        Permission.CONSENT_READ,
+        Permission.ORGANIZATION_READ,
+        Permission.FACILITY_READ,
+        Permission.DEPARTMENT_READ,
+        Permission.CLINICIAN_NETWORK_READ,
+        Permission.FACILITY_DISCOVER,
+        Permission.TRANSFER_READ,
+        Permission.INTEROPERABILITY_READ,
+        Permission.AI_READ,
+        Permission.PRIVACY_POLICY_READ,
+        Permission.PRIVACY_ADMIN,
+        Permission.CONFIGURATION_READ,
+        Permission.CONFIGURATION_MANAGE,
+        Permission.FEATURE_FLAG_READ,
+        Permission.FEATURE_FLAG_MANAGE,
+        Permission.KILL_SWITCH_MANAGE,
+        Permission.DATA_QUALITY_READ,
+        Permission.ADMIN_SYSTEM_VIEW,
+        Permission.ADMIN_SYSTEM_MANAGE,
+        Permission.ADMIN_USERS_VIEW,
+        Permission.ADMIN_USERS_MANAGE,
+        Permission.ADMIN_JOBS_VIEW,
+        Permission.ADMIN_JOBS_MANAGE,
+        Permission.ADMIN_INTEGRATIONS_VIEW,
+        Permission.ADMIN_INCIDENTS_VIEW,
+        Permission.ADMIN_INCIDENTS_MANAGE,
+        Permission.ADMIN_AUDIT_VIEW,
+        Permission.ADMIN_SECURITY_VIEW,
+        Permission.ADMIN_CONFIGURATION_VIEW,
+        Permission.ADMIN_CONFIGURATION_MANAGE,
+        Permission.ADMIN_SUPPORT_VIEW,
+        Permission.ADMIN_SUPPORT_MANAGE,
+    }),
+    "OPERATIONS_ADMIN": frozenset({
+        Permission.ADMIN_SYSTEM_VIEW,
+        Permission.ADMIN_SYSTEM_MANAGE,
+        Permission.ADMIN_JOBS_VIEW,
+        Permission.ADMIN_JOBS_MANAGE,
+        Permission.ADMIN_INTEGRATIONS_VIEW,
+        Permission.ADMIN_INCIDENTS_VIEW,
+        Permission.ADMIN_INCIDENTS_MANAGE,
+        Permission.ADMIN_SUPPORT_VIEW,
+        Permission.ADMIN_SUPPORT_MANAGE,
+        Permission.DATA_QUALITY_READ,
+        Permission.CONFIGURATION_READ,
+    }),
+    "SUPPORT_OPERATOR": frozenset({
+        Permission.ADMIN_SYSTEM_VIEW,
+        Permission.ADMIN_SUPPORT_VIEW,
+        Permission.ADMIN_SUPPORT_MANAGE,
+        Permission.ADMIN_JOBS_VIEW,
+        Permission.ADMIN_JOBS_MANAGE,
+        Permission.ADMIN_INCIDENTS_VIEW,
+        Permission.ADMIN_INCIDENTS_MANAGE,
+        Permission.ADMIN_INTEGRATIONS_VIEW,
+        Permission.DATA_QUALITY_READ,
+    }),
+    "SECURITY_OPERATOR": frozenset({
+        Permission.ADMIN_SYSTEM_VIEW,
+        Permission.ADMIN_SECURITY_VIEW,
+        Permission.ADMIN_AUDIT_VIEW,
+        Permission.ADMIN_INCIDENTS_VIEW,
+        Permission.ADMIN_INCIDENTS_MANAGE,
+        Permission.PRIVACY_POLICY_READ,
+    }),
+    "AUDIT_OPERATOR": frozenset({
+        Permission.ADMIN_SYSTEM_VIEW,
+        Permission.ADMIN_AUDIT_VIEW,
+        Permission.ADMIN_SECURITY_VIEW,
+        Permission.ADMIN_AUDIT_READ,
+    }),
+    "INTEGRATION_OPERATOR": frozenset({
+        Permission.ADMIN_SYSTEM_VIEW,
+        Permission.ADMIN_INTEGRATIONS_VIEW,
+        Permission.ADMIN_JOBS_VIEW,
+        Permission.ADMIN_INCIDENTS_VIEW,
+        Permission.ADMIN_INCIDENTS_MANAGE,
+        Permission.INTEROPERABILITY_READ,
     }),
 }
 

@@ -14,6 +14,14 @@ class UserRole(str, Enum):
     DOCTOR = "DOCTOR"
     ADMIN = "ADMIN"
 
+    # Phase 27: Specialized administrative and operational support roles
+    SYSTEM_ADMIN = "SYSTEM_ADMIN"
+    OPERATIONS_ADMIN = "OPERATIONS_ADMIN"
+    SUPPORT_OPERATOR = "SUPPORT_OPERATOR"
+    SECURITY_OPERATOR = "SECURITY_OPERATOR"
+    AUDIT_OPERATOR = "AUDIT_OPERATOR"
+    INTEGRATION_OPERATOR = "INTEGRATION_OPERATOR"
+
 
 class AccountStatus(str, Enum):
     """Account operational statuses."""

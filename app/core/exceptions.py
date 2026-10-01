@@ -201,6 +201,26 @@ class ErrorCode(str, Enum):
     EXTERNAL_DATA_CONFLICT = "EXTERNAL_DATA_CONFLICT"
     DUPLICATE_REVIEW_REQUIRED = "DUPLICATE_REVIEW_REQUIRED"
 
+    # Phase 27: Administration, Support Operations & Controlled Backoffice
+    ADMIN_ACCESS_DENIED = "ADMIN_ACCESS_DENIED"
+    ADMIN_PERMISSION_REQUIRED = "ADMIN_PERMISSION_REQUIRED"
+    ADMIN_RESOURCE_NOT_FOUND = "ADMIN_RESOURCE_NOT_FOUND"
+    ADMIN_ACTION_NOT_ALLOWED = "ADMIN_ACTION_NOT_ALLOWED"
+    ADMIN_ACTION_FAILED = "ADMIN_ACTION_FAILED"
+    JOB_RETRY_NOT_ALLOWED = "JOB_RETRY_NOT_ALLOWED"
+    JOB_CANCEL_NOT_ALLOWED = "JOB_CANCEL_NOT_ALLOWED"
+    INTEGRATION_NOT_FOUND = "INTEGRATION_NOT_FOUND"
+    INTEGRATION_TEST_NOT_ALLOWED = "INTEGRATION_TEST_NOT_ALLOWED"
+    INTEGRATION_UNAVAILABLE = "INTEGRATION_UNAVAILABLE"
+    INCIDENT_NOT_FOUND = "INCIDENT_NOT_FOUND"
+    INCIDENT_INVALID_STATE = "INCIDENT_INVALID_STATE"
+    CONFIGURATION_CHANGE_NOT_ALLOWED = "CONFIGURATION_CHANGE_NOT_ALLOWED"
+    INVALID_CONFIGURATION = "INVALID_CONFIGURATION"
+    SECURITY_EVENT_ACCESS_DENIED = "SECURITY_EVENT_ACCESS_DENIED"
+    AUDIT_ACCESS_DENIED = "AUDIT_ACCESS_DENIED"
+    SUPPORT_LOOKUP_NOT_ALLOWED = "SUPPORT_LOOKUP_NOT_ALLOWED"
+    RESOURCE_ACCESS_DENIED = "RESOURCE_ACCESS_DENIED"
+
 
 class AppException(Exception):
     """Base application exception for all domain and operational errors."""
@@ -1566,6 +1586,177 @@ class InsufficientProvenanceException(AppException):
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             details={"resource_type": resource_type, "resource_id": resource_id, "reason": reason},
         )
+
+
+# ---------------------------------------------------------------------------
+# Phase 27: Administration, Support Operations & Controlled Backoffice Exceptions
+# ---------------------------------------------------------------------------
+
+class AdminAccessDeniedException(ForbiddenException):
+    """Administrative access denied (HTTP 403)."""
+
+    def __init__(self, message: str = "Administrative access denied. Caller lacks operator authorization.", details: Any = None) -> None:
+        super().__init__(message=message, details=details)
+        self.code = ErrorCode.ADMIN_ACCESS_DENIED.value
+
+
+class AdminPermissionRequiredException(ForbiddenException):
+    """Required administrative capability permission missing (HTTP 403)."""
+
+    def __init__(self, permission: str, details: Any = None) -> None:
+        super().__init__(
+            message=f"Administrative capability '{permission}' required for this operational action.",
+            details=details or {"required_permission": permission},
+        )
+        self.code = ErrorCode.ADMIN_PERMISSION_REQUIRED.value
+
+
+class AdminResourceNotFoundException(NotFoundException):
+    """Administrative resource not found (HTTP 404)."""
+
+    def __init__(self, resource_type: str, resource_id: str) -> None:
+        super().__init__(
+            message=f"Administrative resource '{resource_type}' with ID '{resource_id}' was not found.",
+            details={"resource_type": resource_type, "resource_id": resource_id},
+        )
+        self.code = ErrorCode.ADMIN_RESOURCE_NOT_FOUND.value
+
+
+class AdminActionNotAllowedException(AppException):
+    """Operational action not permitted under system safety invariants (HTTP 400)."""
+
+    def __init__(self, message: str, details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ADMIN_ACTION_NOT_ALLOWED,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class JobRetryNotAllowedException(AppException):
+    """Job cannot be safely retried under idempotency / state rules (HTTP 400)."""
+
+    def __init__(self, job_id: str, reason: str) -> None:
+        super().__init__(
+            code=ErrorCode.JOB_RETRY_NOT_ALLOWED,
+            message=f"Job '{job_id}' cannot be retried: {reason}",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details={"job_id": job_id, "reason": reason},
+        )
+
+
+class JobCancelNotAllowedException(AppException):
+    """Job cannot be cancelled in its current state (HTTP 400)."""
+
+    def __init__(self, job_id: str, reason: str) -> None:
+        super().__init__(
+            code=ErrorCode.JOB_CANCEL_NOT_ALLOWED,
+            message=f"Job '{job_id}' cannot be cancelled: {reason}",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details={"job_id": job_id, "reason": reason},
+        )
+
+
+class IntegrationNotFoundException(NotFoundException):
+    """Integration provider not found (HTTP 404)."""
+
+    def __init__(self, integration_name: str) -> None:
+        super().__init__(
+            message=f"External integration provider '{integration_name}' was not found in registry.",
+            details={"integration_name": integration_name},
+        )
+        self.code = ErrorCode.INTEGRATION_NOT_FOUND.value
+
+
+class IntegrationTestNotAllowedException(AppException):
+    """Integration provider testing not permitted or disabled (HTTP 403)."""
+
+    def __init__(self, message: str = "Integration provider testing is disabled by configuration.") -> None:
+        super().__init__(
+            code=ErrorCode.INTEGRATION_TEST_NOT_ALLOWED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+        )
+
+
+class IntegrationUnavailableException(AppException):
+    """Integration provider is currently degraded or unavailable (HTTP 503)."""
+
+    def __init__(self, integration_name: str, reason: str) -> None:
+        super().__init__(
+            code=ErrorCode.INTEGRATION_UNAVAILABLE,
+            message=f"Integration provider '{integration_name}' is unavailable: {reason}",
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            details={"integration_name": integration_name, "reason": reason},
+        )
+
+
+class IncidentNotFoundException(NotFoundException):
+    """Operational incident not found (HTTP 404)."""
+
+    def __init__(self, incident_id: str) -> None:
+        super().__init__(
+            message=f"Operational incident '{incident_id}' was not found.",
+            details={"incident_id": incident_id},
+        )
+        self.code = ErrorCode.INCIDENT_NOT_FOUND.value
+
+
+class IncidentInvalidStateException(AppException):
+    """Invalid incident lifecycle transition requested (HTTP 400)."""
+
+    def __init__(self, message: str, details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INCIDENT_INVALID_STATE,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class SupportLookupNotAllowedException(ForbiddenException):
+    """Support search not authorized or violates privacy boundary (HTTP 403)."""
+
+    def __init__(self, message: str = "Support lookup query violates privacy boundary.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.SUPPORT_LOOKUP_NOT_ALLOWED.value
+
+
+class AdminActionFailedException(AppException):
+    """Administrative or operational action failed during execution (HTTP 500)."""
+
+    def __init__(self, message: str, details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ADMIN_ACTION_FAILED,
+            message=message,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            details=details,
+        )
+
+
+class ConfigurationChangeNotAllowedException(ForbiddenException):
+    """Configuration modification not permitted for this actor (HTTP 403)."""
+
+    def __init__(self, message: str = "Administrative configuration modification not permitted.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.CONFIGURATION_CHANGE_NOT_ALLOWED.value
+
+
+class SecurityEventAccessDeniedException(ForbiddenException):
+    """Security audit event inspection denied (HTTP 403)."""
+
+    def __init__(self, message: str = "Security audit event inspection requires SECURITY_OPERATOR or SYSTEM_ADMIN authorization.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.SECURITY_EVENT_ACCESS_DENIED.value
+
+
+class AuditAccessDeniedException(ForbiddenException):
+    """Administrative audit log inspection denied (HTTP 403)."""
+
+    def __init__(self, message: str = "Administrative audit inspection requires AUDIT_OPERATOR or SYSTEM_ADMIN authorization.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.AUDIT_ACCESS_DENIED.value
 
 
 def _get_request_id(request: Request) -> str:

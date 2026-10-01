@@ -174,8 +174,16 @@ class Settings(BaseSettings):
         default=120,
         description="Maximum execution timeout for OCR extraction operations",
     )
+    OCR_ENABLED: bool = Field(
+        default=True,
+        description="Enable OCR extraction pipeline",
+    )
 
     # Medication & Prescription Configuration (Phase 6)
+    MEDICATION_TERMINOLOGY_ENABLED: bool = Field(
+        default=True,
+        description="Enable medication terminology provider integration",
+    )
     MEDICATION_TERMINOLOGY_PROVIDER: str = Field(
         default="local",
         description="Medication terminology provider ('local', 'rxnorm', 'licensed_provider')",
@@ -345,6 +353,10 @@ class Settings(BaseSettings):
     TRANSFER_CLINICAL_CONTEXT_ENABLED: bool = Field(
         default=True,
         description="Flag allowing authorized minimal clinical context attachment to transfers",
+    )
+    GEOLOCATION_ENABLED: bool = Field(
+        default=True,
+        description="Flag enabling geolocation distance calculation and provider routing",
     )
     GEOGRAPHIC_DISTANCE_PROVIDER: str = Field(
         default="local",
@@ -589,6 +601,7 @@ class Settings(BaseSettings):
     EVENT_PROVIDER_URL: str = Field(default="", description="Connection URL for event bus")
     EVENT_MAX_RETRIES: int = Field(default=3, description="Maximum retries for failed event consumers")
     OUTBOX_ENABLED: bool = Field(default=True, description="Enable transactional outbox for reliable event publishing")
+    WORKER_ENABLED: bool = Field(default=True, description="Enable background worker execution pool")
     WORKER_CONCURRENCY: int = Field(default=5, description="Concurrent task execution limit for async worker pool")
     WORKER_MAX_TASKS: int = Field(default=100, description="Maximum in-memory pending tasks before queuing backpressure")
     WORKER_SHUTDOWN_TIMEOUT_SECONDS: float = Field(default=30.0, description="Graceful shutdown drain timeout for in-flight tasks")
@@ -656,6 +669,19 @@ class Settings(BaseSettings):
     MEDICATION_RECONCILIATION_ENABLED: bool = Field(default=True, description="Enable cross-source medication discrepancy analysis")
     EXTERNAL_DATA_RECONCILIATION_ENABLED: bool = Field(default=True, description="Enable reconciliation for external FHIR/HL7 imports")
     STALE_DATA_THRESHOLD_DAYS: int = Field(default=365, description="Days after which un-reassessed observations are flagged as stale")
+
+    # Phase 27: Administration, Support Operations & Controlled Backoffice
+    ADMIN_OPERATIONS_ENABLED: bool = Field(default=True, description="Enable administrative operations API layer")
+    ADMIN_SUPPORT_ENABLED: bool = Field(default=True, description="Enable support operator troubleshooting workflows")
+    ADMIN_JOB_MANAGEMENT_ENABLED: bool = Field(default=True, description="Enable background job inspection and retry/cancel")
+    ADMIN_INCIDENT_MANAGEMENT_ENABLED: bool = Field(default=True, description="Enable operational incident management")
+    ADMIN_INTEGRATION_MONITORING_ENABLED: bool = Field(default=True, description="Enable integration and provider health monitoring")
+    ADMIN_AUDIT_ACCESS_ENABLED: bool = Field(default=True, description="Enable administrative audit query access")
+    ADMIN_SECURITY_EVENT_ACCESS_ENABLED: bool = Field(default=True, description="Enable security event log inspection")
+    ADMIN_SUPPORT_LOOKUP_ENABLED: bool = Field(default=True, description="Enable privacy-safe patient support lookup")
+    ADMIN_PROVIDER_TESTING_ENABLED: bool = Field(default=False, description="Enable controlled external provider connectivity testing")
+    ADMIN_OPERATION_MAX_RETRIES: int = Field(default=3, description="Maximum retries for admin operational actions")
+    ADMIN_OPERATION_TIMEOUT_SECONDS: float = Field(default=30.0, description="Timeout in seconds for admin operational actions")
 
     @property
     def max_document_size_bytes(self) -> int:

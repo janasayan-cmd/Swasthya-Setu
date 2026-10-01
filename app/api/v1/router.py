@@ -32,6 +32,7 @@ from app.api.v1.endpoints import (
     transfers,
     triage,
     vitals,
+    admin,
 )
 
 v1_router = APIRouter()
@@ -105,4 +106,7 @@ v1_router.include_router(configuration.router)
 
 # Register Phase 26 Data Quality & Clinical Reconciliation endpoints
 v1_router.include_router(data_quality.router)
+
+# Register Phase 27 Administration, Support Operations & Controlled Backoffice endpoints
+v1_router.include_router(admin.router)
 

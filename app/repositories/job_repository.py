@@ -70,3 +70,25 @@ class JobRepository(BaseRepository[Any]):
             matched = [j for j in self._jobs.values() if j.status == status]
             matched.sort(key=lambda j: j.created_at, reverse=True)
             return matched[:limit]
+
+    async def list_all(
+        self,
+        skip: int = 0,
+        limit: int = 50,
+        status: Optional[JobStatus] = None,
+        job_type: Optional[JobType] = None,
+        patient_id: Optional[str] = None,
+    ) -> tuple[List[JobRecord], int]:
+        """List all jobs with optional filters and total count for admin inspection."""
+        async with self._lock:
+            matched = list(self._jobs.values())
+            if status is not None:
+                matched = [j for j in matched if j.status == status]
+            if job_type is not None:
+                matched = [j for j in matched if j.job_type == job_type]
+            if patient_id is not None:
+                matched = [j for j in matched if j.patient_id == patient_id]
+
+            total = len(matched)
+            matched.sort(key=lambda j: j.created_at, reverse=True)
+            return matched[skip : skip + limit], total

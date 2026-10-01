@@ -114,3 +114,35 @@ class AuditRepository(BaseRepository[Any]):
         if actor_id:
             results = [e for e in results if e.actor_id == actor_id]
         return results[-limit:]
+
+    async def list_events(
+        self,
+        skip: int = 0,
+        limit: int = 50,
+        event_type: str | None = None,
+        actor_id: str | None = None,
+        patient_id: str | None = None,
+    ) -> tuple[list[AuditEventRecord], int]:
+        """Query immutable audit events with pagination and filtering."""
+        matched = list(self._events)
+        if event_type:
+            matched = [
+                e for e in matched
+                if (e.event_type.value if hasattr(e.event_type, "value") else str(e.event_type)) == event_type
+            ]
+        if actor_id:
+            matched = [
+                e for e in matched
+                if getattr(e, "actor_id", None) == actor_id or (getattr(e, "actor", None) and getattr(e.actor, "actor_id", None) == actor_id)
+            ]
+        if patient_id:
+            matched = [
+                e for e in matched
+                if (getattr(e, "resource_type", "") == "patient" and getattr(e, "resource_id", "") == patient_id)
+                or (isinstance(getattr(e, "details", None), dict) and str(getattr(e, "details", {})).find(patient_id) != -1)
+            ]
+
+        total = len(matched)
+        matched.reverse()
+        return matched[skip : skip + limit], total
+
