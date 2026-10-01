@@ -173,6 +173,42 @@ export interface BackendFacilityItem {
   };
 }
 
+export interface DataQualityFinding {
+  id: string;
+  patient_id: string;
+  resource_type: string;
+  resource_id: string;
+  finding_type: string;
+  severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | 'INFO';
+  status: 'PENDING' | 'IN_REVIEW' | 'RESOLVED' | 'REJECTED' | 'UNRESOLVED';
+  description: string;
+  rule_id: string;
+  rule_version: string;
+  detected_at: string;
+  version: number;
+  reviewer_notes?: string;
+  resolved_at?: string;
+  resolved_by?: string;
+  resolution_action?: string;
+  resolution_notes?: string;
+  source_references?: string[];
+  conflicting_references?: string[];
+}
+
+export interface ClinicalReconciliation {
+  id: string;
+  patient_id: string;
+  scope: string;
+  status: 'PENDING' | 'RESOLVED' | 'UNRESOLVED';
+  summary: string;
+  sources: Array<{ source_name: string; resource_type: string; count: number }>;
+  conflicts: Array<{ domain: string; field: string; source_a: string; val_a: string; source_b: string; val_b: string; risk: string }>;
+  created_at: string;
+  version: number;
+  resolved_at?: string;
+  resolution_action?: string;
+}
+
 class HealthSetuApiClient {
   private token: string | null = null;
   private activeRole: 'PATIENT' | 'DOCTOR' | 'ADMIN' | null = null;
@@ -648,6 +684,114 @@ class HealthSetuApiClient {
       body: JSON.stringify(payload),
     });
     return { record: res.data, error: res.error };
+  }
+
+  // =========================================================================
+  // Phase 26: Data Quality & Clinical Reconciliation
+  // =========================================================================
+  async getPatientDataQualityFindings(patientId: string, status?: string): Promise<{ findings?: DataQualityFinding[]; total?: number; error?: string }> {
+    const q = status ? `?status=${encodeURIComponent(status)}` : '';
+    const res = await this.request<{ items: DataQualityFinding[]; total: number }>(
+      `/patients/${encodeURIComponent(patientId.trim())}/data-quality${q}`,
+      { method: 'GET' }
+    );
+    return { findings: res.data?.items || [], total: res.data?.total || 0, error: res.error };
+  }
+
+  async runPatientDataQualityCheck(patientId: string, body?: {
+    resource_types?: string[];
+    rule_types?: string[];
+    external_imports?: any[];
+  }): Promise<{ result?: any; error?: string }> {
+    const res = await this.request<any>(
+      `/patients/${encodeURIComponent(patientId.trim())}/data-quality/check`,
+      {
+        method: 'POST',
+        body: JSON.stringify(body || {}),
+      }
+    );
+    return { result: res.data, error: res.error };
+  }
+
+  async reviewDataQualityFinding(patientId: string, findingId: string, notes: string): Promise<{ finding?: DataQualityFinding; error?: string }> {
+    const res = await this.request<DataQualityFinding>(
+      `/patients/${encodeURIComponent(patientId.trim())}/data-quality/${encodeURIComponent(findingId)}/review`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ notes }),
+      }
+    );
+    return { finding: res.data, error: res.error };
+  }
+
+  async resolveDataQualityFinding(
+    patientId: string,
+    findingId: string,
+    action: string,
+    expectedVersion: number,
+    reason: string,
+    notes?: string
+  ): Promise<{ finding?: DataQualityFinding; error?: string }> {
+    const res = await this.request<DataQualityFinding>(
+      `/patients/${encodeURIComponent(patientId.trim())}/data-quality/${encodeURIComponent(findingId)}/resolve`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          action,
+          expected_version: expectedVersion,
+          reason,
+          notes,
+        }),
+      }
+    );
+    return { finding: res.data, error: res.error };
+  }
+
+  async reconcilePatientRecords(
+    patientId: string,
+    scope: string = 'all',
+    externalRecords: any[] = []
+  ): Promise<{ reconciliation?: ClinicalReconciliation; error?: string }> {
+    const res = await this.request<ClinicalReconciliation>(
+      `/patients/${encodeURIComponent(patientId.trim())}/data-quality/reconcile`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          scope,
+          external_records: externalRecords,
+        }),
+      }
+    );
+    return { reconciliation: res.data, error: res.error };
+  }
+
+  async resolveReconciliation(
+    patientId: string,
+    reconciliationId: string,
+    action: string,
+    expectedVersion: number,
+    reason: string
+  ): Promise<{ reconciliation?: ClinicalReconciliation; error?: string }> {
+    const res = await this.request<ClinicalReconciliation>(
+      `/patients/${encodeURIComponent(patientId.trim())}/reconciliation/${encodeURIComponent(reconciliationId)}/resolve`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          action,
+          expected_version: expectedVersion,
+          reason,
+        }),
+      }
+    );
+    return { reconciliation: res.data, error: res.error };
+  }
+
+  async getClinicianDataQualityFindings(): Promise<{ findings?: DataQualityFinding[]; total?: number; error?: string }> {
+    const res = await this.request<{ items: DataQualityFinding[]; total: number }>(
+      `/clinicians/me/data-quality/findings`,
+      { method: 'GET' }
+    );
+    return { findings: res.data?.items || [], total: res.data?.total || 0, error: res.error };
   }
 }
 

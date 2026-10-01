@@ -599,3 +599,50 @@ CREATE INDEX idx_consent_grants_lookup  ON consent_grants(doctor_id, patient_id,
 CREATE INDEX idx_bed_reports_latest     ON bed_availability_reports(facility_id, ward_type, reported_at DESC);
 CREATE INDEX idx_allergies_patient      ON patient_allergies(patient_id);
 
+-- ---------------------------------------------------------------------
+--  Phase 26: Data Quality & Clinical Reconciliation (TRD Sec 15, 16, 18)
+-- ---------------------------------------------------------------------
+CREATE TABLE data_quality_findings (
+    id                      VARCHAR(64) PRIMARY KEY,
+    patient_id              INT         NOT NULL REFERENCES patients(id),
+    resource_type           VARCHAR(64) NOT NULL,
+    resource_id             VARCHAR(64) NOT NULL,
+    finding_type            VARCHAR(64) NOT NULL,
+    severity                VARCHAR(32) NOT NULL,
+    status                  VARCHAR(32) NOT NULL,
+    description             TEXT        NOT NULL,
+    rule_id                 VARCHAR(64) NOT NULL,
+    rule_version            VARCHAR(32) NOT NULL,
+    source_references       JSONB       DEFAULT '[]',
+    conflicting_references  JSONB       DEFAULT '[]',
+    context_data            JSONB       DEFAULT '{}',
+    detected_at             TIMESTAMPTZ NOT NULL,
+    reviewer_notes          TEXT,
+    resolved_at             TIMESTAMPTZ,
+    resolved_by             VARCHAR(64),
+    resolution_action       VARCHAR(64),
+    resolution_notes        TEXT,
+    version                 INTEGER     DEFAULT 1 NOT NULL
+);
+
+CREATE TABLE clinical_reconciliations (
+    id                      VARCHAR(64) PRIMARY KEY,
+    patient_id              INT         NOT NULL REFERENCES patients(id),
+    scope                   VARCHAR(32) NOT NULL,
+    status                  VARCHAR(32) NOT NULL,
+    sources                 JSONB       DEFAULT '[]',
+    conflicts               JSONB       DEFAULT '[]',
+    summary                 TEXT        NOT NULL,
+    created_at              TIMESTAMPTZ NOT NULL,
+    resolved_at             TIMESTAMPTZ,
+    resolved_by             VARCHAR(64),
+    resolution_action       VARCHAR(64),
+    resolution_notes        TEXT,
+    version                 INTEGER     DEFAULT 1 NOT NULL
+);
+
+CREATE INDEX idx_dq_findings_patient    ON data_quality_findings(patient_id, status);
+CREATE INDEX idx_dq_findings_rule       ON data_quality_findings(rule_id);
+CREATE INDEX idx_dq_findings_severity   ON data_quality_findings(severity);
+CREATE INDEX idx_reconciliation_patient ON clinical_reconciliations(patient_id, status);
+
