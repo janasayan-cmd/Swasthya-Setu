@@ -13,6 +13,7 @@ import { Footer } from './components/landing/Footer';
 import { PatientPortal } from './components/patient/PatientPortal';
 import { DoctorWorkspace } from './components/doctor/DoctorWorkspace';
 import { HospitalPortal } from './components/hospital/HospitalPortal';
+import { AdminPortal } from './components/admin/AdminPortal';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { AccessRestricted } from './components/common/AccessRestricted';
 import { PortalLoginView } from './components/auth/PortalLoginView';
@@ -224,6 +225,14 @@ export function App() {
               if (currentRole === 'hospital') {
                 return (
                   <HospitalPortal 
+                    currentUser={currentUser}
+                  />
+                );
+              }
+
+              if (currentRole === 'admin') {
+                return (
+                  <AdminPortal 
                     currentUser={currentUser}
                   />
                 );

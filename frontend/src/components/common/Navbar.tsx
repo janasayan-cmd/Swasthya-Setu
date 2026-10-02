@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { Activity, User, Stethoscope, Building2, PhoneCall, KeyRound, LogOut, ChevronDown, ShieldCheck, Lock } from 'lucide-react';
+import { Activity, User, Stethoscope, Building2, PhoneCall, KeyRound, LogOut, ChevronDown, ShieldCheck, ShieldAlert, Lock } from 'lucide-react';
 import type { Role } from '../../types';
 import type { UserProfile } from '../../services/authStore';
 
@@ -30,6 +29,8 @@ export const Navbar: React.FC<NavbarProps> = ({
         return { bg: 'bg-[#2D5A40]', border: 'border-[#D3EAD7]', text: 'text-[#2D5A40]' };
       case 'hospital':
         return { bg: 'bg-[#5B3D8A]', border: 'border-[#E9DCF8]', text: 'text-[#5B3D8A]' };
+      case 'admin':
+        return { bg: 'bg-[#9A3412]', border: 'border-[#FAD8C3]', text: 'text-[#9A3412]' };
       default:
         return { bg: 'bg-[#1C2B3A]', border: 'border-[#DDD9D1]', text: 'text-[#1C2B3A]' };
     }
@@ -124,6 +125,24 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Building2 className="w-3.5 h-3.5" strokeWidth={1.8} />
             <span>Hospital Capacity</span>
             {currentUser && currentUser.role !== 'hospital' && (
+              <Lock className="w-2.5 h-2.5 text-[#A05520]" />
+            )}
+          </button>
+
+          <button
+            onClick={() => setCurrentRole('admin')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-semibold transition-colors focus-visible:ring-1 focus-visible:ring-[#4A90C4] ${
+              currentRole === 'admin'
+                ? 'bg-[#FFFFFF] text-[#9A3412] border border-[#FAD8C3]'
+                : currentUser && currentUser.role !== 'admin'
+                  ? 'text-[#6B7A8D] opacity-80 hover:text-[#1C2B3A]'
+                  : 'text-[#6B7A8D] hover:text-[#9A3412]'
+            }`}
+            title={currentUser && currentUser.role !== 'admin' ? 'Requires Platform Operator Clearance' : undefined}
+          >
+            <ShieldAlert className="w-3.5 h-3.5" strokeWidth={1.8} />
+            <span>Ops & Analytics</span>
+            {currentUser && currentUser.role !== 'admin' && (
               <Lock className="w-2.5 h-2.5 text-[#A05520]" />
             )}
           </button>

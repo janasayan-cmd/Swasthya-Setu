@@ -646,3 +646,137 @@ CREATE INDEX idx_dq_findings_rule       ON data_quality_findings(rule_id);
 CREATE INDEX idx_dq_findings_severity   ON data_quality_findings(severity);
 CREATE INDEX idx_reconciliation_patient ON clinical_reconciliations(patient_id, status);
 
+-- ---------------------------------------------------------------------
+--  Phase 27: Administration, Support Operations & Controlled Backoffice Layer
+-- ---------------------------------------------------------------------
+DO $$ BEGIN
+    CREATE TYPE incident_status_enum AS ENUM (
+        'OPEN',
+        'INVESTIGATING',
+        'MITIGATED',
+        'RESOLVED',
+        'CLOSED'
+    );
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE incident_severity_enum AS ENUM (
+        'CRITICAL',
+        'HIGH',
+        'MEDIUM',
+        'LOW'
+    );
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE incident_category_enum AS ENUM (
+        'API_OUTAGE',
+        'DATABASE_FAILURE',
+        'QUEUE_FAILURE',
+        'OCR_FAILURE',
+        'MEDICATION_PROVIDER_OUTAGE',
+        'AI_PROVIDER_OUTAGE',
+        'INTEROPERABILITY_FAILURE',
+        'SECURITY_INCIDENT',
+        'DATA_QUALITY_INCIDENT',
+        'PERFORMANCE_INCIDENT',
+        'DEPLOYMENT_INCIDENT',
+        'OTHER'
+    );
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+CREATE TABLE operational_incidents (
+    id VARCHAR(64) PRIMARY KEY,
+    title VARCHAR(200) NOT NULL,
+    description TEXT NOT NULL,
+    category incident_category_enum NOT NULL DEFAULT 'OTHER',
+    severity incident_severity_enum NOT NULL DEFAULT 'MEDIUM',
+    status incident_status_enum NOT NULL DEFAULT 'OPEN',
+    detected_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    acknowledged_at TIMESTAMPTZ,
+    resolved_at TIMESTAMPTZ,
+    closed_at TIMESTAMPTZ,
+    owner VARCHAR(64),
+    correlation_id VARCHAR(128),
+    resolution_summary TEXT,
+    created_by VARCHAR(64) NOT NULL,
+    updated_by VARCHAR(64) NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    metadata JSONB NOT NULL DEFAULT '{}'::jsonb
+);
+
+CREATE INDEX idx_incidents_status ON operational_incidents(status);
+CREATE INDEX idx_incidents_severity ON operational_incidents(severity);
+CREATE INDEX idx_incidents_category ON operational_incidents(category);
+CREATE INDEX idx_incidents_created_at ON operational_incidents(created_at DESC);
+
+-- ---------------------------------------------------------------------
+--  Phase 28: API Analytics, Usage Governance & Operational Intelligence
+-- ---------------------------------------------------------------------
+CREATE TABLE analytics_events (
+    event_id UUID NOT NULL,
+    event_type VARCHAR(64) NOT NULL,
+    timestamp TIMESTAMPTZ NOT NULL,
+    environment VARCHAR(32) NOT NULL,
+    service VARCHAR(64) NOT NULL,
+    api_version VARCHAR(16) NOT NULL DEFAULT 'v1',
+    endpoint_template VARCHAR(255),
+    http_method VARCHAR(16),
+    status_code INT,
+    duration_ms DOUBLE PRECISION,
+    request_id VARCHAR(64),
+    correlation_id VARCHAR(64),
+    user_category VARCHAR(32),
+    organization_id VARCHAR(64),
+    facility_id VARCHAR(64),
+    feature_name VARCHAR(64),
+    provider_name VARCHAR(64),
+    job_type VARCHAR(64),
+    job_status VARCHAR(32),
+    resource_type VARCHAR(64),
+    result_category VARCHAR(32),
+    error_category VARCHAR(64),
+    metadata JSONB DEFAULT '{}'::jsonb,
+    PRIMARY KEY (event_id, timestamp)
+) PARTITION BY RANGE (timestamp);
+
+CREATE TABLE analytics_events_default PARTITION OF analytics_events DEFAULT;
+
+CREATE INDEX idx_analytics_events_query ON analytics_events (timestamp DESC, endpoint_template, status_code);
+CREATE INDEX idx_analytics_events_org ON analytics_events (organization_id, facility_id, timestamp DESC);
+CREATE INDEX idx_analytics_events_provider ON analytics_events (provider_name, timestamp DESC);
+
+CREATE TABLE operational_anomalies (
+    anomaly_id UUID PRIMARY KEY,
+    anomaly_type VARCHAR(64) NOT NULL,
+    severity VARCHAR(32) NOT NULL,
+    status VARCHAR(32) NOT NULL DEFAULT 'DETECTED',
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    detected_at TIMESTAMPTZ NOT NULL,
+    acknowledged_at TIMESTAMPTZ,
+    acknowledged_by VARCHAR(64),
+    resolved_at TIMESTAMPTZ,
+    resolution_notes TEXT,
+    metric_name VARCHAR(64),
+    current_value DOUBLE PRECISION,
+    threshold_value DOUBLE PRECISION,
+    baseline_value DOUBLE PRECISION,
+    deviation_percent DOUBLE PRECISION,
+    endpoint VARCHAR(255),
+    provider_name VARCHAR(64),
+    metrics JSONB DEFAULT '{}'::jsonb,
+    metadata JSONB DEFAULT '{}'::jsonb
+);
+
+CREATE INDEX idx_anomalies_status ON operational_anomalies (status, detected_at DESC);
+CREATE INDEX idx_anomalies_type ON operational_anomalies (anomaly_type, detected_at DESC);
+
+

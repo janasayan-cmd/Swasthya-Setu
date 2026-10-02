@@ -8,9 +8,9 @@
 import { apiClient } from './api';
 
 export interface UserProfile {
-  id: string; // The sovereign unique ID (e.g. HS-PAT-8921, DOC-AIIMS-104, HOSP-APOLLO-01)
+  id: string; // The sovereign unique ID (e.g. HS-PAT-8921, DOC-AIIMS-104, HOSP-APOLLO-01, ADM-OPS-9901)
   name: string;
-  role: 'patient' | 'doctor' | 'hospital';
+  role: 'patient' | 'doctor' | 'hospital' | 'admin';
   email: string;
   phone?: string;
   issuedAt: string;
@@ -35,9 +35,14 @@ export interface UserProfile {
     icuBeds: number;
     helpline: string;
   };
+  adminDetails?: {
+    clearanceLevel: string;
+    permissions: string[];
+    managedFacilities: string;
+  };
 }
 
-export const DEMO_PROFILES: Record<'patient' | 'doctor' | 'hospital', UserProfile> = {
+export const DEMO_PROFILES: Record<'patient' | 'doctor' | 'hospital' | 'admin', UserProfile> = {
   patient: {
     id: 'HS-PAT-8921',
     name: 'Rohan Sharma',
@@ -85,12 +90,26 @@ export const DEMO_PROFILES: Record<'patient' | 'doctor' | 'hospital', UserProfil
       helpline: '+91 11 2692 5858 (24x7 Emergency Desk)',
     },
   },
+  admin: {
+    id: 'ADM-OPS-9901',
+    name: 'Platform Operations Admin',
+    role: 'admin',
+    email: 'ops@healthsetu.org',
+    phone: '+91 11 2658 9000',
+    avatarInitials: 'OA',
+    issuedAt: '01 Jan 2026',
+    adminDetails: {
+      clearanceLevel: 'LEVEL-4-SOVEREIGN-OPERATOR',
+      permissions: ['SYSTEM_ADMIN', 'OPERATIONS_ADMIN', 'SUPPORT_OPERATOR', 'API_ANALYTICS_VIEW'],
+      managedFacilities: 'All Active Connected Nodes (Cross-Tenant)',
+    },
+  },
 };
 
 const STORAGE_KEY = 'healthsetu_active_user';
 const ALL_USERS_KEY = 'healthsetu_registered_users';
 
-export function generateUniqueId(role: 'patient' | 'doctor' | 'hospital'): string {
+export function generateUniqueId(role: 'patient' | 'doctor' | 'hospital' | 'admin'): string {
   const randNum = Math.floor(1000 + Math.random() * 9000);
   switch (role) {
     case 'patient':
@@ -99,6 +118,8 @@ export function generateUniqueId(role: 'patient' | 'doctor' | 'hospital'): strin
       return `HS-DOC-${randNum}`;
     case 'hospital':
       return `HS-HOSP-${randNum}`;
+    case 'admin':
+      return `HS-ADM-${randNum}`;
   }
 }
 

@@ -15,7 +15,21 @@
  * - Phase 11 & 12: Hospital Directory & Emergency Bed Discovery (/api/v1/facilities, /api/v1/facilities/discover)
  */
 
-import type { Medication, Allergy, TimelineEvent, AccessRequest, HospitalFacility, SafetyAlert } from '../types';
+import type {
+  Medication,
+  Allergy,
+  TimelineEvent,
+  AccessRequest,
+  HospitalFacility,
+  SafetyAlert,
+  OperationalIncident,
+  AdminUserRecord,
+  AdminSystemHealth,
+  SupportSessionRecord,
+  AnalyticsOverview,
+  OperationalAnomaly,
+  ProviderUsageMetric,
+} from '../types';
 
 // Support VITE_API_BASE_URL, VITE_API_URL, production Railway fallback, relative /api/v1, or localhost:8000
 const rawApiUrl = (import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL) as string | undefined;
@@ -793,6 +807,288 @@ class HealthSetuApiClient {
     );
     return { findings: res.data?.items || [], total: res.data?.total || 0, error: res.error };
   }
+
+  // =====================================================================
+  // Phase 27: Administration, Support Operations & Controlled Backoffice
+  // =====================================================================
+
+  async getAdminSystemHealth(): Promise<{ health?: AdminSystemHealth; error?: string }> {
+    const res = await this.request<AdminSystemHealth>('/admin/health', { method: 'GET' });
+    return { health: res.data, error: res.error };
+  }
+
+  async getAdminUsers(params?: {
+    role?: string;
+    is_active?: boolean;
+    search?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ users?: AdminUserRecord[]; total?: number; error?: string }> {
+    const q = new URLSearchParams();
+    if (params?.role) q.append('role', params.role);
+    if (params?.is_active !== undefined) q.append('is_active', String(params.is_active));
+    if (params?.search) q.append('search', params.search);
+    if (params?.limit) q.append('limit', String(params.limit));
+    if (params?.offset) q.append('offset', String(params.offset));
+
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    const res = await this.request<{ items: AdminUserRecord[]; total: number }>(`/admin/users${qs}`, {
+      method: 'GET',
+    });
+    return { users: res.data?.items || [], total: res.data?.total || 0, error: res.error };
+  }
+
+  async setAdminUserStatus(
+    userId: string,
+    isActive: boolean,
+    reason: string
+  ): Promise<{ success?: boolean; user?: AdminUserRecord; error?: string }> {
+    const res = await this.request<AdminUserRecord>(
+      `/admin/users/${encodeURIComponent(userId)}/status`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ is_active: isActive, reason }),
+      }
+    );
+    return { success: !res.error, user: res.data, error: res.error };
+  }
+
+  async resetAdminUserMFA(
+    userId: string,
+    reason: string
+  ): Promise<{ success?: boolean; error?: string }> {
+    const res = await this.request<{ message: string }>(
+      `/admin/users/${encodeURIComponent(userId)}/reset-mfa`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ reason }),
+      }
+    );
+    return { success: !res.error, error: res.error };
+  }
+
+  async getAdminIncidents(params?: {
+    status?: string;
+    severity?: string;
+    category?: string;
+    limit?: number;
+  }): Promise<{ incidents?: OperationalIncident[]; total?: number; error?: string }> {
+    const q = new URLSearchParams();
+    if (params?.status) q.append('status', params.status);
+    if (params?.severity) q.append('severity', params.severity);
+    if (params?.category) q.append('category', params.category);
+    if (params?.limit) q.append('limit', String(params.limit));
+
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    const res = await this.request<{ items: OperationalIncident[]; total: number }>(
+      `/admin/incidents${qs}`,
+      { method: 'GET' }
+    );
+    return { incidents: res.data?.items || [], total: res.data?.total || 0, error: res.error };
+  }
+
+  async createAdminIncident(incident: {
+    title: string;
+    description: string;
+    category: string;
+    severity: string;
+    owner?: string;
+  }): Promise<{ incident?: OperationalIncident; error?: string }> {
+    const res = await this.request<OperationalIncident>('/admin/incidents', {
+      method: 'POST',
+      body: JSON.stringify(incident),
+    });
+    return { incident: res.data, error: res.error };
+  }
+
+  async updateAdminIncident(
+    incidentId: string,
+    patch: {
+      status?: string;
+      severity?: string;
+      owner?: string;
+      resolution_summary?: string;
+    }
+  ): Promise<{ incident?: OperationalIncident; error?: string }> {
+    const res = await this.request<OperationalIncident>(
+      `/admin/incidents/${encodeURIComponent(incidentId)}`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify(patch),
+      }
+    );
+    return { incident: res.data, error: res.error };
+  }
+
+  async resolveAdminIncident(
+    incidentId: string,
+    resolutionSummary: string
+  ): Promise<{ incident?: OperationalIncident; error?: string }> {
+    const res = await this.request<OperationalIncident>(
+      `/admin/incidents/${encodeURIComponent(incidentId)}/resolve`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ resolution_summary: resolutionSummary }),
+      }
+    );
+    return { incident: res.data, error: res.error };
+  }
+
+  async getAdminAuditLogs(params?: {
+    action?: string;
+    limit?: number;
+    actor_id?: string;
+  }): Promise<{ logs?: any[]; total?: number; error?: string }> {
+    const q = new URLSearchParams();
+    if (params?.action) q.append('action', params.action);
+    if (params?.limit) q.append('limit', String(params.limit));
+    if (params?.actor_id) q.append('actor_id', params.actor_id);
+
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    const res = await this.request<{ items: any[]; total: number }>(`/admin/audit-logs${qs}`, {
+      method: 'GET',
+    });
+    return { logs: res.data?.items || [], total: res.data?.total || 0, error: res.error };
+  }
+
+  async createSupportSession(data: {
+    reason: string;
+    ticket_id?: string;
+    target_user_id?: string;
+    duration_minutes?: number;
+  }): Promise<{ session?: SupportSessionRecord; error?: string }> {
+    const res = await this.request<SupportSessionRecord>('/admin/support-sessions', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return { session: res.data, error: res.error };
+  }
+
+  async getSupportSessions(): Promise<{ sessions?: SupportSessionRecord[]; error?: string }> {
+    const res = await this.request<{ items: SupportSessionRecord[] }>('/admin/support-sessions', {
+      method: 'GET',
+    });
+    return { sessions: res.data?.items || [], error: res.error };
+  }
+
+  // =====================================================================
+  // Phase 28: API Analytics, Usage Governance & Operational Intelligence
+  // =====================================================================
+
+  async getAnalyticsOverview(params?: {
+    window_minutes?: number;
+    organization_id?: string;
+    facility_id?: string;
+  }): Promise<{ overview?: AnalyticsOverview; error?: string }> {
+    const q = new URLSearchParams();
+    if (params?.window_minutes) q.append('window_minutes', String(params.window_minutes));
+    if (params?.organization_id) q.append('organization_id', params.organization_id);
+    if (params?.facility_id) q.append('facility_id', params.facility_id);
+
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    const res = await this.request<AnalyticsOverview>(`/analytics/overview${qs}`, {
+      method: 'GET',
+    });
+    return { overview: res.data, error: res.error };
+  }
+
+  async getLatencyDistribution(params?: {
+    window_minutes?: number;
+  }): Promise<{ percentiles?: LatencyPercentiles; distribution?: LatencyDistribution; error?: string }> {
+    const q = new URLSearchParams();
+    if (params?.window_minutes) q.append('window_minutes', String(params.window_minutes));
+
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    const res = await this.request<{
+      percentiles: LatencyPercentiles;
+      distribution: LatencyDistribution;
+    }>(`/analytics/latency${qs}`, { method: 'GET' });
+
+    return {
+      percentiles: res.data?.percentiles,
+      distribution: res.data?.distribution,
+      error: res.error,
+    };
+  }
+
+  async getErrorAnalytics(params?: {
+    window_minutes?: number;
+  }): Promise<{ error_rate?: number; client_errors?: number; server_errors?: number; top_errors?: any[]; error?: string }> {
+    const q = new URLSearchParams();
+    if (params?.window_minutes) q.append('window_minutes', String(params.window_minutes));
+
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    const res = await this.request<any>(`/analytics/errors${qs}`, { method: 'GET' });
+    return {
+      error_rate: res.data?.error_rate_percentage,
+      client_errors: res.data?.client_errors,
+      server_errors: res.data?.server_errors,
+      top_errors: res.data?.top_failing_endpoints || [],
+      error: res.error,
+    };
+  }
+
+  async getProviderUsage(params?: {
+    window_minutes?: number;
+  }): Promise<{ providers?: ProviderUsageMetric[]; total_cost_usd?: number; error?: string }> {
+    const q = new URLSearchParams();
+    if (params?.window_minutes) q.append('window_minutes', String(params.window_minutes));
+
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    const res = await this.request<{ items: ProviderUsageMetric[]; total_estimated_cost_usd: number }>(
+      `/analytics/providers${qs}`,
+      { method: 'GET' }
+    );
+    return {
+      providers: res.data?.items || [],
+      total_cost_usd: res.data?.total_estimated_cost_usd,
+      error: res.error,
+    };
+  }
+
+  async getOperationalAnomalies(params?: {
+    status?: string;
+    severity?: string;
+  }): Promise<{ anomalies?: OperationalAnomaly[]; error?: string }> {
+    const q = new URLSearchParams();
+    if (params?.status) q.append('status', params.status);
+    if (params?.severity) q.append('severity', params.severity);
+
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    const res = await this.request<{ items: OperationalAnomaly[] }>(`/analytics/anomalies${qs}`, {
+      method: 'GET',
+    });
+    return { anomalies: res.data?.items || [], error: res.error };
+  }
+
+  async acknowledgeOperationalAnomaly(
+    anomalyId: string,
+    notes?: string
+  ): Promise<{ anomaly?: OperationalAnomaly; error?: string }> {
+    const res = await this.request<OperationalAnomaly>(
+      `/analytics/anomalies/${encodeURIComponent(anomalyId)}/acknowledge`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ notes: notes || 'Acknowledged by operator' }),
+      }
+    );
+    return { anomaly: res.data, error: res.error };
+  }
+
+  async resolveOperationalAnomaly(
+    anomalyId: string,
+    notes: string
+  ): Promise<{ anomaly?: OperationalAnomaly; error?: string }> {
+    const res = await this.request<OperationalAnomaly>(
+      `/analytics/anomalies/${encodeURIComponent(anomalyId)}/resolve`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ resolution_notes: notes }),
+      }
+    );
+    return { anomaly: res.data, error: res.error };
+  }
 }
 
 export const apiClient = new HealthSetuApiClient();
+

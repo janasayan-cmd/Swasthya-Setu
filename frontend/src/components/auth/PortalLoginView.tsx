@@ -32,9 +32,9 @@ export const PortalLoginView: React.FC<PortalLoginViewProps> = ({
   onNavigateHome,
   onSwitchPortalRole,
 }) => {
-  // Normalize portal role to one of the 3 portal roles
-  const activeRole: 'patient' | 'doctor' | 'hospital' = 
-    portalRole === 'doctor' ? 'doctor' : portalRole === 'hospital' ? 'hospital' : 'patient';
+  // Normalize portal role to one of the portal roles
+  const activeRole: 'patient' | 'doctor' | 'hospital' | 'admin' = 
+    portalRole === 'doctor' ? 'doctor' : portalRole === 'hospital' ? 'hospital' : portalRole === 'admin' ? 'admin' : 'patient';
 
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
@@ -119,6 +119,17 @@ export const PortalLoginView: React.FC<PortalLoginViewProps> = ({
           bgColor: '#F8F5FB',
           badgeText: 'Facility Authority',
           idPlaceholder: 'e.g. HS-HOSP-4491 or admin email',
+        };
+      case 'admin':
+        return {
+          title: 'Operations & Analytics Backoffice Login',
+          subtitle: 'Sign in to monitor system health, operational incidents, telemetry percentiles, and usage governance.',
+          idPrefix: 'HS-ADM-XXXX',
+          icon: <ShieldCheck className="w-5 h-5 text-[#9A3412]" />,
+          color: '#9A3412',
+          bgColor: '#FFF7ED',
+          badgeText: 'Platform Operations',
+          idPlaceholder: 'e.g. ADM-OPS-9901 or ops email',
         };
     }
   };
