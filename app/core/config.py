@@ -698,6 +698,38 @@ class Settings(BaseSettings):
     ANALYTICS_EVENT_BATCH_SIZE: int = Field(default=100, description="Batch size for event flushing")
     ANALYTICS_PROCESSING_ENABLED: bool = Field(default=True, description="Enable background analytics processing")
 
+    # Phase 29: Notification, Communication & Event Delivery System
+    NOTIFICATIONS_ENABLED: bool = Field(default=True, description="Enable notification delivery system")
+    EMAIL_NOTIFICATIONS_ENABLED: bool = Field(default=True, description="Enable email delivery channel")
+    SMS_NOTIFICATIONS_ENABLED: bool = Field(default=True, description="Enable SMS delivery channel")
+    PUSH_NOTIFICATIONS_ENABLED: bool = Field(default=False, description="Enable push delivery channel")
+    IN_APP_NOTIFICATIONS_ENABLED: bool = Field(default=True, description="Enable in-app delivery channel")
+
+    EMAIL_PROVIDER: str = Field(default="mock_email", description="Active email provider adapter")
+    EMAIL_PROVIDER_BASE_URL: str = Field(default="https://api.emailprovider.example.com", description="Email provider API base URL")
+    EMAIL_PROVIDER_API_KEY: str = Field(default="test_email_key_sec_123", description="Email provider API key")
+    EMAIL_PROVIDER_TIMEOUT_SECONDS: float = Field(default=15.0, description="Email provider timeout in seconds")
+
+    SMS_PROVIDER: str = Field(default="mock_sms", description="Active SMS provider adapter")
+    SMS_PROVIDER_BASE_URL: str = Field(default="https://api.smsprovider.example.com", description="SMS provider API base URL")
+    SMS_PROVIDER_API_KEY: str = Field(default="test_sms_key_sec_123", description="SMS provider API key")
+    SMS_PROVIDER_TIMEOUT_SECONDS: float = Field(default=15.0, description="SMS provider timeout in seconds")
+
+    PUSH_PROVIDER: str = Field(default="mock_push", description="Active push provider adapter")
+    PUSH_PROVIDER_BASE_URL: str = Field(default="https://api.pushprovider.example.com", description="Push provider API base URL")
+    PUSH_PROVIDER_API_KEY: str = Field(default="test_push_key_sec_123", description="Push provider API key")
+    PUSH_PROVIDER_TIMEOUT_SECONDS: float = Field(default=15.0, description="Push provider timeout in seconds")
+
+    NOTIFICATION_MAX_RETRIES: int = Field(default=3, description="Maximum retries for transient delivery failures")
+    NOTIFICATION_RETRY_BASE_DELAY_SECONDS: float = Field(default=5.0, description="Initial retry delay in seconds")
+    NOTIFICATION_RETRY_MAX_DELAY_SECONDS: float = Field(default=300.0, description="Maximum retry delay backoff ceiling")
+    NOTIFICATION_RATE_LIMIT_ENABLED: bool = Field(default=True, description="Enable notification rate limiting")
+    NOTIFICATION_DEDUPLICATION_ENABLED: bool = Field(default=True, description="Enable event deduplication")
+    NOTIFICATION_PROVIDER_FAILOVER_ENABLED: bool = Field(default=False, description="Enable automatic provider failover")
+    NOTIFICATION_DEFAULT_LANGUAGE: str = Field(default="en", description="Default localization language code")
+    NOTIFICATION_RATE_LIMIT_PER_MINUTE: int = Field(default=30, description="Per-recipient rate limit per minute")
+    NOTIFICATION_RETENTION_DAYS: int = Field(default=90, description="Notification history retention in days")
+
     @property
     def max_document_size_bytes(self) -> int:
         """Maximum allowed document upload size in bytes."""

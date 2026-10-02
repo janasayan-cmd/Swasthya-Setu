@@ -195,6 +195,17 @@ class Permission(str, Enum):
     ORGANIZATION_ANALYTICS_VIEW = "organization:analytics_view"
     FACILITY_ANALYTICS_VIEW = "facility:analytics_view"
 
+    # ---- Phase 29: Notification, Communication & Event Delivery System ----
+    NOTIFICATION_READ = "notification:read"
+    NOTIFICATION_DISMISS = "notification:dismiss"
+    NOTIFICATION_CREATE = "notification:create"
+    NOTIFICATION_MANAGE = "notification:manage"
+    NOTIFICATION_PREFERENCE_READ = "notification_preference:read"
+    NOTIFICATION_PREFERENCE_MANAGE = "notification_preference:manage"
+    ADMIN_NOTIFICATION_VIEW = "admin:notification_view"
+    ADMIN_NOTIFICATION_MANAGE = "admin:notification_manage"
+    ADMIN_NOTIFICATION_PROVIDER_TEST = "admin:notification_provider_test"
+
 
 # ---------------------------------------------------------------------------
 # Role-to-Permission Mapping
@@ -271,6 +282,11 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         # Phase 26: Data Quality & Reconciliation
         Permission.DATA_QUALITY_READ,
         Permission.RECONCILIATION_READ,
+        # Phase 29: Notifications
+        Permission.NOTIFICATION_READ,
+        Permission.NOTIFICATION_DISMISS,
+        Permission.NOTIFICATION_PREFERENCE_READ,
+        Permission.NOTIFICATION_PREFERENCE_MANAGE,
     }),
     "DOCTOR": frozenset({
         Permission.PATIENT_READ_SELF,         # can read patient profile in context
@@ -361,6 +377,12 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         # Phase 28: Analytics
         Permission.ORGANIZATION_ANALYTICS_VIEW,
         Permission.FACILITY_ANALYTICS_VIEW,
+        # Phase 29: Notifications
+        Permission.NOTIFICATION_READ,
+        Permission.NOTIFICATION_DISMISS,
+        Permission.NOTIFICATION_CREATE,
+        Permission.NOTIFICATION_PREFERENCE_READ,
+        Permission.NOTIFICATION_PREFERENCE_MANAGE,
     }),
     "ADMIN": frozenset({
         # Administrative capabilities ONLY — no automatic clinical data access
@@ -424,6 +446,15 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.ADMIN_ANALYTICS_VIEW,
         Permission.ORGANIZATION_ANALYTICS_VIEW,
         Permission.FACILITY_ANALYTICS_VIEW,
+        # Phase 29: Notifications
+        Permission.NOTIFICATION_READ,
+        Permission.NOTIFICATION_DISMISS,
+        Permission.NOTIFICATION_CREATE,
+        Permission.NOTIFICATION_PREFERENCE_READ,
+        Permission.NOTIFICATION_PREFERENCE_MANAGE,
+        Permission.ADMIN_NOTIFICATION_VIEW,
+        Permission.ADMIN_NOTIFICATION_MANAGE,
+        Permission.ADMIN_NOTIFICATION_PROVIDER_TEST,
     }),
     "SYSTEM_ADMIN": frozenset({
         Permission.ADMIN_USER_MANAGE,
@@ -464,6 +495,15 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.ADMIN_ANALYTICS_VIEW,
         Permission.ORGANIZATION_ANALYTICS_VIEW,
         Permission.FACILITY_ANALYTICS_VIEW,
+        # Phase 29: Notifications
+        Permission.NOTIFICATION_READ,
+        Permission.NOTIFICATION_DISMISS,
+        Permission.NOTIFICATION_CREATE,
+        Permission.NOTIFICATION_PREFERENCE_READ,
+        Permission.NOTIFICATION_PREFERENCE_MANAGE,
+        Permission.ADMIN_NOTIFICATION_VIEW,
+        Permission.ADMIN_NOTIFICATION_MANAGE,
+        Permission.ADMIN_NOTIFICATION_PROVIDER_TEST,
     }),
     "OPERATIONS_ADMIN": frozenset({
         Permission.ADMIN_SYSTEM_VIEW,
@@ -494,6 +534,8 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.DATA_QUALITY_READ,
         # Phase 28: Analytics
         Permission.ADMIN_ANALYTICS_VIEW,
+        # Phase 29: Notifications
+        Permission.ADMIN_NOTIFICATION_VIEW,
     }),
     "SECURITY_OPERATOR": frozenset({
         Permission.ADMIN_SYSTEM_VIEW,

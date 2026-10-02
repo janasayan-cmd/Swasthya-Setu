@@ -229,6 +229,21 @@ class ErrorCode(str, Enum):
     ANALYTICS_ACCESS_DENIED = "ANALYTICS_ACCESS_DENIED"
     ANOMALY_NOT_FOUND = "ANOMALY_NOT_FOUND"
 
+    # Phase 29: Notification, Communication & Event Delivery System
+    NOTIFICATION_DISABLED = "NOTIFICATION_DISABLED"
+    NOTIFICATION_NOT_FOUND = "NOTIFICATION_NOT_FOUND"
+    NOTIFICATION_ACCESS_DENIED = "NOTIFICATION_ACCESS_DENIED"
+    NOTIFICATION_PREFERENCE_CONFLICT = "NOTIFICATION_PREFERENCE_CONFLICT"
+    INVALID_RECIPIENT = "INVALID_RECIPIENT"
+    TEMPLATE_RESOLUTION_ERROR = "TEMPLATE_RESOLUTION_ERROR"
+    CHANNEL_DISABLED = "CHANNEL_DISABLED"
+    PROVIDER_DELIVERY_ERROR = "PROVIDER_DELIVERY_ERROR"
+    PROVIDER_UNAVAILABLE = "PROVIDER_UNAVAILABLE"
+    NOTIFICATION_RATE_LIMIT_EXCEEDED = "NOTIFICATION_RATE_LIMIT_EXCEEDED"
+    DUPLICATE_NOTIFICATION = "DUPLICATE_NOTIFICATION"
+    UNAUTHORIZED_CLINICAL_CONTENT = "UNAUTHORIZED_CLINICAL_CONTENT"
+    DELIVERY_NOT_FOUND = "DELIVERY_NOT_FOUND"
+
 
 class AppException(Exception):
     """Base application exception for all domain and operational errors."""
@@ -1825,6 +1840,155 @@ class AnomalyNotFoundException(NotFoundException):
             details={"anomaly_id": anomaly_id},
         )
         self.code = ErrorCode.ANOMALY_NOT_FOUND.value
+
+
+# ---------------------------------------------------------------------------
+# Phase 29: Notification, Communication & Event Delivery System Exceptions
+# ---------------------------------------------------------------------------
+
+
+class NotificationDisabledException(AppException):
+    """Notification service or channel is globally disabled (HTTP 503)."""
+
+    def __init__(self, message: str = "Notification service is currently disabled.") -> None:
+        super().__init__(
+            code=ErrorCode.NOTIFICATION_DISABLED,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+
+class NotificationNotFoundException(NotFoundException):
+    """Notification record not found (HTTP 404)."""
+
+    def __init__(self, notification_id: str) -> None:
+        super().__init__(
+            message=f"Notification '{notification_id}' was not found.",
+            details={"notification_id": notification_id},
+        )
+        self.code = ErrorCode.NOTIFICATION_NOT_FOUND.value
+
+
+class NotificationAccessDeniedException(ForbiddenException):
+    """Access to notification denied (HTTP 403)."""
+
+    def __init__(self, message: str = "Access to notification denied.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.NOTIFICATION_ACCESS_DENIED.value
+
+
+class NotificationPreferenceConflictException(AppException):
+    """Notification delivery conflicts with recipient communication preferences (HTTP 422)."""
+
+    def __init__(self, message: str = "Notification cannot be delivered due to recipient communication preferences.") -> None:
+        super().__init__(
+            code=ErrorCode.NOTIFICATION_PREFERENCE_CONFLICT,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )
+
+
+class InvalidRecipientException(AppException):
+    """Recipient identifier or contact target is invalid or unverified (HTTP 400)."""
+
+    def __init__(self, message: str = "Recipient contact information is invalid or unverified.") -> None:
+        super().__init__(
+            code=ErrorCode.INVALID_RECIPIENT,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class TemplateResolutionException(AppException):
+    """Notification template resolution or variable validation failed (HTTP 422)."""
+
+    def __init__(self, message: str = "Failed to resolve or validate notification template.") -> None:
+        super().__init__(
+            code=ErrorCode.TEMPLATE_RESOLUTION_ERROR,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )
+
+
+class ChannelDisabledException(AppException):
+    """Requested delivery channel is disabled or unsupported (HTTP 400)."""
+
+    def __init__(self, channel: str) -> None:
+        super().__init__(
+            code=ErrorCode.CHANNEL_DISABLED,
+            message=f"Delivery channel '{channel}' is disabled or unsupported.",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details={"channel": channel},
+        )
+
+
+class ProviderDeliveryException(AppException):
+    """External notification provider delivery failure (HTTP 502)."""
+
+    def __init__(self, provider: str, message: str = "External provider failed to deliver notification.") -> None:
+        super().__init__(
+            code=ErrorCode.PROVIDER_DELIVERY_ERROR,
+            message=message,
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            details={"provider": provider},
+        )
+
+
+class ProviderUnavailableException(AppException):
+    """Notification provider temporarily unavailable (HTTP 503)."""
+
+    def __init__(self, provider: str, message: str = "Notification provider is unavailable.") -> None:
+        super().__init__(
+            code=ErrorCode.PROVIDER_UNAVAILABLE,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            details={"provider": provider},
+        )
+
+
+class NotificationRateLimitExceededException(AppException):
+    """Recipient or sender notification rate limit exceeded (HTTP 429)."""
+
+    def __init__(self, message: str = "Notification rate limit exceeded. Please retry later.") -> None:
+        super().__init__(
+            code=ErrorCode.NOTIFICATION_RATE_LIMIT_EXCEEDED,
+            message=message,
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+        )
+
+
+class DuplicateNotificationException(AppException):
+    """Idempotency violation or duplicate notification event (HTTP 409)."""
+
+    def __init__(self, idempotency_key: str) -> None:
+        super().__init__(
+            code=ErrorCode.DUPLICATE_NOTIFICATION,
+            message=f"Duplicate notification event detected with idempotency key '{idempotency_key}'.",
+            status_code=status.HTTP_409_CONFLICT,
+            details={"idempotency_key": idempotency_key},
+        )
+
+
+class UnauthorizedClinicalContentException(AppException):
+    """Notification attempts to transmit autonomous clinical diagnosis or medical advice (HTTP 422)."""
+
+    def __init__(self, message: str = "Notification violates clinical safety boundary by containing autonomous clinical advice.") -> None:
+        super().__init__(
+            code=ErrorCode.UNAUTHORIZED_CLINICAL_CONTENT,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )
+
+
+class DeliveryNotFoundException(NotFoundException):
+    """Notification delivery record not found (HTTP 404)."""
+
+    def __init__(self, delivery_id: str) -> None:
+        super().__init__(
+            message=f"Delivery record '{delivery_id}' was not found.",
+            details={"delivery_id": delivery_id},
+        )
+        self.code = ErrorCode.DELIVERY_NOT_FOUND.value
 
 
 def _get_request_id(request: Request) -> str:

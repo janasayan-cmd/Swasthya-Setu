@@ -34,6 +34,7 @@ from app.api.v1.endpoints import (
     vitals,
     admin,
     analytics,
+    notifications,
 )
 
 v1_router = APIRouter()
@@ -113,4 +114,8 @@ v1_router.include_router(admin.router)
 
 # Register Phase 28 API Analytics, Usage Governance & Operational Intelligence endpoints
 v1_router.include_router(analytics.router)
+
+# Register Phase 29 Notification, Communication & Event Delivery endpoints
+v1_router.include_router(notifications.router)
+
 

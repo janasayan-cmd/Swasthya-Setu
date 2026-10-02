@@ -161,9 +161,18 @@ from app.services.incident_service import IncidentService
 from app.services.support_service import SupportService
 from app.services.admin_service import AdminService
 
-# Phase 28: API Analytics, Usage Governance & Operational Intelligence imports
 from app.repositories.analytics_repository import AnalyticsRepository
 from app.services.analytics_service import AnalyticsService
+
+# Phase 29: Notification, Communication & Event Delivery System imports
+from app.repositories.notification_repository import NotificationRepository
+from app.repositories.notification_delivery_repository import NotificationDeliveryRepository
+from app.repositories.notification_preference_repository import NotificationPreferenceRepository
+from app.services.notification_template_service import NotificationTemplateService
+from app.services.notification_preference_service import NotificationPreferenceService
+from app.services.communication_service import CommunicationService
+from app.services.notification_service import NotificationService
+from app.integrations.notifications import get_notification_provider_registry
 
 # ---------------------------------------------------------------------------
 # HTTP Bearer scheme
@@ -372,6 +381,30 @@ _global_analytics_repo = AnalyticsRepository()
 _global_analytics_service = AnalyticsService(
     repository=_global_analytics_repo,
     audit_repository=_global_audit_repo,
+)
+
+# ---------------------------------------------------------------------------
+# Phase 29: Notification, Communication & Event Delivery System singletons
+# ---------------------------------------------------------------------------
+_global_notification_repo = NotificationRepository()
+_global_notification_delivery_repo = NotificationDeliveryRepository()
+_global_notification_preference_repo = NotificationPreferenceRepository()
+_global_notification_template_service = NotificationTemplateService()
+_global_notification_preference_service = NotificationPreferenceService(
+    repository=_global_notification_preference_repo
+)
+_global_communication_service = CommunicationService(
+    delivery_repository=_global_notification_delivery_repo,
+    provider_registry=get_notification_provider_registry(),
+)
+_global_notification_service = NotificationService(
+    notification_repository=_global_notification_repo,
+    delivery_repository=_global_notification_delivery_repo,
+    template_service=_global_notification_template_service,
+    preference_service=_global_notification_preference_service,
+    communication_service=_global_communication_service,
+    audit_service=_global_audit_service,
+    analytics_service=_global_analytics_service,
 )
 
 
@@ -1596,5 +1629,44 @@ def get_analytics_repository() -> AnalyticsRepository:
 def get_analytics_service() -> AnalyticsService:
     """Dependency provider for AnalyticsService."""
     return _global_analytics_service
+
+
+# ---------------------------------------------------------------------------
+# Phase 29: Notification, Communication & Event Delivery System providers
+# ---------------------------------------------------------------------------
+
+def get_notification_repository() -> NotificationRepository:
+    """Dependency provider for NotificationRepository."""
+    return _global_notification_repo
+
+
+def get_notification_delivery_repository() -> NotificationDeliveryRepository:
+    """Dependency provider for NotificationDeliveryRepository."""
+    return _global_notification_delivery_repo
+
+
+def get_notification_preference_repository() -> NotificationPreferenceRepository:
+    """Dependency provider for NotificationPreferenceRepository."""
+    return _global_notification_preference_repo
+
+
+def get_notification_template_service() -> NotificationTemplateService:
+    """Dependency provider for NotificationTemplateService."""
+    return _global_notification_template_service
+
+
+def get_notification_preference_service() -> NotificationPreferenceService:
+    """Dependency provider for NotificationPreferenceService."""
+    return _global_notification_preference_service
+
+
+def get_communication_service() -> CommunicationService:
+    """Dependency provider for CommunicationService."""
+    return _global_communication_service
+
+
+def get_notification_service() -> NotificationService:
+    """Dependency provider for NotificationService."""
+    return _global_notification_service
 
 
