@@ -33,6 +33,7 @@ class SearchResourceType(str, Enum):
     FACILITY = "facility"
     CLINICIAN = "clinician"
     TRANSFER = "transfer"
+    APPOINTMENT = "appointment"
 
 
 class MatchType(str, Enum):

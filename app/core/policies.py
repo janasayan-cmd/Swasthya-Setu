@@ -216,6 +216,18 @@ class Permission(str, Enum):
     ADMIN_SEARCH_VIEW = "admin:search_view"
     ADMIN_SEARCH_MANAGE = "admin:search_manage"
 
+    # ---- Phase 31: Scheduling, Appointment & Clinical Access Management ----
+    APPOINTMENT_READ = "appointment:read"
+    APPOINTMENT_CREATE = "appointment:create"
+    APPOINTMENT_UPDATE = "appointment:update"
+    APPOINTMENT_CANCEL = "appointment:cancel"
+    APPOINTMENT_RESCHEDULE = "appointment:reschedule"
+    APPOINTMENT_CHECK_IN = "appointment:check_in"
+    AVAILABILITY_READ = "availability:read"
+    SCHEDULE_MANAGE = "schedule:manage"
+    ADMIN_SCHEDULING_VIEW = "admin:scheduling_view"
+    ADMIN_SCHEDULING_MANAGE = "admin:scheduling_manage"
+
 
 # ---------------------------------------------------------------------------
 # Role-to-Permission Mapping
@@ -301,6 +313,12 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.SEARCH_EXECUTE,
         Permission.SEARCH_FACILITY,
         Permission.SEARCH_ORGANIZATION,
+        # Phase 31: Scheduling & Appointments
+        Permission.APPOINTMENT_READ,
+        Permission.APPOINTMENT_CREATE,
+        Permission.APPOINTMENT_CANCEL,
+        Permission.APPOINTMENT_RESCHEDULE,
+        Permission.AVAILABILITY_READ,
     }),
     "DOCTOR": frozenset({
         Permission.PATIENT_READ_SELF,         # can read patient profile in context
@@ -404,6 +422,15 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.SEARCH_DOCUMENT,
         Permission.SEARCH_FACILITY,
         Permission.SEARCH_ORGANIZATION,
+        # Phase 31: Scheduling & Appointments
+        Permission.APPOINTMENT_READ,
+        Permission.APPOINTMENT_CREATE,
+        Permission.APPOINTMENT_UPDATE,
+        Permission.APPOINTMENT_CANCEL,
+        Permission.APPOINTMENT_RESCHEDULE,
+        Permission.APPOINTMENT_CHECK_IN,
+        Permission.AVAILABILITY_READ,
+        Permission.SCHEDULE_MANAGE,
     }),
     "ADMIN": frozenset({
         # Administrative capabilities ONLY — no automatic clinical data access
@@ -482,6 +509,12 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.SEARCH_ORGANIZATION,
         Permission.ADMIN_SEARCH_VIEW,
         Permission.ADMIN_SEARCH_MANAGE,
+        # Phase 31: Scheduling & Appointments
+        Permission.APPOINTMENT_READ,
+        Permission.AVAILABILITY_READ,
+        Permission.SCHEDULE_MANAGE,
+        Permission.ADMIN_SCHEDULING_VIEW,
+        Permission.ADMIN_SCHEDULING_MANAGE,
     }),
     "SYSTEM_ADMIN": frozenset({
         Permission.ADMIN_USER_MANAGE,
@@ -537,6 +570,17 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.SEARCH_ORGANIZATION,
         Permission.ADMIN_SEARCH_VIEW,
         Permission.ADMIN_SEARCH_MANAGE,
+        # Phase 31: Scheduling & Appointments
+        Permission.APPOINTMENT_READ,
+        Permission.APPOINTMENT_CREATE,
+        Permission.APPOINTMENT_UPDATE,
+        Permission.APPOINTMENT_CANCEL,
+        Permission.APPOINTMENT_RESCHEDULE,
+        Permission.APPOINTMENT_CHECK_IN,
+        Permission.AVAILABILITY_READ,
+        Permission.SCHEDULE_MANAGE,
+        Permission.ADMIN_SCHEDULING_VIEW,
+        Permission.ADMIN_SCHEDULING_MANAGE,
     }),
     "OPERATIONS_ADMIN": frozenset({
         Permission.ADMIN_SYSTEM_VIEW,
@@ -554,6 +598,9 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.ADMIN_ANALYTICS_VIEW,
         Permission.ORGANIZATION_ANALYTICS_VIEW,
         Permission.FACILITY_ANALYTICS_VIEW,
+        # Phase 31: Scheduling Admin
+        Permission.ADMIN_SCHEDULING_VIEW,
+        Permission.APPOINTMENT_READ,
     }),
     "SUPPORT_OPERATOR": frozenset({
         Permission.ADMIN_SYSTEM_VIEW,
@@ -569,6 +616,9 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.ADMIN_ANALYTICS_VIEW,
         # Phase 29: Notifications
         Permission.ADMIN_NOTIFICATION_VIEW,
+        # Phase 31: Scheduling Admin
+        Permission.ADMIN_SCHEDULING_VIEW,
+        Permission.APPOINTMENT_READ,
     }),
     "SECURITY_OPERATOR": frozenset({
         Permission.ADMIN_SYSTEM_VIEW,
@@ -734,6 +784,17 @@ ACTION_PERMISSION_MAP: dict[tuple[str, str], Permission] = {
     ("search", "organization"):          Permission.SEARCH_ORGANIZATION,
     ("search_admin", "view"):            Permission.ADMIN_SEARCH_VIEW,
     ("search_admin", "manage"):          Permission.ADMIN_SEARCH_MANAGE,
+    # Phase 31: Scheduling & Appointments
+    ("appointment", "read"):             Permission.APPOINTMENT_READ,
+    ("appointment", "create"):           Permission.APPOINTMENT_CREATE,
+    ("appointment", "update"):           Permission.APPOINTMENT_UPDATE,
+    ("appointment", "cancel"):           Permission.APPOINTMENT_CANCEL,
+    ("appointment", "reschedule"):       Permission.APPOINTMENT_RESCHEDULE,
+    ("appointment", "check_in"):         Permission.APPOINTMENT_CHECK_IN,
+    ("availability", "read"):            Permission.AVAILABILITY_READ,
+    ("schedule", "manage"):              Permission.SCHEDULE_MANAGE,
+    ("scheduling_admin", "view"):        Permission.ADMIN_SCHEDULING_VIEW,
+    ("scheduling_admin", "manage"):      Permission.ADMIN_SCHEDULING_MANAGE,
 }
 
 

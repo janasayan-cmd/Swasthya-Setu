@@ -17,6 +17,7 @@ from app.workers.tasks import (
     data_quality,
     notification,
     search,
+    scheduling,
 )
 from app.workers.worker import AsyncWorkerPool
 

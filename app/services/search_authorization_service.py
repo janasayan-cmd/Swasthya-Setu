@@ -66,6 +66,7 @@ class SearchAuthorizationService:
                 SearchResourceType.CLINICAL_NOTE,
                 SearchResourceType.ENCOUNTER,
                 SearchResourceType.TRANSFER,
+                SearchResourceType.APPOINTMENT,
             ])
             # Patient can NEVER do arbitrary patient search
             effective_patient_id = getattr(user, "patient_id", None)
@@ -93,6 +94,7 @@ class SearchAuthorizationService:
                 SearchResourceType.CLINICAL_NOTE,
                 SearchResourceType.CLINICIAN,
                 SearchResourceType.TRANSFER,
+                SearchResourceType.APPOINTMENT,
             ])
             effective_patient_id = patient_id_filter
             # Inject doctor's organizational scope if present in token/context
@@ -106,6 +108,7 @@ class SearchAuthorizationService:
                 SearchResourceType.FACILITY,
                 SearchResourceType.CLINICIAN,
                 SearchResourceType.TRANSFER,
+                SearchResourceType.APPOINTMENT,
             ])
             # Admins do NOT get unbridled clinical note or patient search without explicit permission
             if role_has_permission(role_str, Permission.SEARCH_PATIENT):

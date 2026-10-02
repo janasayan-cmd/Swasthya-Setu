@@ -749,6 +749,25 @@ class Settings(BaseSettings):
     SEARCH_EXTERNAL_PROVIDER_API_KEY: str = Field(default="", description="External search engine API key")
     SEARCH_EXTERNAL_PROVIDER_TIMEOUT_SECONDS: float = Field(default=5.0, description="External search engine timeout")
 
+    # Scheduling, Appointment & Clinical Access Management Configuration (Phase 31)
+    APPOINTMENTS_ENABLED: bool = Field(default=True, description="Enable appointment management subsystem")
+    AVAILABILITY_ENABLED: bool = Field(default=True, description="Enable availability and slot discovery")
+    APPOINTMENT_BOOKING_ENABLED: bool = Field(default=True, description="Enable new appointment booking")
+    APPOINTMENT_RESCHEDULING_ENABLED: bool = Field(default=True, description="Enable appointment rescheduling")
+    APPOINTMENT_CANCELLATION_ENABLED: bool = Field(default=True, description="Enable appointment cancellation")
+    APPOINTMENT_REMINDERS_ENABLED: bool = Field(default=True, description="Enable automated appointment reminders")
+    SCHEDULING_PROVIDER: str = Field(default="local", description="Authoritative scheduling provider ('local', 'external')")
+    SCHEDULING_PROVIDER_BASE_URL: str = Field(default="", description="Base URL for external scheduling provider API")
+    SCHEDULING_PROVIDER_API_KEY: str = Field(default="", description="API key or token for external scheduling provider")
+    SCHEDULING_PROVIDER_TIMEOUT_SECONDS: int = Field(default=15, description="Timeout ceiling for scheduling provider calls")
+    SCHEDULING_PROVIDER_MAX_RETRIES: int = Field(default=2, description="Max retries for transient provider communication failures")
+    APPOINTMENT_DEFAULT_DURATION_MINUTES: int = Field(default=30, description="Default slot duration in minutes")
+    APPOINTMENT_MAX_LOOKAHEAD_DAYS: int = Field(default=90, description="Maximum forward lookahead for slot discovery")
+    APPOINTMENT_MAX_PAGE_SIZE: int = Field(default=100, description="Maximum appointment pagination page size")
+    APPOINTMENT_RATE_LIMIT_ENABLED: bool = Field(default=True, description="Enable appointment rate limiting")
+    APPOINTMENT_BOOKING_IDEMPOTENCY_ENABLED: bool = Field(default=True, description="Enforce idempotency key handling on booking")
+    APPOINTMENT_REMINDER_ENABLED: bool = Field(default=True, description="Enable background reminder dispatch")
+
     @property
     def max_document_size_bytes(self) -> int:
         """Maximum allowed document upload size in bytes."""

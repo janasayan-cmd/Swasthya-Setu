@@ -426,6 +426,166 @@ TEMPLATES: Dict[NotificationType, Dict[str, TemplateDefinition]] = {
             required_variables=["message"],
         ),
     },
+    NotificationType.APPOINTMENT_CONFIRMED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Appointment Confirmed",
+            body_template="Your appointment at facility {facility_id} is scheduled for {start_time}.",
+            required_variables=["facility_id", "start_time"],
+        ),
+        "hi": TemplateDefinition(
+            version=1,
+            title_template="अपॉइंटमेंट की पुष्टि हो गई",
+            body_template="सुविधा {facility_id} पर आपका अपॉइंटमेंट {start_time} के लिए निर्धारित है।",
+            required_variables=["facility_id", "start_time"],
+        ),
+        "bn": TemplateDefinition(
+            version=1,
+            title_template="অ্যাপয়েন্টমেন্ট নিশ্চিত হয়েছে",
+            body_template="{facility_id} সুবিধায় আপনার অ্যাপয়েন্টমেন্ট {start_time} এর জন্য নির্ধারিত হয়েছে।",
+            required_variables=["facility_id", "start_time"],
+        ),
+    },
+    NotificationType.APPOINTMENT_CREATED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Appointment Request Created",
+            body_template="Your appointment at facility {facility_id} has been recorded.",
+            required_variables=["facility_id"],
+        ),
+        "hi": TemplateDefinition(
+            version=1,
+            title_template="अपॉइंटमेंट का अनुरोध दर्ज किया गया",
+            body_template="सुविधा {facility_id} पर आपका अपॉइंटमेंट दर्ज कर लिया गया है।",
+            required_variables=["facility_id"],
+        ),
+        "bn": TemplateDefinition(
+            version=1,
+            title_template="অ্যাপয়েন্টমেন্ট অনুরোধ তৈরি হয়েছে",
+            body_template="{facility_id} সুবিধায় আপনার অ্যাপয়েন্টমেন্ট রেকর্ড করা হয়েছে।",
+            required_variables=["facility_id"],
+        ),
+    },
+    NotificationType.APPOINTMENT_RESCHEDULED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Appointment Rescheduled",
+            body_template="Your appointment at facility {facility_id} has been rescheduled to {start_time}.",
+            required_variables=["facility_id", "start_time"],
+        ),
+        "hi": TemplateDefinition(
+            version=1,
+            title_template="अपॉइंटमेंट पुनर्निर्धारित किया गया",
+            body_template="सुविधा {facility_id} पर आपका अपॉइंटमेंट {start_time} के लिए पुनर्निर्धारित किया गया है।",
+            required_variables=["facility_id", "start_time"],
+        ),
+        "bn": TemplateDefinition(
+            version=1,
+            title_template="অ্যাপয়েন্টমেন্ট পুনর্নির্ধারণ করা হয়েছে",
+            body_template="{facility_id} সুবিধায় আপনার অ্যাপয়েন্টমেন্ট {start_time} এর জন্য পুনর্নির্ধারণ করা হয়েছে।",
+            required_variables=["facility_id", "start_time"],
+        ),
+    },
+    NotificationType.APPOINTMENT_CANCELLED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Appointment Cancelled",
+            body_template="Your appointment at facility {facility_id} has been cancelled.",
+            required_variables=["facility_id"],
+        ),
+        "hi": TemplateDefinition(
+            version=1,
+            title_template="अपॉइंटमेंट रद्द किया गया",
+            body_template="सुविधा {facility_id} पर आपका अपॉइंटमेंट रद्द कर दिया गया है।",
+            required_variables=["facility_id"],
+        ),
+        "bn": TemplateDefinition(
+            version=1,
+            title_template="অ্যাপয়েন্টমেন্ট বাতিল করা হয়েছে",
+            body_template="{facility_id} সুবিধায় আপনার অ্যাপয়েন্টমেন্ট বাতিল করা হয়েছে।",
+            required_variables=["facility_id"],
+        ),
+    },
+    NotificationType.APPOINTMENT_REMINDER: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Upcoming Appointment Reminder",
+            body_template="Reminder: You have an upcoming appointment at facility {facility_id} on {start_time}.",
+            required_variables=["facility_id", "start_time"],
+        ),
+        "hi": TemplateDefinition(
+            version=1,
+            title_template="आगामी अपॉइंटमेंट अनुस्मारक",
+            body_template="याद दिलाना: सुविधा {facility_id} पर {start_time} को आपका अपॉइंटमेंट है।",
+            required_variables=["facility_id", "start_time"],
+        ),
+        "bn": TemplateDefinition(
+            version=1,
+            title_template="আসন্ন অ্যাপয়েন্টমেন্ট স্মারক",
+            body_template="স্মারক: {facility_id} সুবিধায় {start_time} তারিখে আপনার একটি অ্যাপয়েন্টমেন্ট রয়েছে।",
+            required_variables=["facility_id", "start_time"],
+        ),
+    },
+    NotificationType.APPOINTMENT_CHECK_IN: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Appointment Check-In Confirmed",
+            body_template="You have been checked in for your appointment at {facility_id}.",
+            required_variables=["facility_id"],
+        ),
+        "hi": TemplateDefinition(
+            version=1,
+            title_template="अपॉइंटमेंट चेक-इन की पुष्टि हो गई",
+            body_template="सुविधा {facility_id} पर आपके अपॉइंटमेंट के लिए चेक-इन हो गया है।",
+            required_variables=["facility_id"],
+        ),
+        "bn": TemplateDefinition(
+            version=1,
+            title_template="অ্যাপয়েন্টমেন্ট চেক-ইন নিশ্চিত হয়েছে",
+            body_template="{facility_id} সুবিধায় আপনার অ্যাপয়েন্টমেন্টের জন্য চেক-ইন সম্পন্ন হয়েছে।",
+            required_variables=["facility_id"],
+        ),
+    },
+    NotificationType.APPOINTMENT_NO_SHOW: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Missed Appointment",
+            body_template="You missed your scheduled appointment at {facility_id}.",
+            required_variables=["facility_id"],
+        ),
+        "hi": TemplateDefinition(
+            version=1,
+            title_template="छूटा हुआ अपॉइंटमेंट",
+            body_template="सुविधा {facility_id} पर आपका निर्धारित अपॉइंटमेंट छूट गया।",
+            required_variables=["facility_id"],
+        ),
+        "bn": TemplateDefinition(
+            version=1,
+            title_template="অনুপস্থিত অ্যাপয়েন্টমেন্ট",
+            body_template="{facility_id} সুবিধায় আপনার নির্ধারিত অ্যাপয়েন্টমেন্টটি অনুপস্থিত ছিল।",
+            required_variables=["facility_id"],
+        ),
+    },
+    NotificationType.APPOINTMENT_STATUS_UPDATED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Appointment Status Update",
+            body_template="Your appointment status at {facility_id} is now {status}.",
+            required_variables=["facility_id", "status"],
+        ),
+        "hi": TemplateDefinition(
+            version=1,
+            title_template="अपॉइंटमेंट स्थिति अपडेट",
+            body_template="सुविधा {facility_id} पर आपकी अपॉइंटमेंट स्थिति अब {status} है।",
+            required_variables=["facility_id", "status"],
+        ),
+        "bn": TemplateDefinition(
+            version=1,
+            title_template="অ্যাপয়েন্টমেন্ট স্থিতি আপডেট",
+            body_template="{facility_id} সুবিধায় আপনার অ্যাপয়েন্টমেন্ট স্থিতি এখন {status}।",
+            required_variables=["facility_id", "status"],
+        ),
+    },
 }
 
 

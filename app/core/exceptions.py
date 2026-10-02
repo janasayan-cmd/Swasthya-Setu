@@ -265,6 +265,36 @@ class ErrorCode(str, Enum):
     SEARCH_FAILED = "SEARCH_FAILED"
     SEARCH_RESULT_NOT_FOUND = "SEARCH_RESULT_NOT_FOUND"
 
+    # Phase 31: Scheduling, Appointment & Clinical Access Management Error Codes
+    APPOINTMENT_NOT_FOUND = "APPOINTMENT_NOT_FOUND"
+    APPOINTMENT_NOT_AUTHORIZED = "APPOINTMENT_NOT_AUTHORIZED"
+    APPOINTMENT_ALREADY_CANCELLED = "APPOINTMENT_ALREADY_CANCELLED"
+    APPOINTMENT_ALREADY_COMPLETED = "APPOINTMENT_ALREADY_COMPLETED"
+    APPOINTMENT_INVALID_STATE = "APPOINTMENT_INVALID_STATE"
+    APPOINTMENT_SLOT_NOT_FOUND = "APPOINTMENT_SLOT_NOT_FOUND"
+    APPOINTMENT_SLOT_UNAVAILABLE = "APPOINTMENT_SLOT_UNAVAILABLE"
+    APPOINTMENT_DOUBLE_BOOKING = "APPOINTMENT_DOUBLE_BOOKING"
+    APPOINTMENT_BOOKING_CONFLICT = "APPOINTMENT_BOOKING_CONFLICT"
+    APPOINTMENT_BOOKING_FAILED = "APPOINTMENT_BOOKING_FAILED"
+    APPOINTMENT_BOOKING_UNKNOWN = "APPOINTMENT_BOOKING_UNKNOWN"
+    APPOINTMENT_RESCHEDULE_FAILED = "APPOINTMENT_RESCHEDULE_FAILED"
+    APPOINTMENT_CANCELLATION_FAILED = "APPOINTMENT_CANCELLATION_FAILED"
+    INVALID_APPOINTMENT_TYPE = "INVALID_APPOINTMENT_TYPE"
+    INVALID_APPOINTMENT_TIME = "INVALID_APPOINTMENT_TIME"
+    INVALID_TIMEZONE = "INVALID_TIMEZONE"
+    INVALID_SCHEDULE = "INVALID_SCHEDULE"
+    AVAILABILITY_NOT_FOUND = "AVAILABILITY_NOT_FOUND"
+    AVAILABILITY_UNAVAILABLE = "AVAILABILITY_UNAVAILABLE"
+    CLINICIAN_NOT_SCHEDULABLE = "CLINICIAN_NOT_SCHEDULABLE"
+    FACILITY_NOT_SCHEDULABLE = "FACILITY_NOT_SCHEDULABLE"
+    APPOINTMENT_CONSENT_REQUIRED = "APPOINTMENT_CONSENT_REQUIRED"
+    SCHEDULING_PROVIDER_UNAVAILABLE = "SCHEDULING_PROVIDER_UNAVAILABLE"
+    SCHEDULING_PROVIDER_TIMEOUT = "SCHEDULING_PROVIDER_TIMEOUT"
+    SCHEDULING_PROVIDER_AUTHENTICATION_FAILED = "SCHEDULING_PROVIDER_AUTHENTICATION_FAILED"
+    SCHEDULING_PROVIDER_CONFLICT = "SCHEDULING_PROVIDER_CONFLICT"
+    SCHEDULING_PROVIDER_UNKNOWN_RESULT = "SCHEDULING_PROVIDER_UNKNOWN_RESULT"
+    APPOINTMENTS_DISABLED = "APPOINTMENTS_DISABLED"
+
 
 class AppException(Exception):
     """Base application exception for all domain and operational errors."""
@@ -2185,6 +2215,331 @@ SearchProviderTimeoutError = SearchProviderTimeoutException
 SearchIndexUnavailableError = SearchIndexUnavailableException
 SearchIndexStaleError = SearchIndexStaleException
 AmbiguousPatientMatchError = AmbiguousPatientMatchException
+
+
+# Phase 31: Scheduling, Appointment & Clinical Access Management Exceptions
+class AppointmentsDisabledException(AppException):
+    """Appointments and scheduling subsystem is administratively disabled (HTTP 503)."""
+
+    def __init__(self, message: str = "Appointment and scheduling services are currently disabled.") -> None:
+        super().__init__(
+            code=ErrorCode.APPOINTMENTS_DISABLED,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+
+class AppointmentNotFoundException(NotFoundException):
+    """Appointment resource not found (HTTP 404)."""
+
+    def __init__(self, message: str = "Appointment record not found.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.APPOINTMENT_NOT_FOUND.value
+
+
+class AppointmentNotAuthorizedException(ForbiddenException):
+    """Caller lacks authorization to access or modify this appointment (HTTP 403)."""
+
+    def __init__(self, message: str = "Not authorized to access or modify this appointment.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.APPOINTMENT_NOT_AUTHORIZED.value
+
+
+class AppointmentAlreadyCancelledException(AppException):
+    """Appointment has already been cancelled and cannot be acted upon (HTTP 409)."""
+
+    def __init__(self, message: str = "Appointment is already cancelled.") -> None:
+        super().__init__(
+            code=ErrorCode.APPOINTMENT_ALREADY_CANCELLED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+
+class AppointmentAlreadyCompletedException(AppException):
+    """Appointment has already been completed and cannot be modified (HTTP 409)."""
+
+    def __init__(self, message: str = "Appointment has already been completed.") -> None:
+        super().__init__(
+            code=ErrorCode.APPOINTMENT_ALREADY_COMPLETED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+
+class AppointmentInvalidStateException(AppException):
+    """Requested transition is not permitted from current appointment state (HTTP 409)."""
+
+    def __init__(self, message: str = "Invalid appointment state transition.") -> None:
+        super().__init__(
+            code=ErrorCode.APPOINTMENT_INVALID_STATE,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+
+class AppointmentSlotNotFoundException(NotFoundException):
+    """Requested appointment slot not found (HTTP 404)."""
+
+    def __init__(self, message: str = "Appointment slot not found.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.APPOINTMENT_SLOT_NOT_FOUND.value
+
+
+class AppointmentSlotUnavailableException(AppException):
+    """Selected slot is no longer available or already booked (HTTP 409)."""
+
+    def __init__(self, message: str = "The selected appointment slot is no longer available.") -> None:
+        super().__init__(
+            code=ErrorCode.APPOINTMENT_SLOT_UNAVAILABLE,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+
+class AppointmentDoubleBookingException(AppException):
+    """Attempted double booking on a reserved resource or slot (HTTP 409)."""
+
+    def __init__(self, message: str = "Slot is already reserved or booked.") -> None:
+        super().__init__(
+            code=ErrorCode.APPOINTMENT_DOUBLE_BOOKING,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+
+class AppointmentBookingConflictException(AppException):
+    """Concurrent booking conflict detected (HTTP 409)."""
+
+    def __init__(self, message: str = "Appointment booking conflict detected. Please select another slot.") -> None:
+        super().__init__(
+            code=ErrorCode.APPOINTMENT_BOOKING_CONFLICT,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+
+class AppointmentBookingFailedException(AppException):
+    """Appointment booking could not be completed (HTTP 422)."""
+
+    def __init__(self, message: str = "Appointment booking failed.") -> None:
+        super().__init__(
+            code=ErrorCode.APPOINTMENT_BOOKING_FAILED,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )
+
+
+class AppointmentBookingUnknownException(AppException):
+    """Appointment booking outcome is ambiguous or unverified (HTTP 502)."""
+
+    def __init__(self, message: str = "Appointment booking status is indeterminate; pending reconciliation.") -> None:
+        super().__init__(
+            code=ErrorCode.APPOINTMENT_BOOKING_UNKNOWN,
+            message=message,
+            status_code=status.HTTP_502_BAD_GATEWAY,
+        )
+
+
+class AppointmentRescheduleFailedException(AppException):
+    """Rescheduling failed due to policy or slot constraints (HTTP 409)."""
+
+    def __init__(self, message: str = "Failed to reschedule appointment.") -> None:
+        super().__init__(
+            code=ErrorCode.APPOINTMENT_RESCHEDULE_FAILED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+
+class AppointmentCancellationFailedException(AppException):
+    """Cancellation failed due to state or policy constraints (HTTP 409)."""
+
+    def __init__(self, message: str = "Failed to cancel appointment.") -> None:
+        super().__init__(
+            code=ErrorCode.APPOINTMENT_CANCELLATION_FAILED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+
+class InvalidAppointmentTypeException(AppException):
+    """Appointment type is invalid or not configured (HTTP 400)."""
+
+    def __init__(self, message: str = "Invalid or unsupported appointment type.") -> None:
+        super().__init__(
+            code=ErrorCode.INVALID_APPOINTMENT_TYPE,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class InvalidAppointmentTimeException(AppException):
+    """Appointment start or end time is invalid or violates booking window (HTTP 400)."""
+
+    def __init__(self, message: str = "Invalid appointment timeframe.") -> None:
+        super().__init__(
+            code=ErrorCode.INVALID_APPOINTMENT_TIME,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class InvalidTimezoneException(AppException):
+    """Supplied timezone string is unrecognized or invalid (HTTP 400)."""
+
+    def __init__(self, message: str = "Invalid or unsupported timezone identifier.") -> None:
+        super().__init__(
+            code=ErrorCode.INVALID_TIMEZONE,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class InvalidScheduleException(AppException):
+    """Schedule configuration is malformed or invalid (HTTP 400)."""
+
+    def __init__(self, message: str = "Invalid schedule configuration.") -> None:
+        super().__init__(
+            code=ErrorCode.INVALID_SCHEDULE,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class AvailabilityNotFoundException(NotFoundException):
+    """No availability found for requested criteria (HTTP 404)."""
+
+    def __init__(self, message: str = "No availability found for requested query.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.AVAILABILITY_NOT_FOUND.value
+
+
+class AvailabilityUnavailableException(AppException):
+    """Availability schedule service is temporarily unavailable (HTTP 503)."""
+
+    def __init__(self, message: str = "Availability service is temporarily unavailable.") -> None:
+        super().__init__(
+            code=ErrorCode.AVAILABILITY_UNAVAILABLE,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+
+class ClinicianNotSchedulableException(AppException):
+    """Clinician is inactive or not configured for scheduling (HTTP 422)."""
+
+    def __init__(self, message: str = "Clinician is not available for scheduling.") -> None:
+        super().__init__(
+            code=ErrorCode.CLINICIAN_NOT_SCHEDULABLE,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )
+
+
+class FacilityNotSchedulableException(AppException):
+    """Facility is inactive or not configured for scheduling (HTTP 422)."""
+
+    def __init__(self, message: str = "Facility is not available for scheduling.") -> None:
+        super().__init__(
+            code=ErrorCode.FACILITY_NOT_SCHEDULABLE,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )
+
+
+class AppointmentConsentRequiredException(ForbiddenException):
+    """Patient consent is required before accessing or booking appointment (HTTP 403)."""
+
+    def __init__(self, message: str = "Patient consent is required for this appointment action.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.APPOINTMENT_CONSENT_REQUIRED.value
+
+
+class SchedulingProviderUnavailableException(AppException):
+    """External scheduling provider is unavailable (HTTP 503)."""
+
+    def __init__(self, message: str = "Scheduling provider is temporarily unavailable.") -> None:
+        super().__init__(
+            code=ErrorCode.SCHEDULING_PROVIDER_UNAVAILABLE,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+
+class SchedulingProviderTimeoutException(AppException):
+    """Scheduling provider operation timed out (HTTP 504)."""
+
+    def __init__(self, message: str = "Scheduling provider timed out.") -> None:
+        super().__init__(
+            code=ErrorCode.SCHEDULING_PROVIDER_TIMEOUT,
+            message=message,
+            status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+        )
+
+
+class SchedulingProviderAuthenticationFailedException(AppException):
+    """Authentication with external scheduling provider failed (HTTP 502)."""
+
+    def __init__(self, message: str = "External scheduling provider authentication failed.") -> None:
+        super().__init__(
+            code=ErrorCode.SCHEDULING_PROVIDER_AUTHENTICATION_FAILED,
+            message=message,
+            status_code=status.HTTP_502_BAD_GATEWAY,
+        )
+
+
+class SchedulingProviderConflictException(AppException):
+    """External provider detected scheduling conflict (HTTP 409)."""
+
+    def __init__(self, message: str = "Scheduling provider rejected request due to conflict.") -> None:
+        super().__init__(
+            code=ErrorCode.SCHEDULING_PROVIDER_CONFLICT,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+
+class SchedulingProviderUnknownResultException(AppException):
+    """External provider returned ambiguous or unverified result (HTTP 502)."""
+
+    def __init__(self, message: str = "Scheduling provider returned unknown or ambiguous outcome.") -> None:
+        super().__init__(
+            code=ErrorCode.SCHEDULING_PROVIDER_UNKNOWN_RESULT,
+            message=message,
+            status_code=status.HTTP_502_BAD_GATEWAY,
+        )
+
+
+# Phase 31 Error aliases
+AppointmentsDisabledError = AppointmentsDisabledException
+AppointmentNotFoundError = AppointmentNotFoundException
+AppointmentNotAuthorizedError = AppointmentNotAuthorizedException
+AppointmentAlreadyCancelledError = AppointmentAlreadyCancelledException
+AppointmentAlreadyCompletedError = AppointmentAlreadyCompletedException
+AppointmentInvalidStateError = AppointmentInvalidStateException
+AppointmentSlotNotFoundError = AppointmentSlotNotFoundException
+AppointmentSlotUnavailableError = AppointmentSlotUnavailableException
+AppointmentDoubleBookingError = AppointmentDoubleBookingException
+AppointmentBookingConflictError = AppointmentBookingConflictException
+AppointmentBookingFailedError = AppointmentBookingFailedException
+AppointmentBookingUnknownError = AppointmentBookingUnknownException
+AppointmentRescheduleFailedError = AppointmentRescheduleFailedException
+AppointmentCancellationFailedError = AppointmentCancellationFailedException
+InvalidAppointmentTypeError = InvalidAppointmentTypeException
+InvalidAppointmentTimeError = InvalidAppointmentTimeException
+InvalidTimezoneError = InvalidTimezoneException
+InvalidScheduleError = InvalidScheduleException
+AvailabilityNotFoundError = AvailabilityNotFoundException
+AvailabilityUnavailableError = AvailabilityUnavailableException
+ClinicianNotSchedulableError = ClinicianNotSchedulableException
+FacilityNotSchedulableError = FacilityNotSchedulableException
+AppointmentConsentRequiredError = AppointmentConsentRequiredException
+SchedulingProviderUnavailableError = SchedulingProviderUnavailableException
+SchedulingProviderTimeoutError = SchedulingProviderTimeoutException
+SchedulingProviderAuthenticationFailedError = SchedulingProviderAuthenticationFailedException
+SchedulingProviderConflictError = SchedulingProviderConflictException
+SchedulingProviderUnknownResultError = SchedulingProviderUnknownResultException
 
 
 def _get_request_id(request: Request) -> str:

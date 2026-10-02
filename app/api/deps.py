@@ -182,6 +182,18 @@ from app.services.search_authorization_service import SearchAuthorizationService
 from app.services.search_result_service import SearchResultService
 from app.services.search_service import SearchService
 
+# Phase 31: Scheduling, Appointment & Clinical Access Management imports
+from app.repositories.appointment_repository import AppointmentRepository
+from app.repositories.availability_repository import AvailabilityRepository
+from app.repositories.schedule_repository import ScheduleRepository
+from app.integrations.scheduling.base import SchedulingProvider
+from app.integrations.scheduling.local import LocalSchedulingProvider
+from app.services.appointment_validation_service import AppointmentValidationService
+from app.services.appointment_authorization_service import AppointmentAuthorizationService
+from app.services.availability_service import AvailabilityService
+from app.services.appointment_service import AppointmentService
+from app.services.scheduling_service import SchedulingService
+
 # ---------------------------------------------------------------------------
 # HTTP Bearer scheme
 # ---------------------------------------------------------------------------
@@ -416,6 +428,13 @@ _global_notification_service = NotificationService(
 )
 
 # ---------------------------------------------------------------------------
+# Phase 31: Scheduling, Appointment & Clinical Access Management singletons
+# ---------------------------------------------------------------------------
+_global_appointment_repo = AppointmentRepository()
+_global_availability_repo = AvailabilityRepository()
+_global_schedule_repo = ScheduleRepository()
+
+# ---------------------------------------------------------------------------
 # Phase 30: Authorized Search, Indexing & Clinical Resource Retrieval singletons
 # ---------------------------------------------------------------------------
 _global_search_repo = SearchRepository()
@@ -432,6 +451,7 @@ _global_search_provider = PostgresSearchProvider(
     facility_repo=_global_facility_repo,
     transfer_repo=_global_transfer_repo,
     search_repo=_global_search_repo,
+    appointment_repo=_global_appointment_repo,
 )
 _global_search_normalization_service = SearchNormalizationService()
 _global_search_authorization_service = SearchAuthorizationService(patient_repo=_global_patient_repo)
@@ -442,6 +462,32 @@ _global_search_service = SearchService(
     authorization_service=_global_search_authorization_service,
     result_service=_global_search_result_service,
     audit_service=_global_audit_service,
+)
+
+_global_scheduling_provider = LocalSchedulingProvider(
+    appointment_repo=_global_appointment_repo,
+    availability_repo=_global_availability_repo,
+)
+_global_appointment_validation_service = AppointmentValidationService()
+_global_appointment_authorization_service = AppointmentAuthorizationService(patient_repo=_global_patient_repo)
+_global_availability_service = AvailabilityService(
+    provider=_global_scheduling_provider,
+    validation_service=_global_appointment_validation_service,
+    audit_service=_global_audit_service,
+)
+_global_appointment_service = AppointmentService(
+    provider=_global_scheduling_provider,
+    appointment_repo=_global_appointment_repo,
+    validation_service=_global_appointment_validation_service,
+    auth_service=_global_appointment_authorization_service,
+    notification_service=_global_notification_service,
+    audit_service=_global_audit_service,
+    analytics_service=_global_analytics_service,
+)
+_global_scheduling_service = SchedulingService(
+    schedule_repo=_global_schedule_repo,
+    availability_repo=_global_availability_repo,
+    provider=_global_scheduling_provider,
 )
 
 
@@ -1719,5 +1765,54 @@ def get_search_repository() -> SearchRepository:
 def get_search_service() -> SearchService:
     """Dependency provider for SearchService."""
     return _global_search_service
+
+
+# ---------------------------------------------------------------------------
+# Phase 31: Scheduling, Appointment & Clinical Access Management providers
+# ---------------------------------------------------------------------------
+
+def get_appointment_repository() -> AppointmentRepository:
+    """Dependency provider for AppointmentRepository."""
+    return _global_appointment_repo
+
+
+def get_availability_repository() -> AvailabilityRepository:
+    """Dependency provider for AvailabilityRepository."""
+    return _global_availability_repo
+
+
+def get_schedule_repository() -> ScheduleRepository:
+    """Dependency provider for ScheduleRepository."""
+    return _global_schedule_repo
+
+
+def get_scheduling_provider() -> SchedulingProvider:
+    """Dependency provider for SchedulingProvider."""
+    return _global_scheduling_provider
+
+
+def get_appointment_validation_service() -> AppointmentValidationService:
+    """Dependency provider for AppointmentValidationService."""
+    return _global_appointment_validation_service
+
+
+def get_appointment_authorization_service() -> AppointmentAuthorizationService:
+    """Dependency provider for AppointmentAuthorizationService."""
+    return _global_appointment_authorization_service
+
+
+def get_availability_service() -> AvailabilityService:
+    """Dependency provider for AvailabilityService."""
+    return _global_availability_service
+
+
+def get_appointment_service() -> AppointmentService:
+    """Dependency provider for AppointmentService."""
+    return _global_appointment_service
+
+
+def get_scheduling_service() -> SchedulingService:
+    """Dependency provider for SchedulingService."""
+    return _global_scheduling_service
 
 

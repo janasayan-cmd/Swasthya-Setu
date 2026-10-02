@@ -54,6 +54,7 @@ class PostgresSearchProvider(SearchProvider):
         facility_repo: FacilityRepository,
         transfer_repo: TransferRepository,
         search_repo: SearchRepository,
+        appointment_repo: Optional[Any] = None,
     ) -> None:
         self.patient_repo = patient_repo
         self.document_repo = document_repo
@@ -67,6 +68,7 @@ class PostgresSearchProvider(SearchProvider):
         self.facility_repo = facility_repo
         self.transfer_repo = transfer_repo
         self.search_repo = search_repo
+        self.appointment_repo = appointment_repo
 
     @property
     def provider_name(self) -> str:
@@ -469,6 +471,44 @@ class PostgresSearchProvider(SearchProvider):
                             status=str(tr.status.value if hasattr(tr.status, "value") else tr.status),
                             relevance_score=score,
                             provenance=SearchResultProvenance(source="healthsetu"),
+                        )
+                    )
+
+        elif resource_type == SearchResourceType.APPOINTMENT:
+            appts = getattr(self.appointment_repo, "_appointments", {}) if self.appointment_repo else {}
+            for a_id, appt in appts.items():
+                if actor_patient_id and appt.patient_id != actor_patient_id:
+                    continue
+                if actor_facility_id and appt.facility_id != actor_facility_id:
+                    continue
+                m_type = None
+                score = 0.5
+                app_type_val = appt.appointment_type.value if hasattr(appt.appointment_type, "value") else str(appt.appointment_type)
+                app_status_val = appt.status.value if hasattr(appt.status, "value") else str(appt.status)
+                if a_id.lower() == q:
+                    m_type = MatchType.IDENTIFIER
+                    score = 1.0
+                elif app_type_val.lower().startswith(q):
+                    m_type = MatchType.PREFIX
+                    score = 0.8
+                elif q in app_type_val.lower() or (appt.reason and q in appt.reason.lower()):
+                    m_type = MatchType.CONTAINS
+                    score = 0.6
+
+                if m_type:
+                    items.append(
+                        SearchResultItem(
+                            resource_type=SearchResourceType.APPOINTMENT,
+                            resource_id=a_id,
+                            display=f"Appointment {app_type_val} ({app_status_val})",
+                            match_type=m_type,
+                            source="healthsetu",
+                            status=app_status_val,
+                            relevance_score=score,
+                            provenance=SearchResultProvenance(
+                                source="healthsetu",
+                                source_organization_id=appt.organization_id,
+                            ),
                         )
                     )
 
