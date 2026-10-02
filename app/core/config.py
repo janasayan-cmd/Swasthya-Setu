@@ -730,6 +730,25 @@ class Settings(BaseSettings):
     NOTIFICATION_RATE_LIMIT_PER_MINUTE: int = Field(default=30, description="Per-recipient rate limit per minute")
     NOTIFICATION_RETENTION_DAYS: int = Field(default=90, description="Notification history retention in days")
 
+    # Phase 30: Authorized Search, Indexing & Clinical Resource Retrieval
+    SEARCH_ENABLED: bool = Field(default=True, description="Enable global search service")
+    SEARCH_PROVIDER: str = Field(default="postgres", description="Active search provider adapter (postgres/mock/external)")
+    SEARCH_DEFAULT_PAGE_SIZE: int = Field(default=20, ge=1, le=100, description="Default pagination size for search queries")
+    SEARCH_MAX_PAGE_SIZE: int = Field(default=100, ge=1, le=200, description="Maximum allowable page size for search queries")
+    SEARCH_MIN_QUERY_LENGTH: int = Field(default=2, ge=1, description="Minimum search query character length")
+    SEARCH_MAX_QUERY_LENGTH: int = Field(default=200, le=1000, description="Maximum search query character length")
+    SEARCH_TIMEOUT_SECONDS: float = Field(default=5.0, description="Search execution timeout ceiling in seconds")
+    SEARCH_RATE_LIMIT_ENABLED: bool = Field(default=True, description="Enable dedicated search rate limiting")
+    SEARCH_RATE_LIMIT_PER_MINUTE: int = Field(default=60, description="Search requests limit per minute per user")
+    SEARCH_INDEXING_ENABLED: bool = Field(default=True, description="Enable background search index synchronization")
+    SEARCH_INDEX_ASYNC_ENABLED: bool = Field(default=True, description="Enable asynchronous index synchronization jobs")
+    SEARCH_INDEX_MAX_RETRIES: int = Field(default=3, description="Maximum retry count for indexing tasks")
+    SEARCH_CACHE_ENABLED: bool = Field(default=False, description="Enable low-risk query result caching")
+    SEARCH_CACHE_TTL_SECONDS: int = Field(default=300, description="Cache TTL for low-risk non-sensitive search results")
+    SEARCH_EXTERNAL_PROVIDER_BASE_URL: str = Field(default="", description="External search engine base URL")
+    SEARCH_EXTERNAL_PROVIDER_API_KEY: str = Field(default="", description="External search engine API key")
+    SEARCH_EXTERNAL_PROVIDER_TIMEOUT_SECONDS: float = Field(default=5.0, description="External search engine timeout")
+
     @property
     def max_document_size_bytes(self) -> int:
         """Maximum allowed document upload size in bytes."""

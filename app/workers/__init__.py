@@ -16,6 +16,7 @@ from app.workers.tasks import (
     deidentification,
     data_quality,
     notification,
+    search,
 )
 from app.workers.worker import AsyncWorkerPool
 

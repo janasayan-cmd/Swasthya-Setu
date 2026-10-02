@@ -206,6 +206,16 @@ class Permission(str, Enum):
     ADMIN_NOTIFICATION_MANAGE = "admin:notification_manage"
     ADMIN_NOTIFICATION_PROVIDER_TEST = "admin:notification_provider_test"
 
+    # ---- Phase 30: Authorized Search, Indexing & Clinical Resource Retrieval ----
+    SEARCH_EXECUTE = "search:execute"
+    SEARCH_PATIENT = "search:patient"
+    SEARCH_CLINICAL = "search:clinical"
+    SEARCH_DOCUMENT = "search:document"
+    SEARCH_FACILITY = "search:facility"
+    SEARCH_ORGANIZATION = "search:organization"
+    ADMIN_SEARCH_VIEW = "admin:search_view"
+    ADMIN_SEARCH_MANAGE = "admin:search_manage"
+
 
 # ---------------------------------------------------------------------------
 # Role-to-Permission Mapping
@@ -287,6 +297,10 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.NOTIFICATION_DISMISS,
         Permission.NOTIFICATION_PREFERENCE_READ,
         Permission.NOTIFICATION_PREFERENCE_MANAGE,
+        # Phase 30: Authorized Search
+        Permission.SEARCH_EXECUTE,
+        Permission.SEARCH_FACILITY,
+        Permission.SEARCH_ORGANIZATION,
     }),
     "DOCTOR": frozenset({
         Permission.PATIENT_READ_SELF,         # can read patient profile in context
@@ -383,6 +397,13 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.NOTIFICATION_CREATE,
         Permission.NOTIFICATION_PREFERENCE_READ,
         Permission.NOTIFICATION_PREFERENCE_MANAGE,
+        # Phase 30: Authorized Search
+        Permission.SEARCH_EXECUTE,
+        Permission.SEARCH_PATIENT,
+        Permission.SEARCH_CLINICAL,
+        Permission.SEARCH_DOCUMENT,
+        Permission.SEARCH_FACILITY,
+        Permission.SEARCH_ORGANIZATION,
     }),
     "ADMIN": frozenset({
         # Administrative capabilities ONLY — no automatic clinical data access
@@ -455,6 +476,12 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.ADMIN_NOTIFICATION_VIEW,
         Permission.ADMIN_NOTIFICATION_MANAGE,
         Permission.ADMIN_NOTIFICATION_PROVIDER_TEST,
+        # Phase 30: Authorized Search & Admin Operations
+        Permission.SEARCH_EXECUTE,
+        Permission.SEARCH_FACILITY,
+        Permission.SEARCH_ORGANIZATION,
+        Permission.ADMIN_SEARCH_VIEW,
+        Permission.ADMIN_SEARCH_MANAGE,
     }),
     "SYSTEM_ADMIN": frozenset({
         Permission.ADMIN_USER_MANAGE,
@@ -504,6 +531,12 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.ADMIN_NOTIFICATION_VIEW,
         Permission.ADMIN_NOTIFICATION_MANAGE,
         Permission.ADMIN_NOTIFICATION_PROVIDER_TEST,
+        # Phase 30: Authorized Search & Admin Operations
+        Permission.SEARCH_EXECUTE,
+        Permission.SEARCH_FACILITY,
+        Permission.SEARCH_ORGANIZATION,
+        Permission.ADMIN_SEARCH_VIEW,
+        Permission.ADMIN_SEARCH_MANAGE,
     }),
     "OPERATIONS_ADMIN": frozenset({
         Permission.ADMIN_SYSTEM_VIEW,
@@ -692,6 +725,15 @@ ACTION_PERMISSION_MAP: dict[tuple[str, str], Permission] = {
     ("reconciliation", "read"):          Permission.RECONCILIATION_READ,
     ("reconciliation", "execute"):       Permission.RECONCILIATION_EXECUTE,
     ("reconciliation", "resolve"):       Permission.RECONCILIATION_RESOLVE,
+    # Phase 30: Authorized Search
+    ("search", "execute"):               Permission.SEARCH_EXECUTE,
+    ("search", "patient"):               Permission.SEARCH_PATIENT,
+    ("search", "clinical"):              Permission.SEARCH_CLINICAL,
+    ("search", "document"):              Permission.SEARCH_DOCUMENT,
+    ("search", "facility"):              Permission.SEARCH_FACILITY,
+    ("search", "organization"):          Permission.SEARCH_ORGANIZATION,
+    ("search_admin", "view"):            Permission.ADMIN_SEARCH_VIEW,
+    ("search_admin", "manage"):          Permission.ADMIN_SEARCH_MANAGE,
 }
 
 

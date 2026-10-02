@@ -241,8 +241,29 @@ class ErrorCode(str, Enum):
     PROVIDER_UNAVAILABLE = "PROVIDER_UNAVAILABLE"
     NOTIFICATION_RATE_LIMIT_EXCEEDED = "NOTIFICATION_RATE_LIMIT_EXCEEDED"
     DUPLICATE_NOTIFICATION = "DUPLICATE_NOTIFICATION"
-    UNAUTHORIZED_CLINICAL_CONTENT = "UNAUTHORIZED_CLINICAL_CONTENT"
     DELIVERY_NOT_FOUND = "DELIVERY_NOT_FOUND"
+    UNAUTHORIZED_CLINICAL_CONTENT = "UNAUTHORIZED_CLINICAL_CONTENT"
+
+    # Phase 30: Authorized Search, Indexing & Clinical Resource Retrieval
+    SEARCH_DISABLED = "SEARCH_DISABLED"
+    INVALID_SEARCH_QUERY = "INVALID_SEARCH_QUERY"
+    SEARCH_QUERY_TOO_LONG = "SEARCH_QUERY_TOO_LONG"
+    SEARCH_QUERY_TOO_SHORT = "SEARCH_QUERY_TOO_SHORT"
+    UNSUPPORTED_SEARCH_RESOURCE_TYPE = "UNSUPPORTED_SEARCH_RESOURCE_TYPE"
+    UNSUPPORTED_SEARCH_FILTER = "UNSUPPORTED_SEARCH_FILTER"
+    UNSUPPORTED_SORT_FIELD = "UNSUPPORTED_SORT_FIELD"
+    INVALID_DATE_RANGE = "INVALID_DATE_RANGE"
+    INVALID_PAGINATION = "INVALID_PAGINATION"
+    SEARCH_NOT_AUTHORIZED = "SEARCH_NOT_AUTHORIZED"
+    PATIENT_SEARCH_NOT_AUTHORIZED = "PATIENT_SEARCH_NOT_AUTHORIZED"
+    RESOURCE_SEARCH_NOT_AUTHORIZED = "RESOURCE_SEARCH_NOT_AUTHORIZED"
+    SEARCH_PROVIDER_UNAVAILABLE = "SEARCH_PROVIDER_UNAVAILABLE"
+    SEARCH_PROVIDER_TIMEOUT = "SEARCH_PROVIDER_TIMEOUT"
+    SEARCH_INDEX_UNAVAILABLE = "SEARCH_INDEX_UNAVAILABLE"
+    SEARCH_INDEX_STALE = "SEARCH_INDEX_STALE"
+    SEARCH_TIMEOUT = "SEARCH_TIMEOUT"
+    SEARCH_FAILED = "SEARCH_FAILED"
+    SEARCH_RESULT_NOT_FOUND = "SEARCH_RESULT_NOT_FOUND"
 
 
 class AppException(Exception):
@@ -1989,6 +2010,181 @@ class DeliveryNotFoundException(NotFoundException):
             details={"delivery_id": delivery_id},
         )
         self.code = ErrorCode.DELIVERY_NOT_FOUND.value
+
+
+# ---------------------------------------------------------------------------
+# Phase 30: Authorized Search, Indexing & Retrieval Exceptions
+# ---------------------------------------------------------------------------
+
+
+class SearchDisabledException(AppException):
+    """Search functionality is globally disabled (HTTP 503)."""
+
+    def __init__(self, message: str = "Search service is currently disabled.") -> None:
+        super().__init__(
+            code=ErrorCode.SEARCH_DISABLED,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+
+class InvalidSearchQueryException(AppException):
+    """Search query contains disallowed operators, injection patterns, or malformed syntax (HTTP 400)."""
+
+    def __init__(self, message: str = "Invalid search query syntax.") -> None:
+        super().__init__(
+            code=ErrorCode.INVALID_SEARCH_QUERY,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class SearchQueryTooLongException(AppException):
+    """Search query exceeds configured maximum length (HTTP 400)."""
+
+    def __init__(self, max_length: int) -> None:
+        super().__init__(
+            code=ErrorCode.SEARCH_QUERY_TOO_LONG,
+            message=f"Search query exceeds maximum length of {max_length} characters.",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details={"max_length": max_length},
+        )
+
+
+class SearchQueryTooShortException(AppException):
+    """Search query is shorter than required minimum length (HTTP 400)."""
+
+    def __init__(self, min_length: int) -> None:
+        super().__init__(
+            code=ErrorCode.SEARCH_QUERY_TOO_SHORT,
+            message=f"Search query must be at least {min_length} characters.",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details={"min_length": min_length},
+        )
+
+
+class UnsupportedResourceTypeException(AppException):
+    """Requested search resource type is not supported (HTTP 400)."""
+
+    def __init__(self, resource_type: str) -> None:
+        super().__init__(
+            code=ErrorCode.UNSUPPORTED_RESOURCE_TYPE,
+            message=f"Resource type '{resource_type}' is not supported for search.",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details={"resource_type": resource_type},
+        )
+
+
+class UnsupportedSearchFilterException(AppException):
+    """Filter field is unsupported or not allowlisted (HTTP 400)."""
+
+    def __init__(self, filter_name: str) -> None:
+        super().__init__(
+            code=ErrorCode.UNSUPPORTED_SEARCH_FILTER,
+            message=f"Filter field '{filter_name}' is not supported.",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details={"filter_name": filter_name},
+        )
+
+
+class UnsupportedSortFieldException(AppException):
+    """Sort field is not allowlisted (HTTP 400)."""
+
+    def __init__(self, sort_field: str) -> None:
+        super().__init__(
+            code=ErrorCode.UNSUPPORTED_SORT_FIELD,
+            message=f"Sort field '{sort_field}' is not supported.",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details={"sort_field": sort_field},
+        )
+
+
+class SearchNotAuthorizedException(ForbiddenException):
+    """Caller lacks required permission or scope to execute search (HTTP 403)."""
+
+    def __init__(self, message: str = "Search not authorized for this caller.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.SEARCH_NOT_AUTHORIZED.value
+
+
+class PatientSearchNotAuthorizedException(ForbiddenException):
+    """Caller lacks patient search authority or facility scope (HTTP 403)."""
+
+    def __init__(self, message: str = "Patient search is not authorized.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.PATIENT_SEARCH_NOT_AUTHORIZED.value
+
+
+class SearchProviderUnavailableException(AppException):
+    """Search database or backend provider is unavailable (HTTP 503)."""
+
+    def __init__(self, message: str = "Search provider is temporarily unavailable.") -> None:
+        super().__init__(
+            code=ErrorCode.SEARCH_PROVIDER_UNAVAILABLE,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+
+class SearchProviderTimeoutException(AppException):
+    """Search provider query exceeded execution ceiling (HTTP 504)."""
+
+    def __init__(self, message: str = "Search execution timed out.") -> None:
+        super().__init__(
+            code=ErrorCode.SEARCH_PROVIDER_TIMEOUT,
+            message=message,
+            status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+        )
+
+
+class SearchIndexUnavailableException(AppException):
+    """Search index structure is currently unavailable or rebuilding (HTTP 503)."""
+
+    def __init__(self, message: str = "Search index is temporarily unavailable.") -> None:
+        super().__init__(
+            code=ErrorCode.SEARCH_INDEX_UNAVAILABLE,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+
+class SearchIndexStaleException(AppException):
+    """Search index lag exceeds threshold and fresh querying is mandatory (HTTP 409)."""
+
+    def __init__(self, message: str = "Search index is stale and pending synchronization.") -> None:
+        super().__init__(
+            code=ErrorCode.SEARCH_INDEX_STALE,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+
+class AmbiguousPatientMatchException(AppException):
+    """Patient search returned ambiguous identity matches that cannot be resolved safely (HTTP 422)."""
+
+    def __init__(self, message: str = "Search returned ambiguous patient records. Exact identifier required.") -> None:
+        super().__init__(
+            code=ErrorCode.AMBIGUOUS_PATIENT_MATCH,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )
+
+
+# Phase 30 Error aliases
+SearchDisabledError = SearchDisabledException
+InvalidSearchQueryError = InvalidSearchQueryException
+SearchQueryTooLongError = SearchQueryTooLongException
+SearchQueryTooShortError = SearchQueryTooShortException
+UnsupportedSearchResourceTypeError = UnsupportedResourceTypeException
+UnsupportedSearchFilterError = UnsupportedSearchFilterException
+UnsupportedSortFieldError = UnsupportedSortFieldException
+SearchNotAuthorizedError = SearchNotAuthorizedException
+PatientSearchNotAuthorizedError = PatientSearchNotAuthorizedException
+SearchProviderUnavailableError = SearchProviderUnavailableException
+SearchProviderTimeoutError = SearchProviderTimeoutException
+SearchIndexUnavailableError = SearchIndexUnavailableException
+SearchIndexStaleError = SearchIndexStaleException
+AmbiguousPatientMatchError = AmbiguousPatientMatchException
 
 
 def _get_request_id(request: Request) -> str:

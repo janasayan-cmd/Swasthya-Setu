@@ -174,6 +174,14 @@ from app.services.communication_service import CommunicationService
 from app.services.notification_service import NotificationService
 from app.integrations.notifications import get_notification_provider_registry
 
+# Phase 30: Authorized Search, Indexing & Clinical Resource Retrieval imports
+from app.repositories.search_repository import SearchRepository
+from app.integrations.search.postgres import PostgresSearchProvider
+from app.services.search_normalization_service import SearchNormalizationService
+from app.services.search_authorization_service import SearchAuthorizationService
+from app.services.search_result_service import SearchResultService
+from app.services.search_service import SearchService
+
 # ---------------------------------------------------------------------------
 # HTTP Bearer scheme
 # ---------------------------------------------------------------------------
@@ -405,6 +413,35 @@ _global_notification_service = NotificationService(
     communication_service=_global_communication_service,
     audit_service=_global_audit_service,
     analytics_service=_global_analytics_service,
+)
+
+# ---------------------------------------------------------------------------
+# Phase 30: Authorized Search, Indexing & Clinical Resource Retrieval singletons
+# ---------------------------------------------------------------------------
+_global_search_repo = SearchRepository()
+_global_search_provider = PostgresSearchProvider(
+    patient_repo=_global_patient_repo,
+    document_repo=_global_document_repo,
+    encounter_repo=_global_encounter_repo,
+    prescription_repo=_global_prescription_repo,
+    medication_repo=_global_medication_repo,
+    care_plan_repo=_global_care_plan_repo,
+    discharge_repo=_global_discharge_repo,
+    clinical_note_repo=_global_clinical_note_repo,
+    org_repo=_global_organization_repo,
+    facility_repo=_global_facility_repo,
+    transfer_repo=_global_transfer_repo,
+    search_repo=_global_search_repo,
+)
+_global_search_normalization_service = SearchNormalizationService()
+_global_search_authorization_service = SearchAuthorizationService(patient_repo=_global_patient_repo)
+_global_search_result_service = SearchResultService()
+_global_search_service = SearchService(
+    provider=_global_search_provider,
+    normalization_service=_global_search_normalization_service,
+    authorization_service=_global_search_authorization_service,
+    result_service=_global_search_result_service,
+    audit_service=_global_audit_service,
 )
 
 
@@ -1668,5 +1705,19 @@ def get_communication_service() -> CommunicationService:
 def get_notification_service() -> NotificationService:
     """Dependency provider for NotificationService."""
     return _global_notification_service
+
+
+# ---------------------------------------------------------------------------
+# Phase 30: Authorized Search, Indexing & Clinical Resource Retrieval providers
+# ---------------------------------------------------------------------------
+
+def get_search_repository() -> SearchRepository:
+    """Dependency provider for SearchRepository."""
+    return _global_search_repo
+
+
+def get_search_service() -> SearchService:
+    """Dependency provider for SearchService."""
+    return _global_search_service
 
 

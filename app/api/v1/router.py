@@ -35,6 +35,7 @@ from app.api.v1.endpoints import (
     admin,
     analytics,
     notifications,
+    search,
 )
 
 v1_router = APIRouter()
@@ -117,5 +118,8 @@ v1_router.include_router(analytics.router)
 
 # Register Phase 29 Notification, Communication & Event Delivery endpoints
 v1_router.include_router(notifications.router)
+
+# Register Phase 30 Authorized Search, Indexing & Clinical Resource Retrieval endpoints
+v1_router.include_router(search.router)
 
 
