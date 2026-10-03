@@ -385,6 +385,49 @@ class ErrorCode(str, Enum):
     CLAIM_ACCESS_DENIED = "CLAIM_ACCESS_DENIED"
     AUTHORIZATION_ACCESS_DENIED = "AUTHORIZATION_ACCESS_DENIED"
 
+    # Phase 34: Laboratory, Diagnostic Orders & Result Management Error Codes
+    DIAGNOSTICS_DISABLED = "DIAGNOSTICS_DISABLED"
+    DIAGNOSTIC_CATALOG_DISABLED = "DIAGNOSTIC_CATALOG_DISABLED"
+    DIAGNOSTIC_ORDERING_DISABLED = "DIAGNOSTIC_ORDERING_DISABLED"
+    DIAGNOSTIC_RESULT_PROCESSING_DISABLED = "DIAGNOSTIC_RESULT_PROCESSING_DISABLED"
+    DIAGNOSTIC_RECONCILIATION_DISABLED = "DIAGNOSTIC_RECONCILIATION_DISABLED"
+    DIAGNOSTIC_PROVIDER_INTEGRATIONS_DISABLED = "DIAGNOSTIC_PROVIDER_INTEGRATIONS_DISABLED"
+    PATIENT_IDENTITY_UNRESOLVED = "PATIENT_IDENTITY_UNRESOLVED"
+    DIAGNOSTIC_ORDER_NOT_FOUND = "DIAGNOSTIC_ORDER_NOT_FOUND"
+    DIAGNOSTIC_ORDER_NOT_AUTHORIZED = "DIAGNOSTIC_ORDER_NOT_AUTHORIZED"
+    DIAGNOSTIC_ORDER_INVALID_STATE = "DIAGNOSTIC_ORDER_INVALID_STATE"
+    DIAGNOSTIC_ORDER_VALIDATION_FAILED = "DIAGNOSTIC_ORDER_VALIDATION_FAILED"
+    DIAGNOSTIC_ORDER_DUPLICATE = "DIAGNOSTIC_ORDER_DUPLICATE"
+    DIAGNOSTIC_ORDER_SUBMISSION_FAILED = "DIAGNOSTIC_ORDER_SUBMISSION_FAILED"
+    DIAGNOSTIC_ORDER_UNKNOWN = "DIAGNOSTIC_ORDER_UNKNOWN"
+    DIAGNOSTIC_TEST_NOT_FOUND = "DIAGNOSTIC_TEST_NOT_FOUND"
+    DIAGNOSTIC_TEST_AMBIGUOUS = "DIAGNOSTIC_TEST_AMBIGUOUS"
+    DIAGNOSTIC_TEST_UNSUPPORTED = "DIAGNOSTIC_TEST_UNSUPPORTED"
+    SPECIMEN_NOT_FOUND = "SPECIMEN_NOT_FOUND"
+    SPECIMEN_INVALID_STATE = "SPECIMEN_INVALID_STATE"
+    SPECIMEN_REJECTED = "SPECIMEN_REJECTED"
+    DIAGNOSTIC_RESULT_NOT_FOUND = "DIAGNOSTIC_RESULT_NOT_FOUND"
+    DIAGNOSTIC_RESULT_NOT_AUTHORIZED = "DIAGNOSTIC_RESULT_NOT_AUTHORIZED"
+    DIAGNOSTIC_RESULT_INVALID = "DIAGNOSTIC_RESULT_INVALID"
+    DIAGNOSTIC_RESULT_DUPLICATE = "DIAGNOSTIC_RESULT_DUPLICATE"
+    DIAGNOSTIC_RESULT_UNKNOWN = "DIAGNOSTIC_RESULT_UNKNOWN"
+    DIAGNOSTIC_RESULT_RECONCILIATION_REQUIRED = "DIAGNOSTIC_RESULT_RECONCILIATION_REQUIRED"
+    INVALID_RESULT_UNIT = "INVALID_RESULT_UNIT"
+    INVALID_RESULT_VALUE = "INVALID_RESULT_VALUE"
+    REFERENCE_RANGE_UNAVAILABLE = "REFERENCE_RANGE_UNAVAILABLE"
+    RESULT_VERIFICATION_REQUIRED = "RESULT_VERIFICATION_REQUIRED"
+    DIAGNOSTIC_REPORT_NOT_FOUND = "DIAGNOSTIC_REPORT_NOT_FOUND"
+    DIAGNOSTIC_PROVIDER_UNAVAILABLE = "DIAGNOSTIC_PROVIDER_UNAVAILABLE"
+    DIAGNOSTIC_PROVIDER_TIMEOUT = "DIAGNOSTIC_PROVIDER_TIMEOUT"
+    DIAGNOSTIC_PROVIDER_AUTHENTICATION_FAILED = "DIAGNOSTIC_PROVIDER_AUTHENTICATION_FAILED"
+    DIAGNOSTIC_PROVIDER_UNKNOWN_RESULT = "DIAGNOSTIC_PROVIDER_UNKNOWN_RESULT"
+    DIAGNOSTIC_WEBHOOK_SIGNATURE_INVALID = "DIAGNOSTIC_WEBHOOK_SIGNATURE_INVALID"
+    DIAGNOSTIC_WEBHOOK_INVALID = "DIAGNOSTIC_WEBHOOK_INVALID"
+    DIAGNOSTIC_WEBHOOK_DUPLICATE = "DIAGNOSTIC_WEBHOOK_DUPLICATE"
+    DIAGNOSTIC_ACCESS_DENIED = "DIAGNOSTIC_ACCESS_DENIED"
+    CLINICIAN_DIAGNOSTIC_ACCESS_DENIED = "CLINICIAN_DIAGNOSTIC_ACCESS_DENIED"
+    FACILITY_DIAGNOSTIC_ACCESS_DENIED = "FACILITY_DIAGNOSTIC_ACCESS_DENIED"
+
 
 class AppException(Exception):
     """Base application exception for all domain and operational errors."""
@@ -3270,6 +3313,190 @@ class AuthorizationAccessDeniedException(ForbiddenException):
     def __init__(self, message: str = "Access to authorization resource denied by multi-tenant boundary.") -> None:
         super().__init__(message=message)
         self.code = ErrorCode.AUTHORIZATION_ACCESS_DENIED.value
+
+
+# ===========================================================================
+# Phase 34: Laboratory, Diagnostic Orders & Result Management Exceptions
+# ===========================================================================
+
+class DiagnosticsDisabledException(AppException):
+    def __init__(self, message: str = "Diagnostics and laboratory subsystem is disabled.") -> None:
+        super().__init__(code=ErrorCode.DIAGNOSTICS_DISABLED, message=message, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+class DiagnosticCatalogDisabledException(AppException):
+    def __init__(self, message: str = "Diagnostic test catalog is disabled.") -> None:
+        super().__init__(code=ErrorCode.DIAGNOSTIC_CATALOG_DISABLED, message=message, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+class DiagnosticOrderingDisabledException(AppException):
+    def __init__(self, message: str = "Diagnostic ordering workflow is disabled.") -> None:
+        super().__init__(code=ErrorCode.DIAGNOSTIC_ORDERING_DISABLED, message=message, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+class DiagnosticResultProcessingDisabledException(AppException):
+    def __init__(self, message: str = "Diagnostic result processing is disabled.") -> None:
+        super().__init__(code=ErrorCode.DIAGNOSTIC_RESULT_PROCESSING_DISABLED, message=message, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+class PatientIdentityUnresolvedException(AppException):
+    def __init__(self, message: str = "Patient identity could not be resolved from external laboratory reference.") -> None:
+        super().__init__(code=ErrorCode.PATIENT_IDENTITY_UNRESOLVED, message=message, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+class AmbiguousPatientMatchException(AppException):
+    def __init__(self, message: str = "Ambiguous patient match detected; multiple candidate patient records found.") -> None:
+        super().__init__(code=ErrorCode.AMBIGUOUS_PATIENT_MATCH, message=message, status_code=status.HTTP_409_CONFLICT)
+
+class DiagnosticReconciliationDisabledException(AppException):
+    def __init__(self, message: str = "Diagnostic reconciliation subsystem is disabled.") -> None:
+        super().__init__(code=ErrorCode.DIAGNOSTIC_RECONCILIATION_DISABLED, message=message, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+class DiagnosticProviderIntegrationsDisabledException(AppException):
+    def __init__(self, message: str = "Diagnostic provider integrations are disabled.") -> None:
+        super().__init__(code=ErrorCode.DIAGNOSTIC_PROVIDER_INTEGRATIONS_DISABLED, message=message, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+class DiagnosticTestNotFoundException(NotFoundException):
+    def __init__(self, message: str = "Diagnostic test not found in catalog.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.DIAGNOSTIC_TEST_NOT_FOUND.value
+
+class DiagnosticTestAmbiguousException(AppException):
+    def __init__(self, message: str = "Ambiguous diagnostic test concept matches multiple catalog items.") -> None:
+        super().__init__(code=ErrorCode.DIAGNOSTIC_TEST_AMBIGUOUS, message=message, status_code=status.HTTP_409_CONFLICT)
+
+class DiagnosticTestUnsupportedException(AppException):
+    def __init__(self, message: str = "Diagnostic test is not supported by configured provider.") -> None:
+        super().__init__(code=ErrorCode.DIAGNOSTIC_TEST_UNSUPPORTED, message=message, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+class DiagnosticOrderNotFoundException(NotFoundException):
+    def __init__(self, message: str = "Diagnostic order record not found.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.DIAGNOSTIC_ORDER_NOT_FOUND.value
+
+class DiagnosticOrderNotAuthorizedException(ForbiddenException):
+    def __init__(self, message: str = "Not authorized to create, view, or manage this diagnostic order.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.DIAGNOSTIC_ORDER_NOT_AUTHORIZED.value
+
+class DiagnosticOrderInvalidStateException(AppException):
+    def __init__(self, message: str = "Invalid diagnostic order lifecycle state transition.") -> None:
+        super().__init__(code=ErrorCode.DIAGNOSTIC_ORDER_INVALID_STATE, message=message, status_code=status.HTTP_409_CONFLICT)
+
+class DiagnosticOrderValidationFailedException(AppException):
+    def __init__(self, message: str = "Diagnostic order validation failed.") -> None:
+        super().__init__(code=ErrorCode.DIAGNOSTIC_ORDER_VALIDATION_FAILED, message=message, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+class DiagnosticOrderDuplicateException(AppException):
+    def __init__(self, message: str = "Duplicate diagnostic order detected.") -> None:
+        super().__init__(code=ErrorCode.DIAGNOSTIC_ORDER_DUPLICATE, message=message, status_code=status.HTTP_409_CONFLICT)
+
+class DiagnosticOrderSubmissionFailedException(AppException):
+    def __init__(self, message: str = "Diagnostic order submission to provider failed.") -> None:
+        super().__init__(code=ErrorCode.DIAGNOSTIC_ORDER_SUBMISSION_FAILED, message=message, status_code=status.HTTP_502_BAD_GATEWAY)
+
+class DiagnosticOrderUnknownException(AppException):
+    def __init__(self, message: str = "Diagnostic order status is unknown with laboratory provider.") -> None:
+        super().__init__(code=ErrorCode.DIAGNOSTIC_ORDER_UNKNOWN, message=message, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class SpecimenNotFoundException(NotFoundException):
+    def __init__(self, message: str = "Specimen record not found.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.SPECIMEN_NOT_FOUND.value
+
+class SpecimenInvalidStateException(AppException):
+    def __init__(self, message: str = "Invalid specimen lifecycle transition.") -> None:
+        super().__init__(code=ErrorCode.SPECIMEN_INVALID_STATE, message=message, status_code=status.HTTP_409_CONFLICT)
+
+class SpecimenRejectedException(AppException):
+    def __init__(self, message: str = "Diagnostic specimen was rejected by laboratory.") -> None:
+        super().__init__(code=ErrorCode.SPECIMEN_REJECTED, message=message, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+class DiagnosticResultNotFoundException(NotFoundException):
+    def __init__(self, message: str = "Diagnostic result record not found.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.DIAGNOSTIC_RESULT_NOT_FOUND.value
+
+class DiagnosticResultNotAuthorizedException(ForbiddenException):
+    def __init__(self, message: str = "Not authorized to access or modify this diagnostic result.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.DIAGNOSTIC_RESULT_NOT_AUTHORIZED.value
+
+class DiagnosticResultInvalidException(AppException):
+    def __init__(self, message: str = "Invalid diagnostic result structure or values.") -> None:
+        super().__init__(code=ErrorCode.DIAGNOSTIC_RESULT_INVALID, message=message, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+class DiagnosticResultDuplicateException(AppException):
+    def __init__(self, message: str = "Duplicate diagnostic result ingestion detected.") -> None:
+        super().__init__(code=ErrorCode.DIAGNOSTIC_RESULT_DUPLICATE, message=message, status_code=status.HTTP_409_CONFLICT)
+
+class DiagnosticResultUnknownException(AppException):
+    def __init__(self, message: str = "Diagnostic result state is ambiguous; reconciliation required.") -> None:
+        super().__init__(code=ErrorCode.DIAGNOSTIC_RESULT_UNKNOWN, message=message, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class DiagnosticResultReconciliationRequiredException(AppException):
+    def __init__(self, message: str = "Diagnostic result requires reconciliation with laboratory ledger.") -> None:
+        super().__init__(code=ErrorCode.DIAGNOSTIC_RESULT_RECONCILIATION_REQUIRED, message=message, status_code=status.HTTP_409_CONFLICT)
+
+class InvalidResultUnitException(AppException):
+    def __init__(self, message: str = "Diagnostic result unit is invalid, incompatible, or missing.") -> None:
+        super().__init__(code=ErrorCode.INVALID_RESULT_UNIT, message=message, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+class InvalidResultValueException(AppException):
+    def __init__(self, message: str = "Diagnostic result value is malformed or out of representable bounds.") -> None:
+        super().__init__(code=ErrorCode.INVALID_RESULT_VALUE, message=message, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+class ReferenceRangeUnavailableException(AppException):
+    def __init__(self, message: str = "Reference range is not available from provider for this test.") -> None:
+        super().__init__(code=ErrorCode.REFERENCE_RANGE_UNAVAILABLE, message=message, status_code=status.HTTP_404_NOT_FOUND)
+
+class ResultVerificationRequiredException(AppException):
+    def __init__(self, message: str = "Clinical verification by an authorized clinician is required.") -> None:
+        super().__init__(code=ErrorCode.RESULT_VERIFICATION_REQUIRED, message=message, status_code=status.HTTP_403_FORBIDDEN)
+
+class DiagnosticReportNotFoundException(NotFoundException):
+    def __init__(self, message: str = "Diagnostic report record not found.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.DIAGNOSTIC_REPORT_NOT_FOUND.value
+
+class DiagnosticProviderUnavailableException(AppException):
+    def __init__(self, message: str = "Diagnostic laboratory provider is unavailable.") -> None:
+        super().__init__(code=ErrorCode.DIAGNOSTIC_PROVIDER_UNAVAILABLE, message=message, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+class DiagnosticProviderTimeoutException(AppException):
+    def __init__(self, message: str = "Diagnostic provider request timed out.") -> None:
+        super().__init__(code=ErrorCode.DIAGNOSTIC_PROVIDER_TIMEOUT, message=message, status_code=status.HTTP_504_GATEWAY_TIMEOUT)
+
+class DiagnosticProviderAuthenticationException(AppException):
+    def __init__(self, message: str = "Authentication with external laboratory provider failed.") -> None:
+        super().__init__(code=ErrorCode.DIAGNOSTIC_PROVIDER_AUTHENTICATION_FAILED, message=message, status_code=status.HTTP_502_BAD_GATEWAY)
+
+class DiagnosticProviderUnknownResultException(AppException):
+    def __init__(self, message: str = "Diagnostic provider returned an ambiguous or unrecognized response.") -> None:
+        super().__init__(code=ErrorCode.DIAGNOSTIC_PROVIDER_UNKNOWN_RESULT, message=message, status_code=status.HTTP_502_BAD_GATEWAY)
+
+class DiagnosticWebhookSignatureInvalidException(AppException):
+    def __init__(self, message: str = "Diagnostic webhook HMAC signature verification failed.") -> None:
+        super().__init__(code=ErrorCode.DIAGNOSTIC_WEBHOOK_SIGNATURE_INVALID, message=message, status_code=status.HTTP_401_UNAUTHORIZED)
+
+class DiagnosticWebhookInvalidException(AppException):
+    def __init__(self, message: str = "Malformed or unsupported diagnostic webhook payload.") -> None:
+        super().__init__(code=ErrorCode.DIAGNOSTIC_WEBHOOK_INVALID, message=message, status_code=status.HTTP_400_BAD_REQUEST)
+
+class DiagnosticWebhookDuplicateException(AppException):
+    def __init__(self, message: str = "Diagnostic webhook event has already been processed.") -> None:
+        super().__init__(code=ErrorCode.DIAGNOSTIC_WEBHOOK_DUPLICATE, message=message, status_code=status.HTTP_409_CONFLICT)
+
+class DiagnosticAccessDeniedException(ForbiddenException):
+    def __init__(self, message: str = "Access to diagnostic resource denied by multi-tenant boundary.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.DIAGNOSTIC_ACCESS_DENIED.value
+
+class ClinicianDiagnosticAccessDeniedException(ForbiddenException):
+    def __init__(self, message: str = "Clinician is not authorized to access this diagnostic record.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.CLINICIAN_DIAGNOSTIC_ACCESS_DENIED.value
+
+class FacilityDiagnosticAccessDeniedException(ForbiddenException):
+    def __init__(self, message: str = "Facility boundary does not permit access to this diagnostic record.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.FACILITY_DIAGNOSTIC_ACCESS_DENIED.value
+
 
 
 def _get_request_id(request: Request) -> str:

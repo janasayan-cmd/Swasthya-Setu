@@ -771,6 +771,78 @@ TEMPLATES: Dict[NotificationType, Dict[str, TemplateDefinition]] = {
             required_variables=["claim_number"],
         ),
     },
+    NotificationType.DIAGNOSTIC_ORDER_CREATED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Diagnostic Order Created",
+            body_template="Diagnostic order {order_id} has been recorded.",
+            required_variables=["order_id"],
+        ),
+    },
+    NotificationType.DIAGNOSTIC_ORDER_ACCEPTED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Diagnostic Order Accepted",
+            body_template="Diagnostic order {order_id} has been accepted by the laboratory provider.",
+            required_variables=["order_id"],
+        ),
+    },
+    NotificationType.DIAGNOSTIC_ORDER_FAILED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Diagnostic Order Submission Failed",
+            body_template="Diagnostic order {order_id} submission encountered an error and requires review.",
+            required_variables=["order_id"],
+        ),
+    },
+    NotificationType.SPECIMEN_COLLECTED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Specimen Collected",
+            body_template="Specimen {specimen_id} for order {order_id} has been collected.",
+            required_variables=["specimen_id", "order_id"],
+        ),
+    },
+    NotificationType.DIAGNOSTIC_RESULT_AVAILABLE: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Diagnostic Result Available",
+            body_template="A new diagnostic result is available for order {order_id}.",
+            required_variables=["order_id"],
+        ),
+    },
+    NotificationType.DIAGNOSTIC_RESULT_CORRECTED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Diagnostic Result Corrected",
+            body_template="An amended/corrected result has been received for result reference {result_id}.",
+            required_variables=["result_id"],
+        ),
+    },
+    NotificationType.DIAGNOSTIC_RESULT_REVIEW_REQUIRED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Diagnostic Result Review Required",
+            body_template="Diagnostic result {result_id} is awaiting clinical verification.",
+            required_variables=["result_id"],
+        ),
+    },
+    NotificationType.CRITICAL_RESULT_REVIEW_REQUIRED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Critical Result Review Required",
+            body_template="Priority notification: Diagnostic result {result_id} has a provider critical flag requiring clinician review.",
+            required_variables=["result_id"],
+        ),
+    },
+    NotificationType.DIAGNOSTIC_REPORT_AVAILABLE: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Diagnostic Report Available",
+            body_template="Diagnostic report {report_id} has been published.",
+            required_variables=["report_id"],
+        ),
+    },
 }
 
 

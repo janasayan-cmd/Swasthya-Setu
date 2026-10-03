@@ -20,6 +20,7 @@ from app.workers.tasks import (
     scheduling,
     billing,
     insurance,
+    diagnostics,
 )
 from app.workers.worker import AsyncWorkerPool
 

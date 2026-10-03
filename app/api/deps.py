@@ -228,6 +228,25 @@ from app.services.claim_response_service import ClaimResponseService
 from app.services.claim_reconciliation_service import ClaimReconciliationService
 from app.services.payer_webhook_service import PayerWebhookService
 
+# Phase 34: Laboratory, Diagnostic Orders & Result Management imports
+from app.repositories.diagnostic_catalog_repository import DiagnosticCatalogRepository
+from app.repositories.diagnostic_order_repository import DiagnosticOrderRepository
+from app.repositories.diagnostic_result_repository import DiagnosticResultRepository
+from app.repositories.diagnostic_report_repository import DiagnosticReportRepository
+from app.repositories.diagnostic_reconciliation_repository import DiagnosticReconciliationRepository
+from app.repositories.diagnostic_webhook_repository import DiagnosticWebhookRepository
+from app.integrations.diagnostics.base import DiagnosticProvider
+from app.integrations.diagnostics.providers.mock import MockDiagnosticProvider
+from app.services.diagnostic_validation_service import DiagnosticValidationService
+from app.services.diagnostic_authorization_service import DiagnosticAuthorizationService
+from app.services.diagnostic_catalog_service import DiagnosticCatalogService
+from app.services.diagnostic_order_service import DiagnosticOrderService
+from app.services.diagnostic_result_service import DiagnosticResultService
+from app.services.diagnostic_verification_service import DiagnosticVerificationService
+from app.services.diagnostic_report_service import DiagnosticReportService
+from app.services.diagnostic_reconciliation_service import DiagnosticReconciliationService
+from app.services.diagnostic_webhook_service import DiagnosticWebhookService
+
 # ---------------------------------------------------------------------------
 # HTTP Bearer scheme
 # ---------------------------------------------------------------------------
@@ -624,6 +643,71 @@ _global_payer_webhook_service = PayerWebhookService(
     auth_repo=_global_authorization_repo,
     webhook_repo=_global_payer_webhook_repo,
     provider=_global_mock_payer_provider,
+)
+
+# ---------------------------------------------------------------------------
+# Phase 34: Laboratory, Diagnostic Orders & Result Management singletons
+# ---------------------------------------------------------------------------
+_settings = get_settings()
+_global_diagnostic_catalog_repo = DiagnosticCatalogRepository()
+_global_diagnostic_order_repo = DiagnosticOrderRepository()
+_global_diagnostic_result_repo = DiagnosticResultRepository()
+_global_diagnostic_report_repo = DiagnosticReportRepository()
+_global_diagnostic_reconciliation_repo = DiagnosticReconciliationRepository()
+_global_diagnostic_webhook_repo = DiagnosticWebhookRepository()
+_global_mock_diagnostic_provider = MockDiagnosticProvider(
+    provider_id="MOCK_LAB",
+    secret=_settings.DIAGNOSTIC_PROVIDER_WEBHOOK_SECRET or "mock-diagnostic-webhook-secret-key-12345",
+)
+_global_diagnostic_validation_service = DiagnosticValidationService()
+_global_diagnostic_authorization_service = DiagnosticAuthorizationService()
+_global_diagnostic_catalog_service = DiagnosticCatalogService(
+    catalog_repository=_global_diagnostic_catalog_repo,
+    enabled=_settings.DIAGNOSTIC_CATALOG_ENABLED,
+)
+_global_diagnostic_order_service = DiagnosticOrderService(
+    order_repository=_global_diagnostic_order_repo,
+    catalog_repository=_global_diagnostic_catalog_repo,
+    validation_service=_global_diagnostic_validation_service,
+    authorization_service=_global_diagnostic_authorization_service,
+    provider=_global_mock_diagnostic_provider if _settings.DIAGNOSTIC_PROVIDER_INTEGRATIONS_ENABLED else None,
+    audit_service=_global_audit_service,
+    notification_service=_global_notification_service,
+    enabled=_settings.DIAGNOSTIC_ORDERING_ENABLED,
+)
+_global_diagnostic_result_service = DiagnosticResultService(
+    result_repository=_global_diagnostic_result_repo,
+    order_repository=_global_diagnostic_order_repo,
+    validation_service=_global_diagnostic_validation_service,
+    authorization_service=_global_diagnostic_authorization_service,
+    audit_service=_global_audit_service,
+    notification_service=_global_notification_service,
+    enabled=_settings.DIAGNOSTIC_RESULT_PROCESSING_ENABLED,
+    critical_notifications_enabled=_settings.CRITICAL_RESULT_NOTIFICATION_ENABLED,
+)
+_global_diagnostic_verification_service = DiagnosticVerificationService(
+    result_repository=_global_diagnostic_result_repo,
+    authorization_service=_global_diagnostic_authorization_service,
+    audit_service=_global_audit_service,
+)
+_global_diagnostic_report_service = DiagnosticReportService(
+    report_repository=_global_diagnostic_report_repo,
+    authorization_service=_global_diagnostic_authorization_service,
+    audit_service=_global_audit_service,
+    notification_service=_global_notification_service,
+)
+_global_diagnostic_reconciliation_service = DiagnosticReconciliationService(
+    order_repository=_global_diagnostic_order_repo,
+    result_repository=_global_diagnostic_result_repo,
+    reconciliation_repository=_global_diagnostic_reconciliation_repo,
+    audit_service=_global_audit_service,
+)
+_global_diagnostic_webhook_service = DiagnosticWebhookService(
+    webhook_repository=_global_diagnostic_webhook_repo,
+    order_repository=_global_diagnostic_order_repo,
+    provider=_global_mock_diagnostic_provider,
+    audit_service=_global_audit_service,
+    secret=_settings.DIAGNOSTIC_PROVIDER_WEBHOOK_SECRET or "mock-diagnostic-webhook-secret-key-12345",
 )
 
 
@@ -2093,5 +2177,88 @@ def get_claim_reconciliation_service() -> ClaimReconciliationService:
 def get_payer_webhook_service() -> PayerWebhookService:
     """Dependency provider for PayerWebhookService."""
     return _global_payer_webhook_service
+
+
+# ---------------------------------------------------------------------------
+# Phase 34: Laboratory, Diagnostic Orders & Result Management getters
+# ---------------------------------------------------------------------------
+def get_diagnostic_catalog_repository() -> DiagnosticCatalogRepository:
+    """Dependency provider for DiagnosticCatalogRepository."""
+    return _global_diagnostic_catalog_repo
+
+
+def get_diagnostic_order_repository() -> DiagnosticOrderRepository:
+    """Dependency provider for DiagnosticOrderRepository."""
+    return _global_diagnostic_order_repo
+
+
+def get_diagnostic_result_repository() -> DiagnosticResultRepository:
+    """Dependency provider for DiagnosticResultRepository."""
+    return _global_diagnostic_result_repo
+
+
+def get_diagnostic_report_repository() -> DiagnosticReportRepository:
+    """Dependency provider for DiagnosticReportRepository."""
+    return _global_diagnostic_report_repo
+
+
+def get_diagnostic_reconciliation_repository() -> DiagnosticReconciliationRepository:
+    """Dependency provider for DiagnosticReconciliationRepository."""
+    return _global_diagnostic_reconciliation_repo
+
+
+def get_diagnostic_webhook_repository() -> DiagnosticWebhookRepository:
+    """Dependency provider for DiagnosticWebhookRepository."""
+    return _global_diagnostic_webhook_repo
+
+
+def get_diagnostic_provider() -> DiagnosticProvider:
+    """Dependency provider for DiagnosticProvider."""
+    return _global_mock_diagnostic_provider
+
+
+def get_diagnostic_validation_service() -> DiagnosticValidationService:
+    """Dependency provider for DiagnosticValidationService."""
+    return _global_diagnostic_validation_service
+
+
+def get_diagnostic_authorization_service() -> DiagnosticAuthorizationService:
+    """Dependency provider for DiagnosticAuthorizationService."""
+    return _global_diagnostic_authorization_service
+
+
+def get_diagnostic_catalog_service() -> DiagnosticCatalogService:
+    """Dependency provider for DiagnosticCatalogService."""
+    return _global_diagnostic_catalog_service
+
+
+def get_diagnostic_order_service() -> DiagnosticOrderService:
+    """Dependency provider for DiagnosticOrderService."""
+    return _global_diagnostic_order_service
+
+
+def get_diagnostic_result_service() -> DiagnosticResultService:
+    """Dependency provider for DiagnosticResultService."""
+    return _global_diagnostic_result_service
+
+
+def get_diagnostic_verification_service() -> DiagnosticVerificationService:
+    """Dependency provider for DiagnosticVerificationService."""
+    return _global_diagnostic_verification_service
+
+
+def get_diagnostic_report_service() -> DiagnosticReportService:
+    """Dependency provider for DiagnosticReportService."""
+    return _global_diagnostic_report_service
+
+
+def get_diagnostic_reconciliation_service() -> DiagnosticReconciliationService:
+    """Dependency provider for DiagnosticReconciliationService."""
+    return _global_diagnostic_reconciliation_service
+
+
+def get_diagnostic_webhook_service() -> DiagnosticWebhookService:
+    """Dependency provider for DiagnosticWebhookService."""
+    return _global_diagnostic_webhook_service
 
 

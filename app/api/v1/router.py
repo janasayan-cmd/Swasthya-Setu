@@ -48,6 +48,11 @@ from app.api.v1.endpoints import (
     authorizations,
     claims,
     payer_webhooks,
+    diagnostic_catalog,
+    diagnostic_orders,
+    diagnostic_results,
+    diagnostic_reports,
+    diagnostic_webhooks,
 )
 
 v1_router = APIRouter()
@@ -151,5 +156,12 @@ v1_router.include_router(benefits.router)
 v1_router.include_router(authorizations.router)
 v1_router.include_router(claims.router)
 v1_router.include_router(payer_webhooks.router)
+
+# Register Phase 34 Laboratory, Diagnostic Orders & Result Management endpoints
+v1_router.include_router(diagnostic_catalog.router)
+v1_router.include_router(diagnostic_orders.router)
+v1_router.include_router(diagnostic_results.router)
+v1_router.include_router(diagnostic_reports.router)
+v1_router.include_router(diagnostic_webhooks.router)
 
 

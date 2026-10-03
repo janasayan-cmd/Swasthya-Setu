@@ -272,6 +272,25 @@ class Permission(str, Enum):
     ADMIN_PAYER_MANAGE = "admin:payer_manage"
     ADMIN_PAYER_TEST = "admin:payer_test"
 
+    # ---- Phase 34: Laboratory, Diagnostic Orders & Result Management ----
+    DIAGNOSTIC_CATALOG_READ = "diagnostic_catalog:read"
+    DIAGNOSTIC_ORDER_READ = "diagnostic_order:read"
+    DIAGNOSTIC_ORDER_CREATE = "diagnostic_order:create"
+    DIAGNOSTIC_ORDER_CANCEL = "diagnostic_order:cancel"
+    DIAGNOSTIC_RESULT_READ = "diagnostic_result:read"
+    DIAGNOSTIC_RESULT_VERIFY = "diagnostic_result:verify"
+    DIAGNOSTIC_REPORT_READ = "diagnostic_report:read"
+    DIAGNOSTIC_REPORT_CREATE = "diagnostic_report:create"
+    ADMIN_DIAGNOSTICS_VIEW = "admin:diagnostics_view"
+    ADMIN_DIAGNOSTICS_MANAGE = "admin:diagnostics_manage"
+    ADMIN_DIAGNOSTIC_ORDERS_VIEW = "admin:diagnostic_orders_view"
+    ADMIN_DIAGNOSTIC_ORDERS_MANAGE = "admin:diagnostic_orders_manage"
+    ADMIN_DIAGNOSTIC_RESULTS_VIEW = "admin:diagnostic_results_view"
+    ADMIN_DIAGNOSTIC_RESULTS_MANAGE = "admin:diagnostic_results_manage"
+    ADMIN_DIAGNOSTIC_RECONCILIATION = "admin:diagnostic_reconciliation"
+    ADMIN_DIAGNOSTIC_PROVIDER_VIEW = "admin:diagnostic_provider_view"
+    ADMIN_DIAGNOSTIC_PROVIDER_TEST = "admin:diagnostic_provider_test"
+
 
 # ---------------------------------------------------------------------------
 # Role-to-Permission Mapping
@@ -382,6 +401,10 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.CLAIM_READ,
         Permission.CLAIM_CREATE,
         Permission.CLAIM_SUBMIT,
+        # Phase 34: Laboratory, Diagnostic Orders & Result Management
+        Permission.DIAGNOSTIC_ORDER_READ,
+        Permission.DIAGNOSTIC_RESULT_READ,
+        Permission.DIAGNOSTIC_REPORT_READ,
     }),
     "DOCTOR": frozenset({
         Permission.PATIENT_READ_SELF,         # can read patient profile in context
@@ -505,6 +528,15 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.AUTHORIZATION_UPDATE,
         Permission.AUTHORIZATION_SUBMIT,
         Permission.CLAIM_READ,
+        # Phase 34: Laboratory, Diagnostic Orders & Result Management
+        Permission.DIAGNOSTIC_CATALOG_READ,
+        Permission.DIAGNOSTIC_ORDER_READ,
+        Permission.DIAGNOSTIC_ORDER_CREATE,
+        Permission.DIAGNOSTIC_ORDER_CANCEL,
+        Permission.DIAGNOSTIC_RESULT_READ,
+        Permission.DIAGNOSTIC_RESULT_VERIFY,
+        Permission.DIAGNOSTIC_REPORT_READ,
+        Permission.DIAGNOSTIC_REPORT_CREATE,
     }),
     "ADMIN": frozenset({
         # Administrative capabilities ONLY — no automatic clinical data access
@@ -631,6 +663,20 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.ADMIN_PAYER_VIEW,
         Permission.ADMIN_PAYER_MANAGE,
         Permission.ADMIN_PAYER_TEST,
+        # Phase 34: Diagnostics Admin
+        Permission.DIAGNOSTIC_CATALOG_READ,
+        Permission.DIAGNOSTIC_ORDER_READ,
+        Permission.DIAGNOSTIC_RESULT_READ,
+        Permission.DIAGNOSTIC_REPORT_READ,
+        Permission.ADMIN_DIAGNOSTICS_VIEW,
+        Permission.ADMIN_DIAGNOSTICS_MANAGE,
+        Permission.ADMIN_DIAGNOSTIC_ORDERS_VIEW,
+        Permission.ADMIN_DIAGNOSTIC_ORDERS_MANAGE,
+        Permission.ADMIN_DIAGNOSTIC_RESULTS_VIEW,
+        Permission.ADMIN_DIAGNOSTIC_RESULTS_MANAGE,
+        Permission.ADMIN_DIAGNOSTIC_RECONCILIATION,
+        Permission.ADMIN_DIAGNOSTIC_PROVIDER_VIEW,
+        Permission.ADMIN_DIAGNOSTIC_PROVIDER_TEST,
     }),
     "SYSTEM_ADMIN": frozenset({
         Permission.ADMIN_USER_MANAGE,
@@ -739,6 +785,20 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.ADMIN_PAYER_VIEW,
         Permission.ADMIN_PAYER_MANAGE,
         Permission.ADMIN_PAYER_TEST,
+        # Phase 34: Diagnostics Admin
+        Permission.DIAGNOSTIC_CATALOG_READ,
+        Permission.DIAGNOSTIC_ORDER_READ,
+        Permission.DIAGNOSTIC_RESULT_READ,
+        Permission.DIAGNOSTIC_REPORT_READ,
+        Permission.ADMIN_DIAGNOSTICS_VIEW,
+        Permission.ADMIN_DIAGNOSTICS_MANAGE,
+        Permission.ADMIN_DIAGNOSTIC_ORDERS_VIEW,
+        Permission.ADMIN_DIAGNOSTIC_ORDERS_MANAGE,
+        Permission.ADMIN_DIAGNOSTIC_RESULTS_VIEW,
+        Permission.ADMIN_DIAGNOSTIC_RESULTS_MANAGE,
+        Permission.ADMIN_DIAGNOSTIC_RECONCILIATION,
+        Permission.ADMIN_DIAGNOSTIC_PROVIDER_VIEW,
+        Permission.ADMIN_DIAGNOSTIC_PROVIDER_TEST,
     }),
     "OPERATIONS_ADMIN": frozenset({
         Permission.ADMIN_SYSTEM_VIEW,
@@ -772,6 +832,16 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.ADMIN_PAYER_VIEW,
         Permission.INSURANCE_READ,
         Permission.CLAIM_READ,
+        # Phase 34: Diagnostics Operations
+        Permission.DIAGNOSTIC_CATALOG_READ,
+        Permission.DIAGNOSTIC_ORDER_READ,
+        Permission.DIAGNOSTIC_RESULT_READ,
+        Permission.DIAGNOSTIC_REPORT_READ,
+        Permission.ADMIN_DIAGNOSTICS_VIEW,
+        Permission.ADMIN_DIAGNOSTIC_ORDERS_VIEW,
+        Permission.ADMIN_DIAGNOSTIC_RESULTS_VIEW,
+        Permission.ADMIN_DIAGNOSTIC_RECONCILIATION,
+        Permission.ADMIN_DIAGNOSTIC_PROVIDER_VIEW,
     }),
     "SUPPORT_OPERATOR": frozenset({
         Permission.ADMIN_SYSTEM_VIEW,
@@ -1009,6 +1079,24 @@ ACTION_PERMISSION_MAP: dict[tuple[str, str], Permission] = {
     ("payer_admin", "view"):             Permission.ADMIN_PAYER_VIEW,
     ("payer_admin", "manage"):           Permission.ADMIN_PAYER_MANAGE,
     ("payer_admin", "test"):             Permission.ADMIN_PAYER_TEST,
+    # Phase 34: Laboratory, Diagnostic Orders & Result Management
+    ("diagnostic_catalog", "read"):       Permission.DIAGNOSTIC_CATALOG_READ,
+    ("diagnostic_order", "read"):         Permission.DIAGNOSTIC_ORDER_READ,
+    ("diagnostic_order", "create"):       Permission.DIAGNOSTIC_ORDER_CREATE,
+    ("diagnostic_order", "cancel"):       Permission.DIAGNOSTIC_ORDER_CANCEL,
+    ("diagnostic_result", "read"):        Permission.DIAGNOSTIC_RESULT_READ,
+    ("diagnostic_result", "verify"):      Permission.DIAGNOSTIC_RESULT_VERIFY,
+    ("diagnostic_report", "read"):        Permission.DIAGNOSTIC_REPORT_READ,
+    ("diagnostic_report", "create"):      Permission.DIAGNOSTIC_REPORT_CREATE,
+    ("diagnostics_admin", "view"):        Permission.ADMIN_DIAGNOSTICS_VIEW,
+    ("diagnostics_admin", "manage"):      Permission.ADMIN_DIAGNOSTICS_MANAGE,
+    ("diagnostic_orders_admin", "view"):  Permission.ADMIN_DIAGNOSTIC_ORDERS_VIEW,
+    ("diagnostic_orders_admin", "manage"):Permission.ADMIN_DIAGNOSTIC_ORDERS_MANAGE,
+    ("diagnostic_results_admin", "view"): Permission.ADMIN_DIAGNOSTIC_RESULTS_VIEW,
+    ("diagnostic_results_admin", "manage"):Permission.ADMIN_DIAGNOSTIC_RESULTS_MANAGE,
+    ("diagnostic_admin", "reconcile"):    Permission.ADMIN_DIAGNOSTIC_RECONCILIATION,
+    ("diagnostic_provider_admin", "view"):Permission.ADMIN_DIAGNOSTIC_PROVIDER_VIEW,
+    ("diagnostic_provider_admin", "test"):Permission.ADMIN_DIAGNOSTIC_PROVIDER_TEST,
 }
 
 
@@ -1057,6 +1145,7 @@ class ConsentScope(str, Enum):
     DISCHARGE_SUMMARY = "discharge_summary"
     TRANSFER = "transfer"
     INTEROPERABILITY = "interoperability"
+    DIAGNOSTICS = "diagnostics"
     ALL_RECORDS = "all_records"   # broad scope — must require explicit grant
 
 

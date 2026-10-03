@@ -38,6 +38,9 @@ class SearchResourceType(str, Enum):
     PAYMENT = "payment"
     INSURANCE = "insurance"
     CLAIM = "claim"
+    DIAGNOSTIC_ORDER = "diagnostic_order"
+    DIAGNOSTIC_RESULT = "diagnostic_result"
+    DIAGNOSTIC_REPORT = "diagnostic_report"
 
 
 class MatchType(str, Enum):

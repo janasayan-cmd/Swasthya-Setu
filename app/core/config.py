@@ -817,6 +817,27 @@ class Settings(BaseSettings):
     INSURANCE_NOTIFICATIONS_ENABLED: bool = Field(default=True, description="Emit customer insurance event notifications")
     INSURANCE_DOCUMENT_PROCESSING_ENABLED: bool = Field(default=True, description="Enable insurance document & card extraction")
 
+    # Phase 34: Laboratory, Diagnostic Orders & Result Management
+    DIAGNOSTICS_ENABLED: bool = Field(default=True, description="Master switch for laboratory and diagnostic workflows")
+    DIAGNOSTIC_CATALOG_ENABLED: bool = Field(default=True, description="Enable diagnostic test catalog search and retrieval")
+    DIAGNOSTIC_ORDERING_ENABLED: bool = Field(default=True, description="Enable clinical diagnostic ordering workflow")
+    DIAGNOSTIC_RESULT_PROCESSING_ENABLED: bool = Field(default=True, description="Enable diagnostic result ingestion and normalization")
+    DIAGNOSTIC_DOCUMENT_PROCESSING_ENABLED: bool = Field(default=True, description="Enable diagnostic document & report extraction")
+    DIAGNOSTIC_PROVIDER_INTEGRATIONS_ENABLED: bool = Field(default=True, description="Enable external diagnostic/lab provider adapters")
+    DIAGNOSTIC_PROVIDER: str = Field(default="mock", description="Configured diagnostic provider adapter ('mock', 'quest', 'roche', etc.)")
+    DIAGNOSTIC_PROVIDER_BASE_URL: str = Field(default="", description="Base URL for external diagnostic provider")
+    DIAGNOSTIC_PROVIDER_API_KEY: str = Field(default="", description="API key for external diagnostic provider")
+    DIAGNOSTIC_PROVIDER_CLIENT_ID: str = Field(default="", description="OAuth2 client ID for external diagnostic provider")
+    DIAGNOSTIC_PROVIDER_CLIENT_SECRET: str = Field(default="", description="OAuth2 client secret for external diagnostic provider")
+    DIAGNOSTIC_PROVIDER_WEBHOOK_SECRET: str = Field(default="diagnostic_whsec_test_secret_3441", description="Webhook signing secret for lab events")
+    DIAGNOSTIC_PROVIDER_TIMEOUT_SECONDS: int = Field(default=30, description="Timeout ceiling for lab provider communication")
+    DIAGNOSTIC_PROVIDER_MAX_RETRIES: int = Field(default=2, description="Max retries for transient lab provider failures")
+    DIAGNOSTIC_RESULT_RECONCILIATION_ENABLED: bool = Field(default=True, description="Enable automated diagnostic result reconciliation")
+    CRITICAL_RESULT_NOTIFICATION_ENABLED: bool = Field(default=True, description="Enable urgent alerts for critical lab values")
+    DIAGNOSTIC_ANALYTICS_ENABLED: bool = Field(default=True, description="Record operational diagnostic telemetry in analytics")
+    DIAGNOSTIC_NOTIFICATIONS_ENABLED: bool = Field(default=True, description="Emit diagnostic order and result notifications")
+    DIAGNOSTIC_RATE_LIMIT_ENABLED: bool = Field(default=True, description="Enable rate limiting on diagnostic endpoints")
+
     @property
     def max_document_size_bytes(self) -> int:
         """Maximum allowed document upload size in bytes."""
