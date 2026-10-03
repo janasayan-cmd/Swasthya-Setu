@@ -21,6 +21,7 @@ from app.workers.tasks import (
     billing,
     insurance,
     diagnostics,
+    alerts,
 )
 from app.workers.worker import AsyncWorkerPool
 

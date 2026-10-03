@@ -843,6 +843,39 @@ TEMPLATES: Dict[NotificationType, Dict[str, TemplateDefinition]] = {
             required_variables=["report_id"],
         ),
     },
+    # Phase 35: Clinical Alerts, Safety Notifications & Escalation Management
+    NotificationType.CLINICAL_ALERT_DISPATCHED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Clinical Alert: {alert_title}",
+            body_template="Alert notification ({severity}) for reference {alert_id}. Source event: {source_event_type}. Action required: review and acknowledgement.",
+            required_variables=["alert_title", "severity", "alert_id", "source_event_type"],
+        ),
+    },
+    NotificationType.CLINICAL_ALERT_ESCALATED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Escalated Alert: {alert_title}",
+            body_template="Alert {alert_id} ({severity}) has been escalated to escalation level {escalation_level} due to acknowledgement deadline expiry.",
+            required_variables=["alert_title", "severity", "alert_id", "escalation_level"],
+        ),
+    },
+    NotificationType.CLINICAL_ALERT_ACKNOWLEDGED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Alert Acknowledged",
+            body_template="Alert {alert_id} has been acknowledged by authorized user.",
+            required_variables=["alert_id"],
+        ),
+    },
+    NotificationType.CLINICAL_ALERT_RESOLVED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Alert Resolved",
+            body_template="Alert {alert_id} has been resolved: {resolution_reason}.",
+            required_variables=["alert_id", "resolution_reason"],
+        ),
+    },
 }
 
 

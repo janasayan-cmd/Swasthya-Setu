@@ -428,6 +428,24 @@ class ErrorCode(str, Enum):
     CLINICIAN_DIAGNOSTIC_ACCESS_DENIED = "CLINICIAN_DIAGNOSTIC_ACCESS_DENIED"
     FACILITY_DIAGNOSTIC_ACCESS_DENIED = "FACILITY_DIAGNOSTIC_ACCESS_DENIED"
 
+    # Phase 35: Clinical Alerts, Safety Notifications & Escalation Management
+    ALERT_NOT_FOUND = "ALERT_NOT_FOUND"
+    ALERT_ACCESS_DENIED = "ALERT_ACCESS_DENIED"
+    ALERT_INVALID_STATE = "ALERT_INVALID_STATE"
+    ALERT_ALREADY_ACKNOWLEDGED = "ALERT_ALREADY_ACKNOWLEDGED"
+    ALERT_ALREADY_RESOLVED = "ALERT_ALREADY_RESOLVED"
+    ALERT_ESCALATION_NOT_ALLOWED = "ALERT_ESCALATION_NOT_ALLOWED"
+    ALERT_POLICY_NOT_FOUND = "ALERT_POLICY_NOT_FOUND"
+    ALERT_POLICY_INVALID = "ALERT_POLICY_INVALID"
+    ALERT_RECIPIENT_NOT_FOUND = "ALERT_RECIPIENT_NOT_FOUND"
+    ALERT_RECIPIENT_UNAUTHORIZED = "ALERT_RECIPIENT_UNAUTHORIZED"
+    ALERT_DUPLICATE_EVENT = "ALERT_DUPLICATE_EVENT"
+    ALERT_DELIVERY_FAILED = "ALERT_DELIVERY_FAILED"
+    ALERT_ESCALATION_FAILED = "ALERT_ESCALATION_FAILED"
+    ALERT_SOURCE_EVENT_NOT_FOUND = "ALERT_SOURCE_EVENT_NOT_FOUND"
+    ALERT_SOURCE_EVENT_INVALID = "ALERT_SOURCE_EVENT_INVALID"
+    ALERT_OPERATION_NOT_ALLOWED = "ALERT_OPERATION_NOT_ALLOWED"
+
 
 class AppException(Exception):
     """Base application exception for all domain and operational errors."""
@@ -3496,6 +3514,81 @@ class FacilityDiagnosticAccessDeniedException(ForbiddenException):
     def __init__(self, message: str = "Facility boundary does not permit access to this diagnostic record.") -> None:
         super().__init__(message=message)
         self.code = ErrorCode.FACILITY_DIAGNOSTIC_ACCESS_DENIED.value
+
+
+# ===========================================================================
+# Phase 35: Clinical Alerts, Safety Notifications & Escalation Exceptions
+# ===========================================================================
+
+class AlertNotFoundException(NotFoundException):
+    def __init__(self, message: str = "Alert not found.", alert_id: str | None = None) -> None:
+        super().__init__(message=message, details={"alert_id": alert_id} if alert_id else None)
+        self.code = ErrorCode.ALERT_NOT_FOUND.value
+
+class AlertAccessDeniedException(ForbiddenException):
+    def __init__(self, message: str = "You are not authorized to access this alert.", details: Any = None) -> None:
+        super().__init__(message=message, details=details)
+        self.code = ErrorCode.ALERT_ACCESS_DENIED.value
+
+class AlertInvalidStateException(AppException):
+    def __init__(self, message: str = "Alert is not in a valid state for this operation.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.ALERT_INVALID_STATE, message=message, status_code=status.HTTP_409_CONFLICT, details=details)
+
+class AlertAlreadyAcknowledgedException(AppException):
+    def __init__(self, message: str = "Alert has already been acknowledged.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.ALERT_ALREADY_ACKNOWLEDGED, message=message, status_code=status.HTTP_409_CONFLICT, details=details)
+
+class AlertAlreadyResolvedException(AppException):
+    def __init__(self, message: str = "Alert has already been resolved.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.ALERT_ALREADY_RESOLVED, message=message, status_code=status.HTTP_409_CONFLICT, details=details)
+
+class AlertEscalationNotAllowedException(AppException):
+    def __init__(self, message: str = "Alert cannot be escalated in its current state or configuration.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.ALERT_ESCALATION_NOT_ALLOWED, message=message, status_code=status.HTTP_400_BAD_REQUEST, details=details)
+
+class AlertPolicyNotFoundException(NotFoundException):
+    def __init__(self, message: str = "Alert policy not found.", policy_id: str | None = None) -> None:
+        super().__init__(message=message, details={"policy_id": policy_id} if policy_id else None)
+        self.code = ErrorCode.ALERT_POLICY_NOT_FOUND.value
+
+class AlertPolicyInvalidException(AppException):
+    def __init__(self, message: str = "Alert policy configuration is invalid.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.ALERT_POLICY_INVALID, message=message, status_code=status.HTTP_400_BAD_REQUEST, details=details)
+
+class AlertRecipientNotFoundException(NotFoundException):
+    def __init__(self, message: str = "Alert recipient not found.", details: Any = None) -> None:
+        super().__init__(message=message, details=details)
+        self.code = ErrorCode.ALERT_RECIPIENT_NOT_FOUND.value
+
+class AlertRecipientUnauthorizedException(ForbiddenException):
+    def __init__(self, message: str = "Recipient is not authorized for this alert scope.", details: Any = None) -> None:
+        super().__init__(message=message, details=details)
+        self.code = ErrorCode.ALERT_RECIPIENT_UNAUTHORIZED.value
+
+class AlertDuplicateEventException(AppException):
+    def __init__(self, message: str = "Alert for this source event already exists.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.ALERT_DUPLICATE_EVENT, message=message, status_code=status.HTTP_409_CONFLICT, details=details)
+
+class AlertDeliveryFailedException(AppException):
+    def __init__(self, message: str = "Alert notification delivery failed.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.ALERT_DELIVERY_FAILED, message=message, status_code=status.HTTP_502_BAD_GATEWAY, details=details)
+
+class AlertEscalationFailedException(AppException):
+    def __init__(self, message: str = "Alert escalation workflow failed.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.ALERT_ESCALATION_FAILED, message=message, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, details=details)
+
+class AlertSourceEventNotFoundException(NotFoundException):
+    def __init__(self, message: str = "Source event for alert not found.", details: Any = None) -> None:
+        super().__init__(message=message, details=details)
+        self.code = ErrorCode.ALERT_SOURCE_EVENT_NOT_FOUND.value
+
+class AlertSourceEventInvalidException(AppException):
+    def __init__(self, message: str = "Source event payload is invalid or missing required context.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.ALERT_SOURCE_EVENT_INVALID, message=message, status_code=status.HTTP_400_BAD_REQUEST, details=details)
+
+class AlertOperationNotAllowedException(AppException):
+    def __init__(self, message: str = "Alert operation is not permitted.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.ALERT_OPERATION_NOT_ALLOWED, message=message, status_code=status.HTTP_400_BAD_REQUEST, details=details)
 
 
 

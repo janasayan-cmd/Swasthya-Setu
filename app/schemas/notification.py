@@ -105,6 +105,12 @@ class NotificationType(str, Enum):
     CRITICAL_RESULT_REVIEW_REQUIRED = "CRITICAL_RESULT_REVIEW_REQUIRED"
     DIAGNOSTIC_REPORT_AVAILABLE = "DIAGNOSTIC_REPORT_AVAILABLE"
 
+    # Phase 35: Clinical Alerts, Safety Notifications & Escalation Management
+    CLINICAL_ALERT_DISPATCHED = "CLINICAL_ALERT_DISPATCHED"
+    CLINICAL_ALERT_ESCALATED = "CLINICAL_ALERT_ESCALATED"
+    CLINICAL_ALERT_ACKNOWLEDGED = "CLINICAL_ALERT_ACKNOWLEDGED"
+    CLINICAL_ALERT_RESOLVED = "CLINICAL_ALERT_RESOLVED"
+
 
 class NotificationCategory(str, Enum):
     """Broad categorization for governance and preference management."""
@@ -114,6 +120,7 @@ class NotificationCategory(str, Enum):
     SECURITY = "SECURITY"
     ADMINISTRATIVE = "ADMINISTRATIVE"
     DIAGNOSTIC = "DIAGNOSTIC"
+    ALERT = "ALERT"
 
 
 class NotificationStatus(str, Enum):

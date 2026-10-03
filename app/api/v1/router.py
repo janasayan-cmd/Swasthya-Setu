@@ -53,6 +53,7 @@ from app.api.v1.endpoints import (
     diagnostic_results,
     diagnostic_reports,
     diagnostic_webhooks,
+    alerts,
 )
 
 v1_router = APIRouter()
@@ -163,5 +164,8 @@ v1_router.include_router(diagnostic_orders.router)
 v1_router.include_router(diagnostic_results.router)
 v1_router.include_router(diagnostic_reports.router)
 v1_router.include_router(diagnostic_webhooks.router)
+
+# Register Phase 35 Clinical Alerts, Safety Notifications & Escalation Management endpoints
+v1_router.include_router(alerts.router)
 
 

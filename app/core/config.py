@@ -838,6 +838,18 @@ class Settings(BaseSettings):
     DIAGNOSTIC_NOTIFICATIONS_ENABLED: bool = Field(default=True, description="Emit diagnostic order and result notifications")
     DIAGNOSTIC_RATE_LIMIT_ENABLED: bool = Field(default=True, description="Enable rate limiting on diagnostic endpoints")
 
+    # Phase 35: Clinical Alerts, Safety Notifications & Escalation Management
+    ALERTS_ENABLED: bool = Field(default=True, description="Master switch for clinical alerts and safety notifications")
+    ALERT_ESCALATION_ENABLED: bool = Field(default=True, description="Enable automated alert escalation workflows")
+    ALERT_NOTIFICATION_ENABLED: bool = Field(default=True, description="Enable notifications for alerts")
+    ALERT_MAX_RETRY_ATTEMPTS: int = Field(default=3, description="Maximum retry attempts for alert processing/delivery")
+    ALERT_DEFAULT_PAGE_SIZE: int = Field(default=20, description="Default page size for alert listings")
+    ALERT_MAX_PAGE_SIZE: int = Field(default=100, description="Maximum page size for alert listings")
+    ALERT_ESCALATION_WORKER_ENABLED: bool = Field(default=True, description="Enable background worker for alert escalations")
+    ALERT_PROVIDER: str = Field(default="mock", description="Configured alert provider ('mock', 'local', etc.)")
+    ALERT_DEDUPLICATION_WINDOW_SECONDS: int = Field(default=86400, description="Window in seconds for idempotent duplicate event suppression")
+    ALERT_DEFAULT_ESCALATION_TIMEOUT_MINUTES: int = Field(default=15, description="Default timeout in minutes before escalating an unacknowledged critical alert")
+
     @property
     def max_document_size_bytes(self) -> int:
         """Maximum allowed document upload size in bytes."""

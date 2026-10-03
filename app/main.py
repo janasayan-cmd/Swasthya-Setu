@@ -128,6 +128,7 @@ OPENAPI_TAGS_METADATA = [
     {"name": "AI Intelligence", "description": "Non-authoritative clinical AI assistance, summarization, and safe-failure boundaries."},
     {"name": "Observability", "description": "Prometheus metrics, health summaries, and operational observability."},
     {"name": "Asynchronous Jobs", "description": "Long-running async job queuing, execution status, and retry management."},
+    {"name": "Clinical Alerts & Escalation", "description": "Clinically relevant alerts, safety notifications, acknowledgement workflows, and tiered escalation."},
 ]
 
 

@@ -247,6 +247,18 @@ from app.services.diagnostic_report_service import DiagnosticReportService
 from app.services.diagnostic_reconciliation_service import DiagnosticReconciliationService
 from app.services.diagnostic_webhook_service import DiagnosticWebhookService
 
+# Phase 35: Clinical Alerts, Safety Notifications & Escalation Management imports
+from app.repositories.alert_repository import AlertRepository
+from app.repositories.alert_escalation_repository import AlertEscalationRepository
+from app.repositories.alert_policy_repository import AlertPolicyRepository
+from app.integrations.alerts.base import AlertProvider
+from app.integrations.alerts.providers.local import LocalAlertProvider
+from app.services.alert_validation_service import AlertValidationService
+from app.services.alert_recipient_service import AlertRecipientService
+from app.services.alert_policy_service import AlertPolicyService
+from app.services.alert_escalation_service import AlertEscalationService
+from app.services.alert_service import AlertService
+
 # ---------------------------------------------------------------------------
 # HTTP Bearer scheme
 # ---------------------------------------------------------------------------
@@ -708,6 +720,34 @@ _global_diagnostic_webhook_service = DiagnosticWebhookService(
     provider=_global_mock_diagnostic_provider,
     audit_service=_global_audit_service,
     secret=_settings.DIAGNOSTIC_PROVIDER_WEBHOOK_SECRET or "mock-diagnostic-webhook-secret-key-12345",
+)
+
+# ---------------------------------------------------------------------------
+# Phase 35: Clinical Alerts & Escalation Management singletons
+# ---------------------------------------------------------------------------
+_global_alert_repo = AlertRepository()
+_global_alert_escalation_repo = AlertEscalationRepository()
+_global_alert_policy_repo = AlertPolicyRepository()
+_global_local_alert_provider = LocalAlertProvider()
+_global_alert_validation_service = AlertValidationService()
+_global_alert_recipient_service = AlertRecipientService()
+_global_alert_policy_service = AlertPolicyService(policy_repo=_global_alert_policy_repo)
+_global_alert_escalation_service = AlertEscalationService(
+    alert_repo=_global_alert_repo,
+    escalation_repo=_global_alert_escalation_repo,
+    recipient_service=_global_alert_recipient_service,
+    notification_service=_global_notification_service,
+    audit_service=_global_audit_service,
+    alert_provider=_global_local_alert_provider,
+)
+_global_alert_service = AlertService(
+    alert_repo=_global_alert_repo,
+    policy_service=_global_alert_policy_service,
+    recipient_service=_global_alert_recipient_service,
+    validation_service=_global_alert_validation_service,
+    notification_service=_global_notification_service,
+    audit_service=_global_audit_service,
+    alert_provider=_global_local_alert_provider,
 )
 
 
@@ -2260,5 +2300,54 @@ def get_diagnostic_reconciliation_service() -> DiagnosticReconciliationService:
 def get_diagnostic_webhook_service() -> DiagnosticWebhookService:
     """Dependency provider for DiagnosticWebhookService."""
     return _global_diagnostic_webhook_service
+
+
+# ---------------------------------------------------------------------------
+# Phase 35: Clinical Alerts & Escalation Getters
+# ---------------------------------------------------------------------------
+
+def get_alert_repository() -> AlertRepository:
+    """Dependency provider for AlertRepository."""
+    return _global_alert_repo
+
+
+def get_alert_escalation_repository() -> AlertEscalationRepository:
+    """Dependency provider for AlertEscalationRepository."""
+    return _global_alert_escalation_repo
+
+
+def get_alert_policy_repository() -> AlertPolicyRepository:
+    """Dependency provider for AlertPolicyRepository."""
+    return _global_alert_policy_repo
+
+
+def get_alert_provider() -> AlertProvider:
+    """Dependency provider for AlertProvider."""
+    return _global_local_alert_provider
+
+
+def get_alert_validation_service() -> AlertValidationService:
+    """Dependency provider for AlertValidationService."""
+    return _global_alert_validation_service
+
+
+def get_alert_recipient_service() -> AlertRecipientService:
+    """Dependency provider for AlertRecipientService."""
+    return _global_alert_recipient_service
+
+
+def get_alert_policy_service() -> AlertPolicyService:
+    """Dependency provider for AlertPolicyService."""
+    return _global_alert_policy_service
+
+
+def get_alert_escalation_service() -> AlertEscalationService:
+    """Dependency provider for AlertEscalationService."""
+    return _global_alert_escalation_service
+
+
+def get_alert_service() -> AlertService:
+    """Dependency provider for AlertService."""
+    return _global_alert_service
 
 

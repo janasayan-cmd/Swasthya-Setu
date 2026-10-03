@@ -1173,7 +1173,7 @@ class AuditService(BaseService[AuditRepository]):
     # Phase 26: Data Quality & Reconciliation Audit Event Logging
     async def log_event(
         self,
-        event_type: AuditEventType,
+        event_type: AuditEventType | AuditEventRecord,
         actor: Any = None,
         patient_id: str | None = None,
         resource_type: str | None = None,
@@ -1183,6 +1183,10 @@ class AuditService(BaseService[AuditRepository]):
         payload: dict | None = None,
         outcome: str = "ALLOW",
     ) -> None:
+        if isinstance(event_type, AuditEventRecord):
+            await self.audit_repo.append(event_type)
+            return
+
         actor_id = getattr(actor, "actor_id", None) or getattr(actor, "user_id", None) or (str(actor) if actor else None)
         meta = {"patient_id": patient_id} if patient_id else {}
         if description:

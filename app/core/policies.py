@@ -291,6 +291,18 @@ class Permission(str, Enum):
     ADMIN_DIAGNOSTIC_PROVIDER_VIEW = "admin:diagnostic_provider_view"
     ADMIN_DIAGNOSTIC_PROVIDER_TEST = "admin:diagnostic_provider_test"
 
+    # ---- Phase 35: Clinical Alerts, Safety Notifications & Escalation Management ----
+    ALERT_READ = "alert:read"
+    ALERT_ACKNOWLEDGE = "alert:acknowledge"
+    ALERT_RESOLVE = "alert:resolve"
+    ALERT_DISMISS = "alert:dismiss"
+    ALERT_ESCALATE = "alert:escalate"
+    ALERT_POLICY_READ = "alert_policy:read"
+    ADMIN_ALERTS_VIEW = "admin:alerts_view"
+    ADMIN_ALERTS_MANAGE = "admin:alerts_manage"
+    ADMIN_ALERT_POLICIES_MANAGE = "admin:alert_policies_manage"
+    ADMIN_ALERT_ESCALATION_MANAGE = "admin:alert_escalation_manage"
+
 
 # ---------------------------------------------------------------------------
 # Role-to-Permission Mapping
@@ -405,6 +417,9 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.DIAGNOSTIC_ORDER_READ,
         Permission.DIAGNOSTIC_RESULT_READ,
         Permission.DIAGNOSTIC_REPORT_READ,
+        # Phase 35: Clinical Alerts & Notifications (Patient-facing)
+        Permission.ALERT_READ,
+        Permission.ALERT_ACKNOWLEDGE,
     }),
     "DOCTOR": frozenset({
         Permission.PATIENT_READ_SELF,         # can read patient profile in context
@@ -537,6 +552,12 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.DIAGNOSTIC_RESULT_VERIFY,
         Permission.DIAGNOSTIC_REPORT_READ,
         Permission.DIAGNOSTIC_REPORT_CREATE,
+        # Phase 35: Clinical Alerts, Safety Notifications & Escalation Management
+        Permission.ALERT_READ,
+        Permission.ALERT_ACKNOWLEDGE,
+        Permission.ALERT_RESOLVE,
+        Permission.ALERT_DISMISS,
+        Permission.ALERT_POLICY_READ,
     }),
     "ADMIN": frozenset({
         # Administrative capabilities ONLY — no automatic clinical data access
@@ -677,6 +698,11 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.ADMIN_DIAGNOSTIC_RECONCILIATION,
         Permission.ADMIN_DIAGNOSTIC_PROVIDER_VIEW,
         Permission.ADMIN_DIAGNOSTIC_PROVIDER_TEST,
+        # Phase 35: Clinical Alerts Administration
+        Permission.ADMIN_ALERTS_VIEW,
+        Permission.ADMIN_ALERTS_MANAGE,
+        Permission.ADMIN_ALERT_POLICIES_MANAGE,
+        Permission.ADMIN_ALERT_ESCALATION_MANAGE,
     }),
     "SYSTEM_ADMIN": frozenset({
         Permission.ADMIN_USER_MANAGE,
@@ -799,6 +825,11 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.ADMIN_DIAGNOSTIC_RECONCILIATION,
         Permission.ADMIN_DIAGNOSTIC_PROVIDER_VIEW,
         Permission.ADMIN_DIAGNOSTIC_PROVIDER_TEST,
+        # Phase 35: Clinical Alerts Administration
+        Permission.ADMIN_ALERTS_VIEW,
+        Permission.ADMIN_ALERTS_MANAGE,
+        Permission.ADMIN_ALERT_POLICIES_MANAGE,
+        Permission.ADMIN_ALERT_ESCALATION_MANAGE,
     }),
     "OPERATIONS_ADMIN": frozenset({
         Permission.ADMIN_SYSTEM_VIEW,
@@ -842,6 +873,10 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.ADMIN_DIAGNOSTIC_RESULTS_VIEW,
         Permission.ADMIN_DIAGNOSTIC_RECONCILIATION,
         Permission.ADMIN_DIAGNOSTIC_PROVIDER_VIEW,
+        # Phase 35: Clinical Alerts Operations
+        Permission.ADMIN_ALERTS_VIEW,
+        Permission.ADMIN_ALERTS_MANAGE,
+        Permission.ADMIN_ALERT_ESCALATION_MANAGE,
     }),
     "SUPPORT_OPERATOR": frozenset({
         Permission.ADMIN_SYSTEM_VIEW,
@@ -865,6 +900,8 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.ADMIN_PAYMENT_VIEW,
         Permission.INVOICE_READ,
         Permission.PAYMENT_READ,
+        # Phase 35: Clinical Alerts Support
+        Permission.ADMIN_ALERTS_VIEW,
     }),
     "SECURITY_OPERATOR": frozenset({
         Permission.ADMIN_SYSTEM_VIEW,
@@ -1097,6 +1134,17 @@ ACTION_PERMISSION_MAP: dict[tuple[str, str], Permission] = {
     ("diagnostic_admin", "reconcile"):    Permission.ADMIN_DIAGNOSTIC_RECONCILIATION,
     ("diagnostic_provider_admin", "view"):Permission.ADMIN_DIAGNOSTIC_PROVIDER_VIEW,
     ("diagnostic_provider_admin", "test"):Permission.ADMIN_DIAGNOSTIC_PROVIDER_TEST,
+    # Phase 35: Clinical Alerts & Escalation
+    ("alert", "read"):                    Permission.ALERT_READ,
+    ("alert", "acknowledge"):             Permission.ALERT_ACKNOWLEDGE,
+    ("alert", "resolve"):                 Permission.ALERT_RESOLVE,
+    ("alert", "dismiss"):                 Permission.ALERT_DISMISS,
+    ("alert", "escalate"):                Permission.ALERT_ESCALATE,
+    ("alert_policy", "read"):             Permission.ALERT_POLICY_READ,
+    ("alerts_admin", "view"):             Permission.ADMIN_ALERTS_VIEW,
+    ("alerts_admin", "manage"):           Permission.ADMIN_ALERTS_MANAGE,
+    ("alert_policies_admin", "manage"):   Permission.ADMIN_ALERT_POLICIES_MANAGE,
+    ("alert_escalation_admin", "manage"): Permission.ADMIN_ALERT_ESCALATION_MANAGE,
 }
 
 
@@ -1146,6 +1194,7 @@ class ConsentScope(str, Enum):
     TRANSFER = "transfer"
     INTEROPERABILITY = "interoperability"
     DIAGNOSTICS = "diagnostics"
+    ALERTS = "alerts"
     ALL_RECORDS = "all_records"   # broad scope — must require explicit grant
 
 
