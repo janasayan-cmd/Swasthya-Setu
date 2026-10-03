@@ -791,6 +791,32 @@ class Settings(BaseSettings):
     BILLING_ANALYTICS_ENABLED: bool = Field(default=True, description="Record operational financial telemetry in analytics")
     BILLING_NOTIFICATIONS_ENABLED: bool = Field(default=True, description="Emit customer financial event notifications")
 
+    # Phase 33: Insurance, Claims & Payer Integration Configuration
+    INSURANCE_ENABLED: bool = Field(default=True, description="Master switch for insurance subsystem")
+    ELIGIBILITY_ENABLED: bool = Field(default=True, description="Enable insurance eligibility verification")
+    BENEFITS_ENABLED: bool = Field(default=True, description="Enable insurance benefit retrieval")
+    PREAUTHORIZATION_ENABLED: bool = Field(default=True, description="Enable pre-authorization workflows")
+    CLAIMS_ENABLED: bool = Field(default=True, description="Enable claim management and lifecycle")
+    CLAIM_SUBMISSION_ENABLED: bool = Field(default=True, description="Enable claim submission to payers")
+    CLAIM_RECONCILIATION_ENABLED: bool = Field(default=True, description="Enable automated claim reconciliation")
+    PAYER_INTEGRATIONS_ENABLED: bool = Field(default=True, description="Enable external payer integration adapters")
+    PAYER_PROVIDER: str = Field(default="mock", description="Configured payer provider adapter ('mock', 'tpa_portal', etc.)")
+    PAYER_BASE_URL: str = Field(default="", description="Base URL for payer provider API")
+    PAYER_API_KEY: str = Field(default="", description="API Key for payer provider")
+    PAYER_CLIENT_ID: str = Field(default="", description="OAuth2 Client ID for payer provider")
+    PAYER_CLIENT_SECRET: str = Field(default="", description="OAuth2 Client Secret for payer provider")
+    PAYER_WEBHOOK_SECRET: str = Field(default="payer_whsec_test_secret_7721", description="Webhook signing secret for payer events")
+    PAYER_TIMEOUT_SECONDS: int = Field(default=30, description="Timeout ceiling for general payer communication")
+    PAYER_MAX_RETRIES: int = Field(default=2, description="Max retries for transient payer failures")
+    ELIGIBILITY_TIMEOUT_SECONDS: int = Field(default=20, description="Timeout for eligibility checks")
+    PREAUTHORIZATION_TIMEOUT_SECONDS: int = Field(default=30, description="Timeout for pre-authorization requests")
+    CLAIM_SUBMISSION_TIMEOUT_SECONDS: int = Field(default=30, description="Timeout for claim submission")
+    CLAIM_RECONCILIATION_INTERVAL_SECONDS: int = Field(default=300, description="Interval in seconds between claim reconciliation jobs")
+    INSURANCE_RATE_LIMIT_ENABLED: bool = Field(default=True, description="Enable rate limiting on insurance endpoints")
+    INSURANCE_ANALYTICS_ENABLED: bool = Field(default=True, description="Record operational insurance telemetry in analytics")
+    INSURANCE_NOTIFICATIONS_ENABLED: bool = Field(default=True, description="Emit customer insurance event notifications")
+    INSURANCE_DOCUMENT_PROCESSING_ENABLED: bool = Field(default=True, description="Enable insurance document & card extraction")
+
     @property
     def max_document_size_bytes(self) -> int:
         """Maximum allowed document upload size in bytes."""

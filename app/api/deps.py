@@ -208,6 +208,25 @@ from app.services.payment_service import PaymentService
 from app.services.refund_service import RefundService
 from app.services.payment_webhook_service import PaymentWebhookService
 from app.services.payment_reconciliation_service import PaymentReconciliationService
+from app.repositories.insurance_repository import InsuranceRepository
+from app.repositories.eligibility_repository import EligibilityRepository
+from app.repositories.benefit_repository import BenefitRepository
+from app.repositories.authorization_repository import AuthorizationRepository
+from app.repositories.claim_repository import ClaimRepository
+from app.repositories.claim_reconciliation_repository import ClaimReconciliationRepository
+from app.repositories.payer_webhook_repository import PayerWebhookRepository
+from app.integrations.payers.base import PayerProvider
+from app.integrations.payers.providers.mock import MockPayerProvider
+from app.services.insurance_validation_service import InsuranceValidationService
+from app.services.payer_authorization_service import PayerAuthorizationService
+from app.services.insurance_service import InsuranceService
+from app.services.eligibility_service import EligibilityService
+from app.services.benefit_service import BenefitService
+from app.services.preauthorization_service import PreAuthorizationService
+from app.services.claim_service import ClaimService
+from app.services.claim_response_service import ClaimResponseService
+from app.services.claim_reconciliation_service import ClaimReconciliationService
+from app.services.payer_webhook_service import PayerWebhookService
 
 # ---------------------------------------------------------------------------
 # HTTP Bearer scheme
@@ -559,6 +578,52 @@ _global_payment_reconciliation_service = PaymentReconciliationService(
     invoice_service=_global_invoice_service,
     provider=_global_mock_payment_provider,
     audit_service=_global_audit_service,
+)
+
+# ---------------------------------------------------------------------------
+# Phase 33: Insurance, Claims & Payer Integration singletons
+# ---------------------------------------------------------------------------
+_global_insurance_repo = InsuranceRepository()
+_global_eligibility_repo = EligibilityRepository()
+_global_benefit_repo = BenefitRepository()
+_global_authorization_repo = AuthorizationRepository()
+_global_claim_repo = ClaimRepository()
+_global_claim_reconciliation_repo = ClaimReconciliationRepository()
+_global_payer_webhook_repo = PayerWebhookRepository()
+_global_mock_payer_provider = MockPayerProvider()
+_global_insurance_service = InsuranceService(repository=_global_insurance_repo)
+_global_eligibility_service = EligibilityService(
+    insurance_repo=_global_insurance_repo,
+    eligibility_repo=_global_eligibility_repo,
+    provider=_global_mock_payer_provider,
+)
+_global_benefit_service = BenefitService(
+    insurance_repo=_global_insurance_repo,
+    benefit_repo=_global_benefit_repo,
+    provider=_global_mock_payer_provider,
+)
+_global_preauthorization_service = PreAuthorizationService(
+    insurance_repo=_global_insurance_repo,
+    auth_repo=_global_authorization_repo,
+    provider=_global_mock_payer_provider,
+)
+_global_claim_service = ClaimService(
+    insurance_repo=_global_insurance_repo,
+    claim_repo=_global_claim_repo,
+    auth_repo=_global_authorization_repo,
+    provider=_global_mock_payer_provider,
+)
+_global_claim_response_service = ClaimResponseService(claim_repo=_global_claim_repo)
+_global_claim_reconciliation_service = ClaimReconciliationService(
+    claim_repo=_global_claim_repo,
+    rec_repo=_global_claim_reconciliation_repo,
+    provider=_global_mock_payer_provider,
+)
+_global_payer_webhook_service = PayerWebhookService(
+    claim_repo=_global_claim_repo,
+    auth_repo=_global_authorization_repo,
+    webhook_repo=_global_payer_webhook_repo,
+    provider=_global_mock_payer_provider,
 )
 
 
@@ -1944,5 +2009,89 @@ def get_payment_webhook_service() -> PaymentWebhookService:
 def get_payment_reconciliation_service() -> PaymentReconciliationService:
     """Dependency provider for PaymentReconciliationService."""
     return _global_payment_reconciliation_service
+
+
+# ---------------------------------------------------------------------------
+# Phase 33: Insurance, Claims & Payer Integration providers
+# ---------------------------------------------------------------------------
+
+def get_insurance_repository() -> InsuranceRepository:
+    """Dependency provider for InsuranceRepository."""
+    return _global_insurance_repo
+
+
+def get_eligibility_repository() -> EligibilityRepository:
+    """Dependency provider for EligibilityRepository."""
+    return _global_eligibility_repo
+
+
+def get_benefit_repository() -> BenefitRepository:
+    """Dependency provider for BenefitRepository."""
+    return _global_benefit_repo
+
+
+def get_authorization_repository() -> AuthorizationRepository:
+    """Dependency provider for AuthorizationRepository."""
+    return _global_authorization_repo
+
+
+def get_claim_repository() -> ClaimRepository:
+    """Dependency provider for ClaimRepository."""
+    return _global_claim_repo
+
+
+def get_claim_reconciliation_repository() -> ClaimReconciliationRepository:
+    """Dependency provider for ClaimReconciliationRepository."""
+    return _global_claim_reconciliation_repo
+
+
+def get_payer_webhook_repository() -> PayerWebhookRepository:
+    """Dependency provider for PayerWebhookRepository."""
+    return _global_payer_webhook_repo
+
+
+def get_payer_provider() -> PayerProvider:
+    """Dependency provider for PayerProvider."""
+    return _global_mock_payer_provider
+
+
+def get_insurance_service() -> InsuranceService:
+    """Dependency provider for InsuranceService."""
+    return _global_insurance_service
+
+
+def get_eligibility_service() -> EligibilityService:
+    """Dependency provider for EligibilityService."""
+    return _global_eligibility_service
+
+
+def get_benefit_service() -> BenefitService:
+    """Dependency provider for BenefitService."""
+    return _global_benefit_service
+
+
+def get_preauthorization_service() -> PreAuthorizationService:
+    """Dependency provider for PreAuthorizationService."""
+    return _global_preauthorization_service
+
+
+def get_claim_service() -> ClaimService:
+    """Dependency provider for ClaimService."""
+    return _global_claim_service
+
+
+def get_claim_response_service() -> ClaimResponseService:
+    """Dependency provider for ClaimResponseService."""
+    return _global_claim_response_service
+
+
+def get_claim_reconciliation_service() -> ClaimReconciliationService:
+    """Dependency provider for ClaimReconciliationService."""
+    return _global_claim_reconciliation_service
+
+
+def get_payer_webhook_service() -> PayerWebhookService:
+    """Dependency provider for PayerWebhookService."""
+    return _global_payer_webhook_service
 
 

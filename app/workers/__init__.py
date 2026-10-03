@@ -19,6 +19,7 @@ from app.workers.tasks import (
     search,
     scheduling,
     billing,
+    insurance,
 )
 from app.workers.worker import AsyncWorkerPool
 

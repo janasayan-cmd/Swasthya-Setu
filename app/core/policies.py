@@ -243,6 +243,35 @@ class Permission(str, Enum):
     ADMIN_PAYMENT_RECONCILE = "admin:payment_reconcile"
     ADMIN_REFUND_MANAGE = "admin:refund_manage"
 
+    # ---- Phase 33: Insurance, Claims & Payer Integration ----
+    INSURANCE_READ = "insurance:read"
+    INSURANCE_CREATE = "insurance:create"
+    INSURANCE_UPDATE = "insurance:update"
+    INSURANCE_VERIFY = "insurance:verify"
+    ELIGIBILITY_CHECK = "eligibility:check"
+    BENEFITS_READ = "benefits:read"
+    AUTHORIZATION_READ = "authorization:read"
+    AUTHORIZATION_CREATE = "authorization:create"
+    AUTHORIZATION_UPDATE = "authorization:update"
+    AUTHORIZATION_SUBMIT = "authorization:submit"
+    CLAIM_READ = "claim:read"
+    CLAIM_CREATE = "claim:create"
+    CLAIM_UPDATE = "claim:update"
+    CLAIM_SUBMIT = "claim:submit"
+    CLAIM_RECONCILE = "claim:reconcile"
+    ADMIN_INSURANCE_VIEW = "admin:insurance_view"
+    ADMIN_INSURANCE_MANAGE = "admin:insurance_manage"
+    ADMIN_ELIGIBILITY_VIEW = "admin:eligibility_view"
+    ADMIN_ELIGIBILITY_MANAGE = "admin:eligibility_manage"
+    ADMIN_AUTHORIZATION_VIEW = "admin:authorization_view"
+    ADMIN_AUTHORIZATION_MANAGE = "admin:authorization_manage"
+    ADMIN_CLAIMS_VIEW = "admin:claims_view"
+    ADMIN_CLAIMS_MANAGE = "admin:claims_manage"
+    ADMIN_CLAIM_RECONCILE = "admin:claim_reconcile"
+    ADMIN_PAYER_VIEW = "admin:payer_view"
+    ADMIN_PAYER_MANAGE = "admin:payer_manage"
+    ADMIN_PAYER_TEST = "admin:payer_test"
+
 
 # ---------------------------------------------------------------------------
 # Role-to-Permission Mapping
@@ -342,6 +371,17 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.INVOICE_CANCEL,
         Permission.PAYMENT_READ,
         Permission.PAYMENT_CREATE,
+        # Phase 33: Insurance, Claims & Benefits (Patient Self-Service)
+        Permission.INSURANCE_READ,
+        Permission.INSURANCE_CREATE,
+        Permission.INSURANCE_UPDATE,
+        Permission.ELIGIBILITY_CHECK,
+        Permission.BENEFITS_READ,
+        Permission.AUTHORIZATION_READ,
+        Permission.AUTHORIZATION_CREATE,
+        Permission.CLAIM_READ,
+        Permission.CLAIM_CREATE,
+        Permission.CLAIM_SUBMIT,
     }),
     "DOCTOR": frozenset({
         Permission.PATIENT_READ_SELF,         # can read patient profile in context
@@ -456,6 +496,15 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.SCHEDULE_MANAGE,
         # Phase 32: Billing & Payments
         Permission.INVOICE_READ,
+        # Phase 33: Insurance & Clinical Prior Auth
+        Permission.INSURANCE_READ,
+        Permission.ELIGIBILITY_CHECK,
+        Permission.BENEFITS_READ,
+        Permission.AUTHORIZATION_READ,
+        Permission.AUTHORIZATION_CREATE,
+        Permission.AUTHORIZATION_UPDATE,
+        Permission.AUTHORIZATION_SUBMIT,
+        Permission.CLAIM_READ,
     }),
     "ADMIN": frozenset({
         # Administrative capabilities ONLY — no automatic clinical data access
@@ -554,6 +603,34 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.ADMIN_PAYMENT_VIEW,
         Permission.ADMIN_PAYMENT_RECONCILE,
         Permission.ADMIN_REFUND_MANAGE,
+        # Phase 33: Insurance & Claims Admin
+        Permission.INSURANCE_READ,
+        Permission.INSURANCE_CREATE,
+        Permission.INSURANCE_UPDATE,
+        Permission.INSURANCE_VERIFY,
+        Permission.ELIGIBILITY_CHECK,
+        Permission.BENEFITS_READ,
+        Permission.AUTHORIZATION_READ,
+        Permission.AUTHORIZATION_CREATE,
+        Permission.AUTHORIZATION_UPDATE,
+        Permission.AUTHORIZATION_SUBMIT,
+        Permission.CLAIM_READ,
+        Permission.CLAIM_CREATE,
+        Permission.CLAIM_UPDATE,
+        Permission.CLAIM_SUBMIT,
+        Permission.CLAIM_RECONCILE,
+        Permission.ADMIN_INSURANCE_VIEW,
+        Permission.ADMIN_INSURANCE_MANAGE,
+        Permission.ADMIN_ELIGIBILITY_VIEW,
+        Permission.ADMIN_ELIGIBILITY_MANAGE,
+        Permission.ADMIN_AUTHORIZATION_VIEW,
+        Permission.ADMIN_AUTHORIZATION_MANAGE,
+        Permission.ADMIN_CLAIMS_VIEW,
+        Permission.ADMIN_CLAIMS_MANAGE,
+        Permission.ADMIN_CLAIM_RECONCILE,
+        Permission.ADMIN_PAYER_VIEW,
+        Permission.ADMIN_PAYER_MANAGE,
+        Permission.ADMIN_PAYER_TEST,
     }),
     "SYSTEM_ADMIN": frozenset({
         Permission.ADMIN_USER_MANAGE,
@@ -634,6 +711,34 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.ADMIN_PAYMENT_VIEW,
         Permission.ADMIN_PAYMENT_RECONCILE,
         Permission.ADMIN_REFUND_MANAGE,
+        # Phase 33: Insurance & Claims Admin
+        Permission.INSURANCE_READ,
+        Permission.INSURANCE_CREATE,
+        Permission.INSURANCE_UPDATE,
+        Permission.INSURANCE_VERIFY,
+        Permission.ELIGIBILITY_CHECK,
+        Permission.BENEFITS_READ,
+        Permission.AUTHORIZATION_READ,
+        Permission.AUTHORIZATION_CREATE,
+        Permission.AUTHORIZATION_UPDATE,
+        Permission.AUTHORIZATION_SUBMIT,
+        Permission.CLAIM_READ,
+        Permission.CLAIM_CREATE,
+        Permission.CLAIM_UPDATE,
+        Permission.CLAIM_SUBMIT,
+        Permission.CLAIM_RECONCILE,
+        Permission.ADMIN_INSURANCE_VIEW,
+        Permission.ADMIN_INSURANCE_MANAGE,
+        Permission.ADMIN_ELIGIBILITY_VIEW,
+        Permission.ADMIN_ELIGIBILITY_MANAGE,
+        Permission.ADMIN_AUTHORIZATION_VIEW,
+        Permission.ADMIN_AUTHORIZATION_MANAGE,
+        Permission.ADMIN_CLAIMS_VIEW,
+        Permission.ADMIN_CLAIMS_MANAGE,
+        Permission.ADMIN_CLAIM_RECONCILE,
+        Permission.ADMIN_PAYER_VIEW,
+        Permission.ADMIN_PAYER_MANAGE,
+        Permission.ADMIN_PAYER_TEST,
     }),
     "OPERATIONS_ADMIN": frozenset({
         Permission.ADMIN_SYSTEM_VIEW,
@@ -660,6 +765,13 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.ADMIN_PAYMENT_RECONCILE,
         Permission.INVOICE_READ,
         Permission.PAYMENT_READ,
+        # Phase 33: Insurance & Claims Operations
+        Permission.ADMIN_INSURANCE_VIEW,
+        Permission.ADMIN_CLAIMS_VIEW,
+        Permission.ADMIN_CLAIM_RECONCILE,
+        Permission.ADMIN_PAYER_VIEW,
+        Permission.INSURANCE_READ,
+        Permission.CLAIM_READ,
     }),
     "SUPPORT_OPERATOR": frozenset({
         Permission.ADMIN_SYSTEM_VIEW,
@@ -873,6 +985,30 @@ ACTION_PERMISSION_MAP: dict[tuple[str, str], Permission] = {
     ("payment_admin", "view"):           Permission.ADMIN_PAYMENT_VIEW,
     ("payment_admin", "reconcile"):      Permission.ADMIN_PAYMENT_RECONCILE,
     ("refund_admin", "manage"):          Permission.ADMIN_REFUND_MANAGE,
+    # Phase 33: Insurance, Claims & Payer Integration
+    ("insurance", "read"):               Permission.INSURANCE_READ,
+    ("insurance", "create"):             Permission.INSURANCE_CREATE,
+    ("insurance", "update"):             Permission.INSURANCE_UPDATE,
+    ("insurance", "verify"):             Permission.INSURANCE_VERIFY,
+    ("eligibility", "check"):            Permission.ELIGIBILITY_CHECK,
+    ("benefits", "read"):                Permission.BENEFITS_READ,
+    ("authorization", "read"):           Permission.AUTHORIZATION_READ,
+    ("authorization", "create"):         Permission.AUTHORIZATION_CREATE,
+    ("authorization", "update"):         Permission.AUTHORIZATION_UPDATE,
+    ("authorization", "submit"):         Permission.AUTHORIZATION_SUBMIT,
+    ("claim", "read"):                   Permission.CLAIM_READ,
+    ("claim", "create"):                 Permission.CLAIM_CREATE,
+    ("claim", "update"):                 Permission.CLAIM_UPDATE,
+    ("claim", "submit"):                 Permission.CLAIM_SUBMIT,
+    ("claim", "reconcile"):              Permission.CLAIM_RECONCILE,
+    ("insurance_admin", "view"):         Permission.ADMIN_INSURANCE_VIEW,
+    ("insurance_admin", "manage"):       Permission.ADMIN_INSURANCE_MANAGE,
+    ("claims_admin", "view"):            Permission.ADMIN_CLAIMS_VIEW,
+    ("claims_admin", "manage"):          Permission.ADMIN_CLAIMS_MANAGE,
+    ("claim_admin", "reconcile"):        Permission.ADMIN_CLAIM_RECONCILE,
+    ("payer_admin", "view"):             Permission.ADMIN_PAYER_VIEW,
+    ("payer_admin", "manage"):           Permission.ADMIN_PAYER_MANAGE,
+    ("payer_admin", "test"):             Permission.ADMIN_PAYER_TEST,
 }
 
 

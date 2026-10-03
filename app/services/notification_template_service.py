@@ -674,6 +674,103 @@ TEMPLATES: Dict[NotificationType, Dict[str, TemplateDefinition]] = {
             required_variables=["invoice_number"],
         ),
     },
+    # Phase 33: Insurance, Pre-Authorization & Claims
+    NotificationType.ELIGIBILITY_CHECK_COMPLETED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Eligibility Verified",
+            body_template="Insurance coverage verification completed with status {status}.",
+            required_variables=["status"],
+        ),
+    },
+    NotificationType.ELIGIBILITY_CHECK_FAILED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Eligibility Check Failed",
+            body_template="Could not verify insurance coverage with payer {payer_name}.",
+            required_variables=["payer_name"],
+        ),
+    },
+    NotificationType.PREAUTH_REQUESTED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Pre-Authorization Requested",
+            body_template="Prior authorization {auth_number} submitted to {payer_name}.",
+            required_variables=["auth_number", "payer_name"],
+        ),
+    },
+    NotificationType.PREAUTH_APPROVED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Pre-Authorization Approved",
+            body_template="Prior authorization {auth_number} approved for {service_code}.",
+            required_variables=["auth_number", "service_code"],
+        ),
+    },
+    NotificationType.PREAUTH_DENIED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Pre-Authorization Denied",
+            body_template="Prior authorization {auth_number} was denied by payer.",
+            required_variables=["auth_number"],
+        ),
+    },
+    NotificationType.CLAIM_SUBMITTED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Claim Submitted",
+            body_template="Insurance claim {claim_number} for {currency} {amount} submitted to {payer_name}.",
+            required_variables=["claim_number", "amount", "currency", "payer_name"],
+        ),
+    },
+    NotificationType.CLAIM_RECEIVED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Claim Received",
+            body_template="Claim {claim_number} received and queued for adjudication.",
+            required_variables=["claim_number"],
+        ),
+    },
+    NotificationType.CLAIM_APPROVED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Claim Approved",
+            body_template="Claim {claim_number} approved for {currency} {approved_amount}.",
+            required_variables=["claim_number", "approved_amount", "currency"],
+        ),
+    },
+    NotificationType.CLAIM_DENIED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Claim Denied",
+            body_template="Claim {claim_number} was denied by the payer.",
+            required_variables=["claim_number"],
+        ),
+    },
+    NotificationType.CLAIM_REQUIRES_REVIEW: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Claim Review Required",
+            body_template="Claim {claim_number} requires administrative review.",
+            required_variables=["claim_number"],
+        ),
+    },
+    NotificationType.CLAIM_PAYMENT_RECEIVED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Claim Payment Received",
+            body_template="Payer remittance received for claim {claim_number}: {currency} {paid_amount}.",
+            required_variables=["claim_number", "paid_amount", "currency"],
+        ),
+    },
+    NotificationType.CLAIM_RECONCILIATION_REQUIRED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Claim Reconciliation Required",
+            body_template="Discrepancy detected for claim {claim_number}; manual audit required.",
+            required_variables=["claim_number"],
+        ),
+    },
 }
 
 

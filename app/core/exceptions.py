@@ -335,6 +335,56 @@ class ErrorCode(str, Enum):
     ORGANIZATION_BILLING_ACCESS_DENIED = "ORGANIZATION_BILLING_ACCESS_DENIED"
     FACILITY_BILLING_ACCESS_DENIED = "FACILITY_BILLING_ACCESS_DENIED"
 
+    # Phase 33: Insurance, Claims & Payer Integration Error Codes
+    INSURANCE_DISABLED = "INSURANCE_DISABLED"
+    ELIGIBILITY_DISABLED = "ELIGIBILITY_DISABLED"
+    BENEFITS_DISABLED = "BENEFITS_DISABLED"
+    PREAUTHORIZATION_DISABLED = "PREAUTHORIZATION_DISABLED"
+    CLAIMS_DISABLED = "CLAIMS_DISABLED"
+    CLAIM_SUBMISSION_DISABLED = "CLAIM_SUBMISSION_DISABLED"
+    CLAIM_RECONCILIATION_DISABLED = "CLAIM_RECONCILIATION_DISABLED"
+    PAYER_INTEGRATIONS_DISABLED = "PAYER_INTEGRATIONS_DISABLED"
+    INSURANCE_NOT_FOUND = "INSURANCE_NOT_FOUND"
+    INSURANCE_NOT_AUTHORIZED = "INSURANCE_NOT_AUTHORIZED"
+    INSURANCE_INVALID_STATE = "INSURANCE_INVALID_STATE"
+    INSURANCE_IDENTIFIER_INVALID = "INSURANCE_IDENTIFIER_INVALID"
+    INSURANCE_PROVIDER_UNAVAILABLE = "INSURANCE_PROVIDER_UNAVAILABLE"
+    ELIGIBILITY_CHECK_NOT_FOUND = "ELIGIBILITY_CHECK_NOT_FOUND"
+    ELIGIBILITY_CHECK_FAILED = "ELIGIBILITY_CHECK_FAILED"
+    ELIGIBILITY_PROVIDER_TIMEOUT = "ELIGIBILITY_PROVIDER_TIMEOUT"
+    ELIGIBILITY_PROVIDER_AUTHENTICATION_FAILED = "ELIGIBILITY_PROVIDER_AUTHENTICATION_FAILED"
+    ELIGIBILITY_UNKNOWN = "ELIGIBILITY_UNKNOWN"
+    BENEFITS_NOT_FOUND = "BENEFITS_NOT_FOUND"
+    BENEFITS_UNAVAILABLE = "BENEFITS_UNAVAILABLE"
+    AUTHORIZATION_NOT_FOUND = "AUTHORIZATION_NOT_FOUND"
+    AUTHORIZATION_NOT_AUTHORIZED = "AUTHORIZATION_NOT_AUTHORIZED"
+    AUTHORIZATION_INVALID_STATE = "AUTHORIZATION_INVALID_STATE"
+    AUTHORIZATION_SUBMISSION_FAILED = "AUTHORIZATION_SUBMISSION_FAILED"
+    AUTHORIZATION_UNKNOWN = "AUTHORIZATION_UNKNOWN"
+    CLAIM_NOT_FOUND = "CLAIM_NOT_FOUND"
+    CLAIM_NOT_AUTHORIZED = "CLAIM_NOT_AUTHORIZED"
+    CLAIM_INVALID_STATE = "CLAIM_INVALID_STATE"
+    CLAIM_VALIDATION_FAILED = "CLAIM_VALIDATION_FAILED"
+    CLAIM_SUBMISSION_FAILED = "CLAIM_SUBMISSION_FAILED"
+    CLAIM_SUBMISSION_UNKNOWN = "CLAIM_SUBMISSION_UNKNOWN"
+    CLAIM_ALREADY_SUBMITTED = "CLAIM_ALREADY_SUBMITTED"
+    CLAIM_DUPLICATE = "CLAIM_DUPLICATE"
+    CLAIM_RECONCILIATION_REQUIRED = "CLAIM_RECONCILIATION_REQUIRED"
+    PAYER_PROVIDER_UNAVAILABLE = "PAYER_PROVIDER_UNAVAILABLE"
+    PAYER_PROVIDER_TIMEOUT = "PAYER_PROVIDER_TIMEOUT"
+    PAYER_PROVIDER_AUTHENTICATION_FAILED = "PAYER_PROVIDER_AUTHENTICATION_FAILED"
+    PAYER_PROVIDER_UNKNOWN_RESULT = "PAYER_PROVIDER_UNKNOWN_RESULT"
+    PAYER_WEBHOOK_SIGNATURE_INVALID = "PAYER_WEBHOOK_SIGNATURE_INVALID"
+    PAYER_WEBHOOK_INVALID = "PAYER_WEBHOOK_INVALID"
+    PAYER_WEBHOOK_DUPLICATE = "PAYER_WEBHOOK_DUPLICATE"
+    CLAIM_AMOUNT_MISMATCH = "CLAIM_AMOUNT_MISMATCH"
+    CLAIM_CURRENCY_MISMATCH = "CLAIM_CURRENCY_MISMATCH"
+    CLAIM_COVERAGE_MISMATCH = "CLAIM_COVERAGE_MISMATCH"
+    CLAIM_AUTHORIZATION_MISMATCH = "CLAIM_AUTHORIZATION_MISMATCH"
+    INSURANCE_ACCESS_DENIED = "INSURANCE_ACCESS_DENIED"
+    CLAIM_ACCESS_DENIED = "CLAIM_ACCESS_DENIED"
+    AUTHORIZATION_ACCESS_DENIED = "AUTHORIZATION_ACCESS_DENIED"
+
 
 class AppException(Exception):
     """Base application exception for all domain and operational errors."""
@@ -3010,6 +3060,216 @@ WebhookProviderUnknownError = WebhookProviderUnknownException
 BillingAccessDeniedError = BillingAccessDeniedException
 OrganizationBillingAccessDeniedError = OrganizationBillingAccessDeniedException
 FacilityBillingAccessDeniedError = FacilityBillingAccessDeniedException
+
+
+# ===========================================================================
+# Phase 33: Insurance, Claims & Payer Integration Exceptions
+# ===========================================================================
+
+class InsuranceDisabledException(AppException):
+    def __init__(self, message: str = "Insurance subsystem is disabled.") -> None:
+        super().__init__(code=ErrorCode.INSURANCE_DISABLED, message=message, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+class EligibilityDisabledException(AppException):
+    def __init__(self, message: str = "Eligibility verification subsystem is disabled.") -> None:
+        super().__init__(code=ErrorCode.ELIGIBILITY_DISABLED, message=message, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+class BenefitsDisabledException(AppException):
+    def __init__(self, message: str = "Insurance benefits subsystem is disabled.") -> None:
+        super().__init__(code=ErrorCode.BENEFITS_DISABLED, message=message, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+class PreAuthorizationDisabledException(AppException):
+    def __init__(self, message: str = "Pre-authorization subsystem is disabled.") -> None:
+        super().__init__(code=ErrorCode.PREAUTHORIZATION_DISABLED, message=message, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+class ClaimsDisabledException(AppException):
+    def __init__(self, message: str = "Claim management subsystem is disabled.") -> None:
+        super().__init__(code=ErrorCode.CLAIMS_DISABLED, message=message, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+ClaimDisabledException = ClaimsDisabledException
+
+class ClaimSubmissionDisabledException(AppException):
+    def __init__(self, message: str = "Claim submission subsystem is disabled.") -> None:
+        super().__init__(code=ErrorCode.CLAIM_SUBMISSION_DISABLED, message=message, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+class ClaimReconciliationDisabledException(AppException):
+    def __init__(self, message: str = "Claim reconciliation subsystem is disabled.") -> None:
+        super().__init__(code=ErrorCode.CLAIM_RECONCILIATION_DISABLED, message=message, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+class PayerIntegrationsDisabledException(AppException):
+    def __init__(self, message: str = "Payer integration subsystem is disabled.") -> None:
+        super().__init__(code=ErrorCode.PAYER_INTEGRATIONS_DISABLED, message=message, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+class InsuranceNotFoundException(NotFoundException):
+    def __init__(self, message: str = "Insurance coverage record not found.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.INSURANCE_NOT_FOUND.value
+
+class InsuranceNotAuthorizedException(ForbiddenException):
+    def __init__(self, message: str = "Not authorized to access or modify this insurance record.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.INSURANCE_NOT_AUTHORIZED.value
+
+class InsuranceInvalidStateException(AppException):
+    def __init__(self, message: str = "Invalid insurance coverage state transition.") -> None:
+        super().__init__(code=ErrorCode.INSURANCE_INVALID_STATE, message=message, status_code=status.HTTP_409_CONFLICT)
+
+class InsuranceIdentifierInvalidException(AppException):
+    def __init__(self, message: str = "Invalid insurance identifier format.") -> None:
+        super().__init__(code=ErrorCode.INSURANCE_IDENTIFIER_INVALID, message=message, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+class InsuranceProviderUnavailableException(AppException):
+    def __init__(self, message: str = "Insurance provider service unavailable.") -> None:
+        super().__init__(code=ErrorCode.INSURANCE_PROVIDER_UNAVAILABLE, message=message, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+class EligibilityCheckNotFoundException(NotFoundException):
+    def __init__(self, message: str = "Eligibility check record not found.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.ELIGIBILITY_CHECK_NOT_FOUND.value
+
+class EligibilityCheckFailedException(AppException):
+    def __init__(self, message: str = "Eligibility check failed.") -> None:
+        super().__init__(code=ErrorCode.ELIGIBILITY_CHECK_FAILED, message=message, status_code=status.HTTP_502_BAD_GATEWAY)
+
+class EligibilityProviderTimeoutException(AppException):
+    def __init__(self, message: str = "Eligibility provider timed out.") -> None:
+        super().__init__(code=ErrorCode.ELIGIBILITY_PROVIDER_TIMEOUT, message=message, status_code=status.HTTP_504_GATEWAY_TIMEOUT)
+
+class EligibilityProviderAuthenticationException(AppException):
+    def __init__(self, message: str = "Payer provider authentication failed during eligibility check.") -> None:
+        super().__init__(code=ErrorCode.ELIGIBILITY_PROVIDER_AUTHENTICATION_FAILED, message=message, status_code=status.HTTP_502_BAD_GATEWAY)
+
+class EligibilityUnknownException(AppException):
+    def __init__(self, message: str = "Eligibility result is unknown; reconciliation required.") -> None:
+        super().__init__(code=ErrorCode.ELIGIBILITY_UNKNOWN, message=message, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class BenefitsNotFoundException(NotFoundException):
+    def __init__(self, message: str = "Benefit information record not found.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.BENEFITS_NOT_FOUND.value
+
+class BenefitsUnavailableException(AppException):
+    def __init__(self, message: str = "Benefit information currently unavailable from payer.") -> None:
+        super().__init__(code=ErrorCode.BENEFITS_UNAVAILABLE, message=message, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+class AuthorizationNotFoundException(NotFoundException):
+    def __init__(self, message: str = "Pre-authorization request not found.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.AUTHORIZATION_NOT_FOUND.value
+
+class AuthorizationNotAuthorizedException(ForbiddenException):
+    def __init__(self, message: str = "Not authorized to access or submit pre-authorization.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.AUTHORIZATION_NOT_AUTHORIZED.value
+
+class AuthorizationInvalidStateException(AppException):
+    def __init__(self, message: str = "Invalid pre-authorization state transition.") -> None:
+        super().__init__(code=ErrorCode.AUTHORIZATION_INVALID_STATE, message=message, status_code=status.HTTP_409_CONFLICT)
+
+class AuthorizationSubmissionFailedException(AppException):
+    def __init__(self, message: str = "Pre-authorization submission to payer failed.") -> None:
+        super().__init__(code=ErrorCode.AUTHORIZATION_SUBMISSION_FAILED, message=message, status_code=status.HTTP_502_BAD_GATEWAY)
+
+class AuthorizationUnknownException(AppException):
+    def __init__(self, message: str = "Pre-authorization state is unknown with payer.") -> None:
+        super().__init__(code=ErrorCode.AUTHORIZATION_UNKNOWN, message=message, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class ClaimNotFoundException(NotFoundException):
+    def __init__(self, message: str = "Claim record not found.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.CLAIM_NOT_FOUND.value
+
+class ClaimNotAuthorizedException(ForbiddenException):
+    def __init__(self, message: str = "Not authorized to access or submit claim.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.CLAIM_NOT_AUTHORIZED.value
+
+class ClaimInvalidStateException(AppException):
+    def __init__(self, message: str = "Invalid claim lifecycle state transition.") -> None:
+        super().__init__(code=ErrorCode.CLAIM_INVALID_STATE, message=message, status_code=status.HTTP_409_CONFLICT)
+
+class ClaimValidationFailedException(AppException):
+    def __init__(self, message: str = "Claim validation failed.") -> None:
+        super().__init__(code=ErrorCode.CLAIM_VALIDATION_FAILED, message=message, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+class ClaimSubmissionFailedException(AppException):
+    def __init__(self, message: str = "Claim submission to payer failed.") -> None:
+        super().__init__(code=ErrorCode.CLAIM_SUBMISSION_FAILED, message=message, status_code=status.HTTP_502_BAD_GATEWAY)
+
+class ClaimSubmissionUnknownException(AppException):
+    def __init__(self, message: str = "Claim submission result is ambiguous; reconciliation required.") -> None:
+        super().__init__(code=ErrorCode.CLAIM_SUBMISSION_UNKNOWN, message=message, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class ClaimAlreadySubmittedException(AppException):
+    def __init__(self, message: str = "Claim has already been submitted and cannot be re-submitted without amendment.") -> None:
+        super().__init__(code=ErrorCode.CLAIM_ALREADY_SUBMITTED, message=message, status_code=status.HTTP_409_CONFLICT)
+
+class ClaimDuplicateException(AppException):
+    def __init__(self, message: str = "Duplicate claim submission detected.") -> None:
+        super().__init__(code=ErrorCode.CLAIM_DUPLICATE, message=message, status_code=status.HTTP_409_CONFLICT)
+
+class ClaimReconciliationRequiredException(AppException):
+    def __init__(self, message: str = "Claim status requires authoritative reconciliation with payer.") -> None:
+        super().__init__(code=ErrorCode.CLAIM_RECONCILIATION_REQUIRED, message=message, status_code=status.HTTP_409_CONFLICT)
+
+class PayerProviderUnavailableException(AppException):
+    def __init__(self, message: str = "Payer provider is unavailable.") -> None:
+        super().__init__(code=ErrorCode.PAYER_PROVIDER_UNAVAILABLE, message=message, status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+class PayerProviderTimeoutException(AppException):
+    def __init__(self, message: str = "Payer provider request timed out.") -> None:
+        super().__init__(code=ErrorCode.PAYER_PROVIDER_TIMEOUT, message=message, status_code=status.HTTP_504_GATEWAY_TIMEOUT)
+
+class PayerProviderAuthenticationException(AppException):
+    def __init__(self, message: str = "Authentication with external payer gateway failed.") -> None:
+        super().__init__(code=ErrorCode.PAYER_PROVIDER_AUTHENTICATION_FAILED, message=message, status_code=status.HTTP_502_BAD_GATEWAY)
+
+class PayerProviderUnknownResultException(AppException):
+    def __init__(self, message: str = "Payer gateway returned an ambiguous or unrecognized response.") -> None:
+        super().__init__(code=ErrorCode.PAYER_PROVIDER_UNKNOWN_RESULT, message=message, status_code=status.HTTP_502_BAD_GATEWAY)
+
+class PayerWebhookSignatureInvalidException(AppException):
+    def __init__(self, message: str = "Payer webhook HMAC signature verification failed.") -> None:
+        super().__init__(code=ErrorCode.PAYER_WEBHOOK_SIGNATURE_INVALID, message=message, status_code=status.HTTP_401_UNAUTHORIZED)
+
+class PayerWebhookInvalidException(AppException):
+    def __init__(self, message: str = "Malformed or unsupported payer webhook payload.") -> None:
+        super().__init__(code=ErrorCode.PAYER_WEBHOOK_INVALID, message=message, status_code=status.HTTP_400_BAD_REQUEST)
+
+class PayerWebhookDuplicateException(AppException):
+    def __init__(self, message: str = "Payer webhook event has already been processed.") -> None:
+        super().__init__(code=ErrorCode.PAYER_WEBHOOK_DUPLICATE, message=message, status_code=status.HTTP_409_CONFLICT)
+
+class ClaimAmountMismatchException(AppException):
+    def __init__(self, message: str = "Claim amount does not match billable line items or adjudication total.") -> None:
+        super().__init__(code=ErrorCode.CLAIM_AMOUNT_MISMATCH, message=message, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+class ClaimCurrencyMismatchException(AppException):
+    def __init__(self, message: str = "Claim currency does not match policy or line items currency.") -> None:
+        super().__init__(code=ErrorCode.CLAIM_CURRENCY_MISMATCH, message=message, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+class ClaimCoverageMismatchException(AppException):
+    def __init__(self, message: str = "Claim patient or dates do not match coverage period.") -> None:
+        super().__init__(code=ErrorCode.CLAIM_COVERAGE_MISMATCH, message=message, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+class ClaimAuthorizationMismatchException(AppException):
+    def __init__(self, message: str = "Claim references an unapproved or mismatched pre-authorization.") -> None:
+        super().__init__(code=ErrorCode.CLAIM_AUTHORIZATION_MISMATCH, message=message, status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+class InsuranceAccessDeniedException(ForbiddenException):
+    def __init__(self, message: str = "Access to insurance resource denied by multi-tenant boundary.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.INSURANCE_ACCESS_DENIED.value
+
+class ClaimAccessDeniedException(ForbiddenException):
+    def __init__(self, message: str = "Access to claim resource denied by multi-tenant boundary.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.CLAIM_ACCESS_DENIED.value
+
+class AuthorizationAccessDeniedException(ForbiddenException):
+    def __init__(self, message: str = "Access to authorization resource denied by multi-tenant boundary.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.AUTHORIZATION_ACCESS_DENIED.value
 
 
 def _get_request_id(request: Request) -> str:

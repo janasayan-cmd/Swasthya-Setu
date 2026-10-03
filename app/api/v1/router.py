@@ -42,6 +42,12 @@ from app.api.v1.endpoints import (
     payments,
     refunds,
     payment_webhooks,
+    insurance,
+    eligibility,
+    benefits,
+    authorizations,
+    claims,
+    payer_webhooks,
 )
 
 v1_router = APIRouter()
@@ -137,5 +143,13 @@ v1_router.include_router(invoices.router)
 v1_router.include_router(payments.router)
 v1_router.include_router(refunds.router)
 v1_router.include_router(payment_webhooks.router)
+
+# Register Phase 33 Insurance, Claims & Payer Integration endpoints
+v1_router.include_router(insurance.router)
+v1_router.include_router(eligibility.router)
+v1_router.include_router(benefits.router)
+v1_router.include_router(authorizations.router)
+v1_router.include_router(claims.router)
+v1_router.include_router(payer_webhooks.router)
 
 
