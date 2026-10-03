@@ -44,6 +44,12 @@ from app.api.deps import (
     _global_interoperability_repo,
     _global_ai_repo,
     _global_authz_service,
+    _global_billing_repo,
+    _global_invoice_repo,
+    _global_payment_repo,
+    _global_refund_repo,
+    _global_mock_payment_provider,
+    _global_payment_reconciliation_service,
 )
 from app.core.config import get_settings
 from app.core.security import create_access_token, hash_password
@@ -102,10 +108,21 @@ def clean_state():
     # Phase 12
     _global_facility_discovery_repo.clear()
     _global_transfer_repo.clear()
-    # Phase 13
-    _global_interoperability_repo.clear()
     # Phase 14
     _global_ai_repo.clear()
+    # Phase 32
+    _global_billing_repo._billable_events.clear()
+    _global_invoice_repo._invoices.clear()
+    _global_payment_repo._payments.clear()
+    _global_payment_repo._idempotency_index.clear()
+    _global_payment_repo._provider_tx_index.clear()
+    _global_payment_repo._webhook_events.clear()
+    _global_payment_repo._webhook_dedup_index.clear()
+    _global_refund_repo._refunds.clear()
+    _global_refund_repo._idempotency_index.clear()
+    _global_mock_payment_provider._transactions.clear()
+    _global_mock_payment_provider.set_simulation(False, False, False, None)
+    _global_payment_reconciliation_service._reconciliation_records.clear()
     yield
     get_settings.cache_clear()
     _global_user_repo._local_users.clear()
@@ -147,6 +164,19 @@ def clean_state():
     _global_interoperability_repo.clear()
     # Phase 14
     _global_ai_repo.clear()
+    # Phase 32
+    _global_billing_repo._billable_events.clear()
+    _global_invoice_repo._invoices.clear()
+    _global_payment_repo._payments.clear()
+    _global_payment_repo._idempotency_index.clear()
+    _global_payment_repo._provider_tx_index.clear()
+    _global_payment_repo._webhook_events.clear()
+    _global_payment_repo._webhook_dedup_index.clear()
+    _global_refund_repo._refunds.clear()
+    _global_refund_repo._idempotency_index.clear()
+    _global_mock_payment_provider._transactions.clear()
+    _global_mock_payment_provider.set_simulation(False, False, False, None)
+    _global_payment_reconciliation_service._reconciliation_records.clear()
 
 
 

@@ -295,6 +295,46 @@ class ErrorCode(str, Enum):
     SCHEDULING_PROVIDER_UNKNOWN_RESULT = "SCHEDULING_PROVIDER_UNKNOWN_RESULT"
     APPOINTMENTS_DISABLED = "APPOINTMENTS_DISABLED"
 
+    # Phase 32: Billing, Payments & Financial Transaction Management Error Codes
+    BILLING_DISABLED = "BILLING_DISABLED"
+    INVOICING_DISABLED = "INVOICING_DISABLED"
+    PAYMENTS_DISABLED = "PAYMENTS_DISABLED"
+    REFUNDS_DISABLED = "REFUNDS_DISABLED"
+    PAYMENT_WEBHOOKS_DISABLED = "PAYMENT_WEBHOOKS_DISABLED"
+    PAYMENT_RECONCILIATION_DISABLED = "PAYMENT_RECONCILIATION_DISABLED"
+    INVOICE_NOT_FOUND = "INVOICE_NOT_FOUND"
+    INVOICE_NOT_AUTHORIZED = "INVOICE_NOT_AUTHORIZED"
+    INVOICE_INVALID_STATE = "INVOICE_INVALID_STATE"
+    INVOICE_ALREADY_PAID = "INVOICE_ALREADY_PAID"
+    INVOICE_AMOUNT_MISMATCH = "INVOICE_AMOUNT_MISMATCH"
+    INVOICE_CURRENCY_MISMATCH = "INVOICE_CURRENCY_MISMATCH"
+    PAYMENT_NOT_FOUND = "PAYMENT_NOT_FOUND"
+    PAYMENT_NOT_AUTHORIZED = "PAYMENT_NOT_AUTHORIZED"
+    PAYMENT_INVALID_STATE = "PAYMENT_INVALID_STATE"
+    PAYMENT_AMOUNT_INVALID = "PAYMENT_AMOUNT_INVALID"
+    PAYMENT_AMOUNT_MISMATCH = "PAYMENT_AMOUNT_MISMATCH"
+    PAYMENT_CURRENCY_MISMATCH = "PAYMENT_CURRENCY_MISMATCH"
+    PAYMENT_ALREADY_PROCESSED = "PAYMENT_ALREADY_PROCESSED"
+    PAYMENT_IDEMPOTENCY_CONFLICT = "PAYMENT_IDEMPOTENCY_CONFLICT"
+    PAYMENT_PROVIDER_UNAVAILABLE = "PAYMENT_PROVIDER_UNAVAILABLE"
+    PAYMENT_PROVIDER_TIMEOUT = "PAYMENT_PROVIDER_TIMEOUT"
+    PAYMENT_PROVIDER_AUTHENTICATION_FAILED = "PAYMENT_PROVIDER_AUTHENTICATION_FAILED"
+    PAYMENT_PROVIDER_UNKNOWN_RESULT = "PAYMENT_PROVIDER_UNKNOWN_RESULT"
+    PAYMENT_RECONCILIATION_REQUIRED = "PAYMENT_RECONCILIATION_REQUIRED"
+    REFUND_NOT_FOUND = "REFUND_NOT_FOUND"
+    REFUND_NOT_AUTHORIZED = "REFUND_NOT_AUTHORIZED"
+    REFUND_INVALID_AMOUNT = "REFUND_INVALID_AMOUNT"
+    REFUND_ALREADY_PROCESSED = "REFUND_ALREADY_PROCESSED"
+    REFUND_NOT_ALLOWED = "REFUND_NOT_ALLOWED"
+    REFUND_PROVIDER_FAILED = "REFUND_PROVIDER_FAILED"
+    WEBHOOK_SIGNATURE_INVALID = "WEBHOOK_SIGNATURE_INVALID"
+    WEBHOOK_EVENT_INVALID = "WEBHOOK_EVENT_INVALID"
+    WEBHOOK_DUPLICATE = "WEBHOOK_DUPLICATE"
+    WEBHOOK_PROVIDER_UNKNOWN = "WEBHOOK_PROVIDER_UNKNOWN"
+    BILLING_ACCESS_DENIED = "BILLING_ACCESS_DENIED"
+    ORGANIZATION_BILLING_ACCESS_DENIED = "ORGANIZATION_BILLING_ACCESS_DENIED"
+    FACILITY_BILLING_ACCESS_DENIED = "FACILITY_BILLING_ACCESS_DENIED"
+
 
 class AppException(Exception):
     """Base application exception for all domain and operational errors."""
@@ -2540,6 +2580,436 @@ SchedulingProviderTimeoutError = SchedulingProviderTimeoutException
 SchedulingProviderAuthenticationFailedError = SchedulingProviderAuthenticationFailedException
 SchedulingProviderConflictError = SchedulingProviderConflictException
 SchedulingProviderUnknownResultError = SchedulingProviderUnknownResultException
+
+
+# Phase 32: Billing, Payments & Financial Transaction Management Exceptions
+class BillingDisabledException(AppException):
+    """Billing and invoicing subsystem is administratively disabled (HTTP 503)."""
+
+    def __init__(self, message: str = "Billing services are currently disabled.") -> None:
+        super().__init__(
+            code=ErrorCode.BILLING_DISABLED,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+
+class PaymentsDisabledException(AppException):
+    """Payment processing subsystem is administratively disabled (HTTP 503)."""
+
+    def __init__(self, message: str = "Payment processing services are currently disabled.") -> None:
+        super().__init__(
+            code=ErrorCode.PAYMENTS_DISABLED,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+
+class InvoicingDisabledException(AppException):
+    """Invoicing subsystem is administratively disabled (HTTP 503)."""
+
+    def __init__(self, message: str = "Invoicing services are currently disabled.") -> None:
+        super().__init__(
+            code=ErrorCode.INVOICING_DISABLED,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+
+class RefundsDisabledException(AppException):
+    """Refunds subsystem is administratively disabled (HTTP 503)."""
+
+    def __init__(self, message: str = "Refund processing services are currently disabled.") -> None:
+        super().__init__(
+            code=ErrorCode.REFUNDS_DISABLED,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+
+class PaymentWebhooksDisabledException(AppException):
+    """Payment webhooks ingestion subsystem is administratively disabled (HTTP 503)."""
+
+    def __init__(self, message: str = "Payment webhooks processing is currently disabled.") -> None:
+        super().__init__(
+            code=ErrorCode.PAYMENT_WEBHOOKS_DISABLED,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+
+class PaymentReconciliationDisabledException(AppException):
+    """Payment reconciliation subsystem is administratively disabled (HTTP 503)."""
+
+    def __init__(self, message: str = "Payment reconciliation services are currently disabled.") -> None:
+        super().__init__(
+            code=ErrorCode.PAYMENT_RECONCILIATION_DISABLED,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+
+class InvoiceNotFoundException(NotFoundException):
+    """Invoice record not found (HTTP 404)."""
+
+    def __init__(self, message: str = "Invoice record not found.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.INVOICE_NOT_FOUND.value
+
+
+class InvoiceNotAuthorizedException(ForbiddenException):
+    """Caller lacks authorization to access or modify this invoice (HTTP 403)."""
+
+    def __init__(self, message: str = "Not authorized to access or modify this invoice.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.INVOICE_NOT_AUTHORIZED.value
+
+
+class InvoiceInvalidStateException(AppException):
+    """Requested transition is not permitted from current invoice state (HTTP 409)."""
+
+    def __init__(self, message: str = "Invalid invoice state transition.") -> None:
+        super().__init__(
+            code=ErrorCode.INVOICE_INVALID_STATE,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+
+class InvoiceAlreadyPaidException(AppException):
+    """Invoice is already paid and cannot accept new payments (HTTP 409)."""
+
+    def __init__(self, message: str = "Invoice has already been fully paid.") -> None:
+        super().__init__(
+            code=ErrorCode.INVOICE_ALREADY_PAID,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+
+class InvoiceAmountMismatchException(AppException):
+    """Calculated invoice items sum does not match expected total (HTTP 422)."""
+
+    def __init__(self, message: str = "Invoice line item amounts do not match invoice total.") -> None:
+        super().__init__(
+            code=ErrorCode.INVOICE_AMOUNT_MISMATCH,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )
+
+
+class InvoiceCurrencyMismatchException(AppException):
+    """Invoice currency does not match system or transaction currency (HTTP 422)."""
+
+    def __init__(self, message: str = "Invoice currency mismatch.") -> None:
+        super().__init__(
+            code=ErrorCode.INVOICE_CURRENCY_MISMATCH,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )
+
+
+class PaymentNotFoundException(NotFoundException):
+    """Payment transaction record not found (HTTP 404)."""
+
+    def __init__(self, message: str = "Payment transaction record not found.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.PAYMENT_NOT_FOUND.value
+
+
+class PaymentNotAuthorizedException(ForbiddenException):
+    """Caller lacks authorization to view or initiate payment (HTTP 403)."""
+
+    def __init__(self, message: str = "Not authorized to execute or view payment.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.PAYMENT_NOT_AUTHORIZED.value
+
+
+class PaymentInvalidStateException(AppException):
+    """Payment transition is invalid from current state (HTTP 409)."""
+
+    def __init__(self, message: str = "Invalid payment transaction state transition.") -> None:
+        super().__init__(
+            code=ErrorCode.PAYMENT_INVALID_STATE,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+
+class PaymentAmountInvalidException(AppException):
+    """Payment amount is zero, negative, or invalid (HTTP 400)."""
+
+    def __init__(self, message: str = "Payment amount must be a positive integer in minor currency units.") -> None:
+        super().__init__(
+            code=ErrorCode.PAYMENT_AMOUNT_INVALID,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class PaymentAmountMismatchException(AppException):
+    """Payment amount does not match invoice outstanding balance (HTTP 422)."""
+
+    def __init__(self, message: str = "Payment amount mismatch with invoice outstanding balance.") -> None:
+        super().__init__(
+            code=ErrorCode.PAYMENT_AMOUNT_MISMATCH,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )
+
+
+class PaymentCurrencyMismatchException(AppException):
+    """Payment currency does not match invoice currency (HTTP 422)."""
+
+    def __init__(self, message: str = "Payment currency does not match invoice currency.") -> None:
+        super().__init__(
+            code=ErrorCode.PAYMENT_CURRENCY_MISMATCH,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        )
+
+
+class PaymentAlreadyProcessedException(AppException):
+    """Payment has already been processed and cannot be repeated (HTTP 409)."""
+
+    def __init__(self, message: str = "Payment has already been processed.") -> None:
+        super().__init__(
+            code=ErrorCode.PAYMENT_ALREADY_PROCESSED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+
+class PaymentIdempotencyConflictException(AppException):
+    """Idempotency key reused with different request payload (HTTP 409)."""
+
+    def __init__(self, message: str = "Idempotency key was previously used with different parameters.") -> None:
+        super().__init__(
+            code=ErrorCode.PAYMENT_IDEMPOTENCY_CONFLICT,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+
+class PaymentProviderUnavailableException(AppException):
+    """External payment gateway is unavailable (HTTP 503)."""
+
+    def __init__(self, message: str = "Payment gateway provider is temporarily unavailable.") -> None:
+        super().__init__(
+            code=ErrorCode.PAYMENT_PROVIDER_UNAVAILABLE,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+
+class PaymentProviderTimeoutException(AppException):
+    """Payment gateway request timed out (HTTP 504)."""
+
+    def __init__(self, message: str = "Payment gateway request timed out.") -> None:
+        super().__init__(
+            code=ErrorCode.PAYMENT_PROVIDER_TIMEOUT,
+            message=message,
+            status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+        )
+
+
+class PaymentProviderAuthenticationFailedException(AppException):
+    """Authentication with payment gateway failed (HTTP 502)."""
+
+    def __init__(self, message: str = "Payment gateway authentication failed.") -> None:
+        super().__init__(
+            code=ErrorCode.PAYMENT_PROVIDER_AUTHENTICATION_FAILED,
+            message=message,
+            status_code=status.HTTP_502_BAD_GATEWAY,
+        )
+
+
+class PaymentProviderUnknownResultException(AppException):
+    """Payment gateway outcome is ambiguous and requires reconciliation (HTTP 502)."""
+
+    def __init__(self, message: str = "Payment outcome is indeterminate; pending reconciliation.") -> None:
+        super().__init__(
+            code=ErrorCode.PAYMENT_PROVIDER_UNKNOWN_RESULT,
+            message=message,
+            status_code=status.HTTP_502_BAD_GATEWAY,
+        )
+
+
+class PaymentReconciliationRequiredException(AppException):
+    """Transaction is in indeterminate state requiring manual or automated reconciliation (HTTP 409)."""
+
+    def __init__(self, message: str = "Payment transaction requires reconciliation.") -> None:
+        super().__init__(
+            code=ErrorCode.PAYMENT_RECONCILIATION_REQUIRED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+
+class RefundNotFoundException(NotFoundException):
+    """Refund transaction record not found (HTTP 404)."""
+
+    def __init__(self, message: str = "Refund transaction record not found.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.REFUND_NOT_FOUND.value
+
+
+class RefundNotAuthorizedException(ForbiddenException):
+    """Caller lacks authorization to execute refund (HTTP 403)."""
+
+    def __init__(self, message: str = "Not authorized to execute refund.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.REFUND_NOT_AUTHORIZED.value
+
+
+class RefundInvalidAmountException(AppException):
+    """Refund amount exceeds refundable balance or is non-positive (HTTP 400)."""
+
+    def __init__(self, message: str = "Refund amount must be positive and cannot exceed paid balance.") -> None:
+        super().__init__(
+            code=ErrorCode.REFUND_INVALID_AMOUNT,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class RefundAlreadyProcessedException(AppException):
+    """Refund has already been completed (HTTP 409)."""
+
+    def __init__(self, message: str = "Refund has already been processed.") -> None:
+        super().__init__(
+            code=ErrorCode.REFUND_ALREADY_PROCESSED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+
+class RefundNotAllowedException(AppException):
+    """Refund is not allowed for this transaction state (HTTP 409)."""
+
+    def __init__(self, message: str = "Refund is not permitted for this transaction.") -> None:
+        super().__init__(
+            code=ErrorCode.REFUND_NOT_ALLOWED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+        )
+
+
+class RefundProviderFailedException(AppException):
+    """Payment gateway rejected or failed refund execution (HTTP 502)."""
+
+    def __init__(self, message: str = "Payment provider failed to process refund.") -> None:
+        super().__init__(
+            code=ErrorCode.REFUND_PROVIDER_FAILED,
+            message=message,
+            status_code=status.HTTP_502_BAD_GATEWAY,
+        )
+
+
+class WebhookSignatureInvalidException(UnauthorizedException):
+    """Webhook signature verification failed (HTTP 401)."""
+
+    def __init__(self, message: str = "Invalid payment webhook signature.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.WEBHOOK_SIGNATURE_INVALID.value
+
+
+class WebhookEventInvalidException(AppException):
+    """Webhook payload or event type is malformed (HTTP 400)."""
+
+    def __init__(self, message: str = "Malformed or unsupported webhook event.") -> None:
+        super().__init__(
+            code=ErrorCode.WEBHOOK_EVENT_INVALID,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class WebhookDuplicateException(AppException):
+    """Webhook event has already been processed (HTTP 200/409)."""
+
+    def __init__(self, message: str = "Duplicate webhook event previously processed.") -> None:
+        super().__init__(
+            code=ErrorCode.WEBHOOK_DUPLICATE,
+            message=message,
+            status_code=status.HTTP_200_OK,
+        )
+
+
+class WebhookProviderUnknownException(AppException):
+    """Webhook provider is unknown or unconfigured (HTTP 400)."""
+
+    def __init__(self, message: str = "Unknown webhook provider.") -> None:
+        super().__init__(
+            code=ErrorCode.WEBHOOK_PROVIDER_UNKNOWN,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class BillingAccessDeniedException(ForbiddenException):
+    """Caller lacks billing authorization (HTTP 403)."""
+
+    def __init__(self, message: str = "Billing access denied.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.BILLING_ACCESS_DENIED.value
+
+
+class OrganizationBillingAccessDeniedException(ForbiddenException):
+    """Caller lacks authorization to view organization billing records (HTTP 403)."""
+
+    def __init__(self, message: str = "Organization billing access denied.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.ORGANIZATION_BILLING_ACCESS_DENIED.value
+
+
+class FacilityBillingAccessDeniedException(ForbiddenException):
+    """Caller lacks authorization to view facility billing records (HTTP 403)."""
+
+    def __init__(self, message: str = "Facility billing access denied.") -> None:
+        super().__init__(message=message)
+        self.code = ErrorCode.FACILITY_BILLING_ACCESS_DENIED.value
+
+
+# Phase 32 Error aliases
+BillingDisabledError = BillingDisabledException
+InvoicingDisabledError = InvoicingDisabledException
+PaymentsDisabledError = PaymentsDisabledException
+RefundsDisabledError = RefundsDisabledException
+PaymentWebhooksDisabledError = PaymentWebhooksDisabledException
+PaymentReconciliationDisabledError = PaymentReconciliationDisabledException
+InvoiceNotFoundError = InvoiceNotFoundException
+InvoiceNotAuthorizedError = InvoiceNotAuthorizedException
+InvoiceInvalidStateError = InvoiceInvalidStateException
+InvoiceAlreadyPaidError = InvoiceAlreadyPaidException
+InvoiceAmountMismatchError = InvoiceAmountMismatchException
+InvoiceCurrencyMismatchError = InvoiceCurrencyMismatchException
+PaymentNotFoundError = PaymentNotFoundException
+PaymentNotAuthorizedError = PaymentNotAuthorizedException
+PaymentInvalidStateError = PaymentInvalidStateException
+PaymentAmountInvalidError = PaymentAmountInvalidException
+PaymentAmountMismatchError = PaymentAmountMismatchException
+PaymentCurrencyMismatchError = PaymentCurrencyMismatchException
+PaymentAlreadyProcessedError = PaymentAlreadyProcessedException
+PaymentIdempotencyConflictError = PaymentIdempotencyConflictException
+PaymentProviderUnavailableError = PaymentProviderUnavailableException
+PaymentProviderTimeoutError = PaymentProviderTimeoutException
+PaymentProviderAuthenticationFailedError = PaymentProviderAuthenticationFailedException
+PaymentProviderUnknownResultError = PaymentProviderUnknownResultException
+PaymentReconciliationRequiredError = PaymentReconciliationRequiredException
+RefundNotFoundError = RefundNotFoundException
+RefundNotAuthorizedError = RefundNotAuthorizedException
+RefundInvalidAmountError = RefundInvalidAmountException
+RefundAlreadyProcessedError = RefundAlreadyProcessedException
+RefundNotAllowedError = RefundNotAllowedException
+RefundProviderFailedError = RefundProviderFailedException
+WebhookSignatureInvalidError = WebhookSignatureInvalidException
+WebhookEventInvalidError = WebhookEventInvalidException
+WebhookDuplicateError = WebhookDuplicateException
+WebhookProviderUnknownError = WebhookProviderUnknownException
+BillingAccessDeniedError = BillingAccessDeniedException
+OrganizationBillingAccessDeniedError = OrganizationBillingAccessDeniedException
+FacilityBillingAccessDeniedError = FacilityBillingAccessDeniedException
 
 
 def _get_request_id(request: Request) -> str:

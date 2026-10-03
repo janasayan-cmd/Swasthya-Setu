@@ -228,6 +228,21 @@ class Permission(str, Enum):
     ADMIN_SCHEDULING_VIEW = "admin:scheduling_view"
     ADMIN_SCHEDULING_MANAGE = "admin:scheduling_manage"
 
+    # ---- Phase 32: Billing, Payments & Financial Transaction Management ----
+    INVOICE_READ = "invoice:read"
+    INVOICE_CREATE = "invoice:create"
+    INVOICE_UPDATE = "invoice:update"
+    INVOICE_ISSUE = "invoice:issue"
+    INVOICE_CANCEL = "invoice:cancel"
+    PAYMENT_READ = "payment:read"
+    PAYMENT_CREATE = "payment:create"
+    PAYMENT_REFUND = "payment:refund"
+    ADMIN_BILLING_VIEW = "admin:billing_view"
+    ADMIN_BILLING_MANAGE = "admin:billing_manage"
+    ADMIN_PAYMENT_VIEW = "admin:payment_view"
+    ADMIN_PAYMENT_RECONCILE = "admin:payment_reconcile"
+    ADMIN_REFUND_MANAGE = "admin:refund_manage"
+
 
 # ---------------------------------------------------------------------------
 # Role-to-Permission Mapping
@@ -319,6 +334,14 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.APPOINTMENT_CANCEL,
         Permission.APPOINTMENT_RESCHEDULE,
         Permission.AVAILABILITY_READ,
+        # Phase 32: Billing & Payments
+        Permission.INVOICE_READ,
+        Permission.INVOICE_CREATE,
+        Permission.INVOICE_UPDATE,
+        Permission.INVOICE_ISSUE,
+        Permission.INVOICE_CANCEL,
+        Permission.PAYMENT_READ,
+        Permission.PAYMENT_CREATE,
     }),
     "DOCTOR": frozenset({
         Permission.PATIENT_READ_SELF,         # can read patient profile in context
@@ -431,6 +454,8 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.APPOINTMENT_CHECK_IN,
         Permission.AVAILABILITY_READ,
         Permission.SCHEDULE_MANAGE,
+        # Phase 32: Billing & Payments
+        Permission.INVOICE_READ,
     }),
     "ADMIN": frozenset({
         # Administrative capabilities ONLY — no automatic clinical data access
@@ -515,6 +540,20 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.SCHEDULE_MANAGE,
         Permission.ADMIN_SCHEDULING_VIEW,
         Permission.ADMIN_SCHEDULING_MANAGE,
+        # Phase 32: Billing & Payments Admin
+        Permission.INVOICE_READ,
+        Permission.INVOICE_CREATE,
+        Permission.INVOICE_UPDATE,
+        Permission.INVOICE_ISSUE,
+        Permission.INVOICE_CANCEL,
+        Permission.PAYMENT_READ,
+        Permission.PAYMENT_CREATE,
+        Permission.PAYMENT_REFUND,
+        Permission.ADMIN_BILLING_VIEW,
+        Permission.ADMIN_BILLING_MANAGE,
+        Permission.ADMIN_PAYMENT_VIEW,
+        Permission.ADMIN_PAYMENT_RECONCILE,
+        Permission.ADMIN_REFUND_MANAGE,
     }),
     "SYSTEM_ADMIN": frozenset({
         Permission.ADMIN_USER_MANAGE,
@@ -581,6 +620,20 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.SCHEDULE_MANAGE,
         Permission.ADMIN_SCHEDULING_VIEW,
         Permission.ADMIN_SCHEDULING_MANAGE,
+        # Phase 32: Billing & Payments Admin
+        Permission.INVOICE_READ,
+        Permission.INVOICE_CREATE,
+        Permission.INVOICE_UPDATE,
+        Permission.INVOICE_ISSUE,
+        Permission.INVOICE_CANCEL,
+        Permission.PAYMENT_READ,
+        Permission.PAYMENT_CREATE,
+        Permission.PAYMENT_REFUND,
+        Permission.ADMIN_BILLING_VIEW,
+        Permission.ADMIN_BILLING_MANAGE,
+        Permission.ADMIN_PAYMENT_VIEW,
+        Permission.ADMIN_PAYMENT_RECONCILE,
+        Permission.ADMIN_REFUND_MANAGE,
     }),
     "OPERATIONS_ADMIN": frozenset({
         Permission.ADMIN_SYSTEM_VIEW,
@@ -601,6 +654,12 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         # Phase 31: Scheduling Admin
         Permission.ADMIN_SCHEDULING_VIEW,
         Permission.APPOINTMENT_READ,
+        # Phase 32: Billing Admin
+        Permission.ADMIN_BILLING_VIEW,
+        Permission.ADMIN_PAYMENT_VIEW,
+        Permission.ADMIN_PAYMENT_RECONCILE,
+        Permission.INVOICE_READ,
+        Permission.PAYMENT_READ,
     }),
     "SUPPORT_OPERATOR": frozenset({
         Permission.ADMIN_SYSTEM_VIEW,
@@ -619,6 +678,11 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         # Phase 31: Scheduling Admin
         Permission.ADMIN_SCHEDULING_VIEW,
         Permission.APPOINTMENT_READ,
+        # Phase 32: Billing Support
+        Permission.ADMIN_BILLING_VIEW,
+        Permission.ADMIN_PAYMENT_VIEW,
+        Permission.INVOICE_READ,
+        Permission.PAYMENT_READ,
     }),
     "SECURITY_OPERATOR": frozenset({
         Permission.ADMIN_SYSTEM_VIEW,
@@ -795,6 +859,20 @@ ACTION_PERMISSION_MAP: dict[tuple[str, str], Permission] = {
     ("schedule", "manage"):              Permission.SCHEDULE_MANAGE,
     ("scheduling_admin", "view"):        Permission.ADMIN_SCHEDULING_VIEW,
     ("scheduling_admin", "manage"):      Permission.ADMIN_SCHEDULING_MANAGE,
+    # Phase 32: Billing, Payments & Financial Transactions
+    ("invoice", "read"):                 Permission.INVOICE_READ,
+    ("invoice", "create"):               Permission.INVOICE_CREATE,
+    ("invoice", "update"):               Permission.INVOICE_UPDATE,
+    ("invoice", "issue"):                Permission.INVOICE_ISSUE,
+    ("invoice", "cancel"):               Permission.INVOICE_CANCEL,
+    ("payment", "read"):                 Permission.PAYMENT_READ,
+    ("payment", "create"):               Permission.PAYMENT_CREATE,
+    ("payment", "refund"):               Permission.PAYMENT_REFUND,
+    ("billing_admin", "view"):           Permission.ADMIN_BILLING_VIEW,
+    ("billing_admin", "manage"):         Permission.ADMIN_BILLING_MANAGE,
+    ("payment_admin", "view"):           Permission.ADMIN_PAYMENT_VIEW,
+    ("payment_admin", "reconcile"):      Permission.ADMIN_PAYMENT_RECONCILE,
+    ("refund_admin", "manage"):          Permission.ADMIN_REFUND_MANAGE,
 }
 
 

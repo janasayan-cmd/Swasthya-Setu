@@ -768,6 +768,29 @@ class Settings(BaseSettings):
     APPOINTMENT_BOOKING_IDEMPOTENCY_ENABLED: bool = Field(default=True, description="Enforce idempotency key handling on booking")
     APPOINTMENT_REMINDER_ENABLED: bool = Field(default=True, description="Enable background reminder dispatch")
 
+    # Phase 32: Billing, Payments & Financial Transaction Management Configuration
+    BILLING_ENABLED: bool = Field(default=True, description="Master switch for billing subsystem")
+    INVOICING_ENABLED: bool = Field(default=True, description="Enable invoice generation and lifecycle")
+    PAYMENTS_ENABLED: bool = Field(default=True, description="Enable payment processing and capture")
+    REFUNDS_ENABLED: bool = Field(default=True, description="Enable refund processing and limits")
+    PAYMENT_WEBHOOKS_ENABLED: bool = Field(default=True, description="Enable payment provider webhook consumption")
+    PAYMENT_RECONCILIATION_ENABLED: bool = Field(default=True, description="Enable automated transaction reconciliation")
+    PAYMENT_PROVIDER: str = Field(default="mock", description="Configured payment provider adapter ('mock', 'stripe', 'razorpay', etc.)")
+    PAYMENT_PROVIDER_BASE_URL: str = Field(default="", description="Base URL for payment provider API")
+    PAYMENT_PROVIDER_API_KEY: str = Field(default="", description="API Key for payment provider")
+    PAYMENT_PROVIDER_SECRET: str = Field(default="", description="Secret Key for payment provider")
+    PAYMENT_WEBHOOK_SECRET: str = Field(default="whsec_test_secret_9981", description="Webhook signing secret")
+    PAYMENT_PROVIDER_TIMEOUT_SECONDS: int = Field(default=15, description="Timeout in seconds for payment gateway requests")
+    PAYMENT_PROVIDER_MAX_RETRIES: int = Field(default=2, description="Max retries for transient provider communication failures")
+    PAYMENT_DEFAULT_CURRENCY: str = Field(default="INR", description="Default currency code (ISO 4217)")
+    PAYMENT_IDEMPOTENCY_ENABLED: bool = Field(default=True, description="Enforce idempotency keys on payment creation and refunds")
+    PAYMENT_RECONCILIATION_INTERVAL_SECONDS: int = Field(default=300, description="Interval in seconds between reconciliation runs")
+    PAYMENT_RETRY_BASE_DELAY_SECONDS: float = Field(default=5.0, description="Base backoff delay in seconds for payment retries")
+    PAYMENT_RETRY_MAX_DELAY_SECONDS: float = Field(default=300.0, description="Max backoff ceiling for payment retries")
+    PAYMENT_RATE_LIMIT_ENABLED: bool = Field(default=True, description="Enable rate limiting on payment endpoints")
+    BILLING_ANALYTICS_ENABLED: bool = Field(default=True, description="Record operational financial telemetry in analytics")
+    BILLING_NOTIFICATIONS_ENABLED: bool = Field(default=True, description="Emit customer financial event notifications")
+
     @property
     def max_document_size_bytes(self) -> int:
         """Maximum allowed document upload size in bytes."""

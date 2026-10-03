@@ -18,6 +18,7 @@ from app.workers.tasks import (
     notification,
     search,
     scheduling,
+    billing,
 )
 from app.workers.worker import AsyncWorkerPool
 

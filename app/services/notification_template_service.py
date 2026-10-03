@@ -586,6 +586,94 @@ TEMPLATES: Dict[NotificationType, Dict[str, TemplateDefinition]] = {
             required_variables=["facility_id", "status"],
         ),
     },
+    NotificationType.PAYMENT_CREATED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Payment Initiated",
+            body_template="A payment of {currency} {amount} has been initiated for transaction {payment_number}.",
+            required_variables=["payment_number", "amount", "currency"],
+        ),
+    },
+    NotificationType.PAYMENT_PROCESSING: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Payment Processing",
+            body_template="Your payment {payment_number} is currently being processed by the gateway.",
+            required_variables=["payment_number"],
+        ),
+    },
+    NotificationType.PAYMENT_SUCCEEDED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Payment Successful",
+            body_template="Payment of {currency} {amount} has been successfully completed.",
+            required_variables=["amount", "currency"],
+        ),
+    },
+    NotificationType.PAYMENT_FAILED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Payment Failed",
+            body_template="Payment transaction {payment_number} could not be completed.",
+            required_variables=["payment_number"],
+        ),
+    },
+    NotificationType.PAYMENT_RECONCILIATION_REQUIRED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Payment Status Pending Verification",
+            body_template="Payment {payment_number} requires verification with the gateway.",
+            required_variables=["payment_number"],
+        ),
+    },
+    NotificationType.REFUND_CREATED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Refund Requested",
+            body_template="A refund of {currency} {amount} has been requested.",
+            required_variables=["amount", "currency"],
+        ),
+    },
+    NotificationType.REFUND_SUCCEEDED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Refund Completed",
+            body_template="Refund {refund_number} of {currency} {amount} was processed successfully.",
+            required_variables=["refund_number", "amount", "currency"],
+        ),
+    },
+    NotificationType.REFUND_FAILED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Refund Failed",
+            body_template="Refund {refund_number} could not be completed.",
+            required_variables=["refund_number"],
+        ),
+    },
+    NotificationType.INVOICE_ISSUED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Invoice Issued",
+            body_template="Invoice {invoice_number} for {currency} {amount} has been issued.",
+            required_variables=["invoice_number", "amount", "currency"],
+        ),
+    },
+    NotificationType.INVOICE_OVERDUE: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Invoice Overdue",
+            body_template="Invoice {invoice_number} is past due date.",
+            required_variables=["invoice_number"],
+        ),
+    },
+    NotificationType.INVOICE_PAID: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Invoice Paid",
+            body_template="Invoice {invoice_number} has been fully settled.",
+            required_variables=["invoice_number"],
+        ),
+    },
 }
 
 

@@ -194,6 +194,21 @@ from app.services.availability_service import AvailabilityService
 from app.services.appointment_service import AppointmentService
 from app.services.scheduling_service import SchedulingService
 
+# Phase 32: Billing, Payments & Financial Transaction Management imports
+from app.repositories.billing_repository import BillingRepository
+from app.repositories.invoice_repository import InvoiceRepository
+from app.repositories.payment_repository import PaymentRepository
+from app.repositories.refund_repository import RefundRepository
+from app.integrations.payments.base import PaymentProvider
+from app.integrations.payments.providers.mock import MockPaymentProvider
+from app.services.billing_validation_service import BillingValidationService
+from app.services.billing_authorization_service import BillingAuthorizationService
+from app.services.invoice_service import InvoiceService
+from app.services.payment_service import PaymentService
+from app.services.refund_service import RefundService
+from app.services.payment_webhook_service import PaymentWebhookService
+from app.services.payment_reconciliation_service import PaymentReconciliationService
+
 # ---------------------------------------------------------------------------
 # HTTP Bearer scheme
 # ---------------------------------------------------------------------------
@@ -488,6 +503,62 @@ _global_scheduling_service = SchedulingService(
     schedule_repo=_global_schedule_repo,
     availability_repo=_global_availability_repo,
     provider=_global_scheduling_provider,
+)
+
+# ---------------------------------------------------------------------------
+# Phase 32: Billing, Payments & Financial Transaction Management singletons
+# ---------------------------------------------------------------------------
+_global_billing_repo = BillingRepository()
+_global_invoice_repo = InvoiceRepository()
+_global_payment_repo = PaymentRepository()
+_global_refund_repo = RefundRepository()
+_global_mock_payment_provider = MockPaymentProvider()
+_global_payment_providers: dict[str, PaymentProvider] = {
+    "MOCK": _global_mock_payment_provider,
+}
+_global_billing_validation_service = BillingValidationService()
+_global_billing_authorization_service = BillingAuthorizationService(patient_repo=_global_patient_repo)
+_global_invoice_service = InvoiceService(
+    invoice_repo=_global_invoice_repo,
+    billing_repo=_global_billing_repo,
+    auth_service=_global_billing_authorization_service,
+    audit_service=_global_audit_service,
+    notification_service=_global_notification_service,
+    analytics_service=_global_analytics_service,
+)
+_global_payment_service = PaymentService(
+    payment_repo=_global_payment_repo,
+    invoice_repo=_global_invoice_repo,
+    invoice_service=_global_invoice_service,
+    auth_service=_global_billing_authorization_service,
+    provider=_global_mock_payment_provider,
+    audit_service=_global_audit_service,
+    notification_service=_global_notification_service,
+    analytics_service=_global_analytics_service,
+)
+_global_refund_service = RefundService(
+    refund_repo=_global_refund_repo,
+    payment_repo=_global_payment_repo,
+    invoice_service=_global_invoice_service,
+    auth_service=_global_billing_authorization_service,
+    provider=_global_mock_payment_provider,
+    audit_service=_global_audit_service,
+    notification_service=_global_notification_service,
+    analytics_service=_global_analytics_service,
+)
+_global_payment_webhook_service = PaymentWebhookService(
+    payment_repo=_global_payment_repo,
+    invoice_service=_global_invoice_service,
+    providers=_global_payment_providers,
+    audit_service=_global_audit_service,
+    notification_service=_global_notification_service,
+    analytics_service=_global_analytics_service,
+)
+_global_payment_reconciliation_service = PaymentReconciliationService(
+    payment_repo=_global_payment_repo,
+    invoice_service=_global_invoice_service,
+    provider=_global_mock_payment_provider,
+    audit_service=_global_audit_service,
 )
 
 
@@ -1814,5 +1885,64 @@ def get_appointment_service() -> AppointmentService:
 def get_scheduling_service() -> SchedulingService:
     """Dependency provider for SchedulingService."""
     return _global_scheduling_service
+
+
+# ---------------------------------------------------------------------------
+# Phase 32: Billing, Payments & Financial Transaction Management providers
+# ---------------------------------------------------------------------------
+
+def get_billing_repository() -> BillingRepository:
+    """Dependency provider for BillingRepository."""
+    return _global_billing_repo
+
+
+def get_invoice_repository() -> InvoiceRepository:
+    """Dependency provider for InvoiceRepository."""
+    return _global_invoice_repo
+
+
+def get_payment_repository() -> PaymentRepository:
+    """Dependency provider for PaymentRepository."""
+    return _global_payment_repo
+
+
+def get_refund_repository() -> RefundRepository:
+    """Dependency provider for RefundRepository."""
+    return _global_refund_repo
+
+
+def get_payment_provider() -> PaymentProvider:
+    """Dependency provider for default PaymentProvider."""
+    return _global_mock_payment_provider
+
+
+def get_billing_authorization_service() -> BillingAuthorizationService:
+    """Dependency provider for BillingAuthorizationService."""
+    return _global_billing_authorization_service
+
+
+def get_invoice_service() -> InvoiceService:
+    """Dependency provider for InvoiceService."""
+    return _global_invoice_service
+
+
+def get_payment_service() -> PaymentService:
+    """Dependency provider for PaymentService."""
+    return _global_payment_service
+
+
+def get_refund_service() -> RefundService:
+    """Dependency provider for RefundService."""
+    return _global_refund_service
+
+
+def get_payment_webhook_service() -> PaymentWebhookService:
+    """Dependency provider for PaymentWebhookService."""
+    return _global_payment_webhook_service
+
+
+def get_payment_reconciliation_service() -> PaymentReconciliationService:
+    """Dependency provider for PaymentReconciliationService."""
+    return _global_payment_reconciliation_service
 
 

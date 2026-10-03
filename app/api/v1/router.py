@@ -38,6 +38,10 @@ from app.api.v1.endpoints import (
     search,
     appointments,
     availability,
+    invoices,
+    payments,
+    refunds,
+    payment_webhooks,
 )
 
 v1_router = APIRouter()
@@ -127,5 +131,11 @@ v1_router.include_router(search.router)
 # Register Phase 31 Scheduling, Appointment & Clinical Access Management endpoints
 v1_router.include_router(availability.router)
 v1_router.include_router(appointments.router)
+
+# Register Phase 32 Billing, Payments & Financial Transaction Management endpoints
+v1_router.include_router(invoices.router)
+v1_router.include_router(payments.router)
+v1_router.include_router(refunds.router)
+v1_router.include_router(payment_webhooks.router)
 
 

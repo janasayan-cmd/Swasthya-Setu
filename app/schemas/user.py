@@ -24,6 +24,7 @@ class AuthenticatedUserContext(BaseModel):
     account_status: AccountStatus = Field(default=AccountStatus.ACTIVE)
     organization_id: Optional[str] = Field(default=None, description="Optional tenant organization reference")
     facility_id: Optional[str] = Field(default=None, description="Optional facility reference")
+    patient_id: Optional[str] = Field(default=None, description="Optional patient reference")
 
     def __init__(self, **data: Any) -> None:
         if "id" in data and "user_id" not in data:
