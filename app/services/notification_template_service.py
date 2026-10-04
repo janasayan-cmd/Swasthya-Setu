@@ -876,6 +876,103 @@ TEMPLATES: Dict[NotificationType, Dict[str, TemplateDefinition]] = {
             required_variables=["alert_id", "resolution_reason"],
         ),
     },
+    # Phase 36: Clinical Tasks, Work Queues & Action Management
+    NotificationType.TASK_ASSIGNED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Task Assigned: {task_title}",
+            body_template="Task {task_id} ({priority}) has been assigned to you. Category: {category}. Action required: review and acceptance.",
+            required_variables=["task_title", "task_id", "priority", "category"],
+        ),
+    },
+    NotificationType.TASK_REASSIGNED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Task Reassigned: {task_title}",
+            body_template="Task {task_id} has been reassigned to {new_assignee_id}. Reason: {reason}.",
+            required_variables=["task_title", "task_id", "new_assignee_id", "reason"],
+        ),
+    },
+    NotificationType.TASK_OVERDUE: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Overdue Task: {task_title}",
+            body_template="Task {task_id} ({priority}) is overdue. Due deadline passed. Please attend or escalate.",
+            required_variables=["task_title", "task_id", "priority"],
+        ),
+    },
+    NotificationType.TASK_COMPLETED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Task Completed: {task_title}",
+            body_template="Task {task_id} has been reported completed by {completed_by}.",
+            required_variables=["task_title", "task_id", "completed_by"],
+        ),
+    },
+    NotificationType.TASK_VERIFICATION_REQUIRED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Task Verification Required: {task_title}",
+            body_template="Task {task_id} is completed and awaiting formal verification review.",
+            required_variables=["task_title", "task_id"],
+        ),
+    },
+    NotificationType.WORKFLOW_STARTED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Workflow Started: {workflow_name}",
+            body_template="Clinical workflow {workflow_id} ({workflow_name}) has been initiated.",
+            required_variables=["workflow_name", "workflow_id"],
+        ),
+    },
+    NotificationType.WORKFLOW_APPROVAL_REQUIRED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Workflow Approval Required: {step_name}",
+            body_template="Workflow {workflow_id} step '{step_name}' requires authorized review and sign-off.",
+            required_variables=["step_name", "workflow_id"],
+        ),
+    },
+    NotificationType.WORKFLOW_STEP_ASSIGNED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Workflow Step Assigned: {step_name}",
+            body_template="You have been assigned to workflow step '{step_name}' in workflow {workflow_id}.",
+            required_variables=["step_name", "workflow_id"],
+        ),
+    },
+    NotificationType.WORKFLOW_BLOCKED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Workflow Blocked: {workflow_name}",
+            body_template="Workflow {workflow_id} is blocked pending prerequisite completion.",
+            required_variables=["workflow_name", "workflow_id"],
+        ),
+    },
+    NotificationType.WORKFLOW_FAILED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Workflow Failed: {workflow_name}",
+            body_template="Workflow {workflow_id} failed during execution. Reason: {reason}.",
+            required_variables=["workflow_name", "workflow_id", "reason"],
+        ),
+    },
+    NotificationType.WORKFLOW_COMPLETED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Workflow Completed: {workflow_name}",
+            body_template="Workflow {workflow_id} ({workflow_name}) has completed all required steps.",
+            required_variables=["workflow_name", "workflow_id"],
+        ),
+    },
+    NotificationType.WORKFLOW_ESCALATED: {
+        "en": TemplateDefinition(
+            version=1,
+            title_template="Workflow Escalation: {workflow_name}",
+            body_template="Workflow {workflow_id} has exceeded approved execution threshold and escalated.",
+            required_variables=["workflow_name", "workflow_id"],
+        ),
+    },
 }
 
 

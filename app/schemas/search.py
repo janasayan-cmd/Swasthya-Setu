@@ -42,6 +42,7 @@ class SearchResourceType(str, Enum):
     DIAGNOSTIC_RESULT = "diagnostic_result"
     DIAGNOSTIC_REPORT = "diagnostic_report"
     ALERT = "alert"
+    TASK = "task"
 
 
 class MatchType(str, Enum):

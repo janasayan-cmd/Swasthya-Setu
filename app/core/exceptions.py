@@ -446,6 +446,49 @@ class ErrorCode(str, Enum):
     ALERT_SOURCE_EVENT_INVALID = "ALERT_SOURCE_EVENT_INVALID"
     ALERT_OPERATION_NOT_ALLOWED = "ALERT_OPERATION_NOT_ALLOWED"
 
+    # Phase 36: Clinical Tasks, Work Queues & Action Management Error Codes
+    TASK_NOT_FOUND = "TASK_NOT_FOUND"
+    TASK_ACCESS_DENIED = "TASK_ACCESS_DENIED"
+    TASK_INVALID_STATE = "TASK_INVALID_STATE"
+    TASK_INVALID_TRANSITION = "TASK_INVALID_TRANSITION"
+    TASK_ALREADY_ASSIGNED = "TASK_ALREADY_ASSIGNED"
+    TASK_ALREADY_ACCEPTED = "TASK_ALREADY_ACCEPTED"
+    TASK_ASSIGNMENT_NOT_ALLOWED = "TASK_ASSIGNMENT_NOT_ALLOWED"
+    TASK_REASSIGNMENT_NOT_ALLOWED = "TASK_REASSIGNMENT_NOT_ALLOWED"
+    TASK_COMPLETION_NOT_ALLOWED = "TASK_COMPLETION_NOT_ALLOWED"
+    TASK_VERIFICATION_NOT_ALLOWED = "TASK_VERIFICATION_NOT_ALLOWED"
+    TASK_CANCELLATION_NOT_ALLOWED = "TASK_CANCELLATION_NOT_ALLOWED"
+    TASK_REJECTION_NOT_ALLOWED = "TASK_REJECTION_NOT_ALLOWED"
+    TASK_DEPENDENCY_BLOCKED = "TASK_DEPENDENCY_BLOCKED"
+    TASK_SOURCE_NOT_FOUND = "TASK_SOURCE_NOT_FOUND"
+    TASK_DUPLICATE = "TASK_DUPLICATE"
+    TASK_POLICY_NOT_FOUND = "TASK_POLICY_NOT_FOUND"
+    TASK_POLICY_INVALID = "TASK_POLICY_INVALID"
+    TASK_ESCALATION_FAILED = "TASK_ESCALATION_FAILED"
+    TASK_NOTIFICATION_FAILED = "TASK_NOTIFICATION_FAILED"
+    TASK_OPERATION_NOT_ALLOWED = "TASK_OPERATION_NOT_ALLOWED"
+
+    # Phase 37: Clinical Workflow Orchestration, Order Management & Controlled Action Chains
+    WORKFLOW_ACCESS_DENIED = "WORKFLOW_ACCESS_DENIED"
+    WORKFLOW_DEFINITION_NOT_FOUND = "WORKFLOW_DEFINITION_NOT_FOUND"
+    WORKFLOW_DEFINITION_DISABLED = "WORKFLOW_DEFINITION_DISABLED"
+    WORKFLOW_VERSION_INVALID = "WORKFLOW_VERSION_INVALID"
+    WORKFLOW_INVALID_TRANSITION = "WORKFLOW_INVALID_TRANSITION"
+    WORKFLOW_STEP_NOT_FOUND = "WORKFLOW_STEP_NOT_FOUND"
+    WORKFLOW_STEP_BLOCKED = "WORKFLOW_STEP_BLOCKED"
+    WORKFLOW_APPROVAL_REQUIRED = "WORKFLOW_APPROVAL_REQUIRED"
+    WORKFLOW_APPROVAL_NOT_ALLOWED = "WORKFLOW_APPROVAL_NOT_ALLOWED"
+    WORKFLOW_ALREADY_RUNNING = "WORKFLOW_ALREADY_RUNNING"
+    WORKFLOW_ALREADY_COMPLETED = "WORKFLOW_ALREADY_COMPLETED"
+    WORKFLOW_ALREADY_CANCELLED = "WORKFLOW_ALREADY_CANCELLED"
+    WORKFLOW_DUPLICATE = "WORKFLOW_DUPLICATE"
+    WORKFLOW_PROVIDER_FAILURE = "WORKFLOW_PROVIDER_FAILURE"
+    WORKFLOW_RETRY_EXHAUSTED = "WORKFLOW_RETRY_EXHAUSTED"
+    WORKFLOW_EXECUTION_FAILED = "WORKFLOW_EXECUTION_FAILED"
+    WORKFLOW_CANNOT_RESUME = "WORKFLOW_CANNOT_RESUME"
+    WORKFLOW_CANNOT_CANCEL = "WORKFLOW_CANNOT_CANCEL"
+    WORKFLOW_OPERATION_NOT_ALLOWED = "WORKFLOW_OPERATION_NOT_ALLOWED"
+
 
 class AppException(Exception):
     """Base application exception for all domain and operational errors."""
@@ -3589,6 +3632,188 @@ class AlertSourceEventInvalidException(AppException):
 class AlertOperationNotAllowedException(AppException):
     def __init__(self, message: str = "Alert operation is not permitted.", details: Any = None) -> None:
         super().__init__(code=ErrorCode.ALERT_OPERATION_NOT_ALLOWED, message=message, status_code=status.HTTP_400_BAD_REQUEST, details=details)
+
+
+# ===========================================================================
+# Phase 36: Clinical Tasks, Work Queues & Action Management Exceptions
+# ===========================================================================
+
+class TaskNotFoundException(NotFoundException):
+    def __init__(self, message: str = "Task not found.", task_id: str | None = None) -> None:
+        super().__init__(message=message, details={"task_id": task_id} if task_id else None)
+        self.code = ErrorCode.TASK_NOT_FOUND.value
+
+class TaskAccessDeniedException(ForbiddenException):
+    def __init__(self, message: str = "You are not authorized to access this task.", details: Any = None) -> None:
+        super().__init__(message=message, details=details)
+        self.code = ErrorCode.TASK_ACCESS_DENIED.value
+
+class TaskInvalidStateException(AppException):
+    def __init__(self, message: str = "Task is not in a valid state for this operation.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.TASK_INVALID_STATE, message=message, status_code=status.HTTP_409_CONFLICT, details=details)
+
+class TaskInvalidTransitionException(AppException):
+    def __init__(self, message: str = "Invalid task state transition.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.TASK_INVALID_TRANSITION, message=message, status_code=status.HTTP_400_BAD_REQUEST, details=details)
+
+class TaskAlreadyAssignedException(AppException):
+    def __init__(self, message: str = "Task has already been assigned.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.TASK_ALREADY_ASSIGNED, message=message, status_code=status.HTTP_409_CONFLICT, details=details)
+
+class TaskAlreadyAcceptedException(AppException):
+    def __init__(self, message: str = "Task has already been accepted.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.TASK_ALREADY_ACCEPTED, message=message, status_code=status.HTTP_409_CONFLICT, details=details)
+
+class TaskAssignmentNotAllowedException(AppException):
+    def __init__(self, message: str = "Task assignment is not allowed for this target or state.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.TASK_ASSIGNMENT_NOT_ALLOWED, message=message, status_code=status.HTTP_400_BAD_REQUEST, details=details)
+
+class TaskReassignmentNotAllowedException(AppException):
+    def __init__(self, message: str = "Task reassignment is not permitted.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.TASK_REASSIGNMENT_NOT_ALLOWED, message=message, status_code=status.HTTP_400_BAD_REQUEST, details=details)
+
+class TaskCompletionNotAllowedException(AppException):
+    def __init__(self, message: str = "Task cannot be completed in its current state or by this actor.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.TASK_COMPLETION_NOT_ALLOWED, message=message, status_code=status.HTTP_400_BAD_REQUEST, details=details)
+
+class TaskVerificationNotAllowedException(AppException):
+    def __init__(self, message: str = "Task cannot be verified in its current state or by this actor.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.TASK_VERIFICATION_NOT_ALLOWED, message=message, status_code=status.HTTP_400_BAD_REQUEST, details=details)
+
+class TaskCancellationNotAllowedException(AppException):
+    def __init__(self, message: str = "Task cannot be cancelled in its current state.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.TASK_CANCELLATION_NOT_ALLOWED, message=message, status_code=status.HTTP_400_BAD_REQUEST, details=details)
+
+class TaskRejectionNotAllowedException(AppException):
+    def __init__(self, message: str = "Task assignment rejection is not allowed.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.TASK_REJECTION_NOT_ALLOWED, message=message, status_code=status.HTTP_400_BAD_REQUEST, details=details)
+
+class TaskDependencyBlockedException(AppException):
+    def __init__(self, message: str = "Task is blocked pending prerequisite task completion.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.TASK_DEPENDENCY_BLOCKED, message=message, status_code=status.HTTP_409_CONFLICT, details=details)
+
+class TaskSourceNotFoundException(NotFoundException):
+    def __init__(self, message: str = "Source entity or event for task not found.", details: Any = None) -> None:
+        super().__init__(message=message, details=details)
+        self.code = ErrorCode.TASK_SOURCE_NOT_FOUND.value
+
+class TaskDuplicateException(AppException):
+    def __init__(self, message: str = "A task for this logical source already exists.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.TASK_DUPLICATE, message=message, status_code=status.HTTP_409_CONFLICT, details=details)
+
+class TaskPolicyNotFoundException(NotFoundException):
+    def __init__(self, message: str = "Task policy not found.", policy_id: str | None = None) -> None:
+        super().__init__(message=message, details={"policy_id": policy_id} if policy_id else None)
+        self.code = ErrorCode.TASK_POLICY_NOT_FOUND.value
+
+class TaskPolicyInvalidException(AppException):
+    def __init__(self, message: str = "Task policy is invalid.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.TASK_POLICY_INVALID, message=message, status_code=status.HTTP_400_BAD_REQUEST, details=details)
+
+class TaskEscalationFailedException(AppException):
+    def __init__(self, message: str = "Task escalation failed.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.TASK_ESCALATION_FAILED, message=message, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, details=details)
+
+class TaskNotificationFailedException(AppException):
+    def __init__(self, message: str = "Task notification delivery failed.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.TASK_NOTIFICATION_FAILED, message=message, status_code=status.HTTP_502_BAD_GATEWAY, details=details)
+
+class TaskOperationNotAllowedException(AppException):
+    def __init__(self, message: str = "Task operation is not permitted.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.TASK_OPERATION_NOT_ALLOWED, message=message, status_code=status.HTTP_400_BAD_REQUEST, details=details)
+
+
+# ===========================================================================
+# Phase 37: Clinical Workflow Orchestration Exceptions
+# ===========================================================================
+
+class WorkflowNotFoundException(NotFoundException):
+    def __init__(self, message: str = "Workflow not found.", workflow_id: str | None = None) -> None:
+        super().__init__(message=message, details={"workflow_id": workflow_id} if workflow_id else None)
+        self.code = ErrorCode.WORKFLOW_NOT_FOUND.value
+
+class WorkflowAccessDeniedException(ForbiddenException):
+    def __init__(self, message: str = "You are not authorized to access this workflow.", details: Any = None) -> None:
+        super().__init__(message=message, details=details)
+        self.code = ErrorCode.WORKFLOW_ACCESS_DENIED.value
+
+class WorkflowDefinitionNotFoundException(NotFoundException):
+    def __init__(self, message: str = "Workflow definition not found.", definition_id: str | None = None) -> None:
+        super().__init__(message=message, details={"definition_id": definition_id} if definition_id else None)
+        self.code = ErrorCode.WORKFLOW_DEFINITION_NOT_FOUND.value
+
+class WorkflowDefinitionDisabledException(AppException):
+    def __init__(self, message: str = "Workflow definition is disabled.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.WORKFLOW_DEFINITION_DISABLED, message=message, status_code=status.HTTP_400_BAD_REQUEST, details=details)
+
+class WorkflowVersionInvalidException(AppException):
+    def __init__(self, message: str = "Workflow version is invalid or unsupported.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.WORKFLOW_VERSION_INVALID, message=message, status_code=status.HTTP_400_BAD_REQUEST, details=details)
+
+class WorkflowInvalidStateException(AppException):
+    def __init__(self, message: str = "Workflow is not in a valid state for this operation.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.WORKFLOW_INVALID_STATE, message=message, status_code=status.HTTP_409_CONFLICT, details=details)
+
+class WorkflowInvalidTransitionException(AppException):
+    def __init__(self, message: str = "Invalid workflow transition.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.WORKFLOW_INVALID_TRANSITION, message=message, status_code=status.HTTP_400_BAD_REQUEST, details=details)
+
+class WorkflowStepNotFoundException(NotFoundException):
+    def __init__(self, message: str = "Workflow step not found.", step_id: str | None = None) -> None:
+        super().__init__(message=message, details={"step_id": step_id} if step_id else None)
+        self.code = ErrorCode.WORKFLOW_STEP_NOT_FOUND.value
+
+class WorkflowStepBlockedException(AppException):
+    def __init__(self, message: str = "Workflow step is blocked pending dependencies.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.WORKFLOW_STEP_BLOCKED, message=message, status_code=status.HTTP_409_CONFLICT, details=details)
+
+class WorkflowApprovalRequiredException(AppException):
+    def __init__(self, message: str = "Workflow step requires explicit human approval before continuing.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.WORKFLOW_APPROVAL_REQUIRED, message=message, status_code=status.HTTP_409_CONFLICT, details=details)
+
+class WorkflowApprovalNotAllowedException(AppException):
+    def __init__(self, message: str = "Workflow approval is not allowed by this actor or in current state.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.WORKFLOW_APPROVAL_NOT_ALLOWED, message=message, status_code=status.HTTP_400_BAD_REQUEST, details=details)
+
+class WorkflowAlreadyRunningException(AppException):
+    def __init__(self, message: str = "Workflow is already running.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.WORKFLOW_ALREADY_RUNNING, message=message, status_code=status.HTTP_409_CONFLICT, details=details)
+
+class WorkflowAlreadyCompletedException(AppException):
+    def __init__(self, message: str = "Workflow has already completed.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.WORKFLOW_ALREADY_COMPLETED, message=message, status_code=status.HTTP_409_CONFLICT, details=details)
+
+class WorkflowAlreadyCancelledException(AppException):
+    def __init__(self, message: str = "Workflow has already been cancelled.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.WORKFLOW_ALREADY_CANCELLED, message=message, status_code=status.HTTP_409_CONFLICT, details=details)
+
+class WorkflowDuplicateException(AppException):
+    def __init__(self, message: str = "Workflow instance for this event already exists.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.WORKFLOW_DUPLICATE, message=message, status_code=status.HTTP_409_CONFLICT, details=details)
+
+class WorkflowProviderFailureException(AppException):
+    def __init__(self, message: str = "External provider integration failed during workflow execution.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.WORKFLOW_PROVIDER_FAILURE, message=message, status_code=status.HTTP_502_BAD_GATEWAY, details=details)
+
+class WorkflowRetryExhaustedException(AppException):
+    def __init__(self, message: str = "Workflow retries exhausted.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.WORKFLOW_RETRY_EXHAUSTED, message=message, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, details=details)
+
+class WorkflowExecutionFailedException(AppException):
+    def __init__(self, message: str = "Workflow execution failed.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.WORKFLOW_EXECUTION_FAILED, message=message, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, details=details)
+
+class WorkflowCannotResumeException(AppException):
+    def __init__(self, message: str = "Workflow cannot be resumed from its current state.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.WORKFLOW_CANNOT_RESUME, message=message, status_code=status.HTTP_400_BAD_REQUEST, details=details)
+
+class WorkflowCannotCancelException(AppException):
+    def __init__(self, message: str = "Workflow cannot be cancelled from its current state.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.WORKFLOW_CANNOT_CANCEL, message=message, status_code=status.HTTP_400_BAD_REQUEST, details=details)
+
+class WorkflowOperationNotAllowedException(AppException):
+    def __init__(self, message: str = "Workflow operation is not permitted.", details: Any = None) -> None:
+        super().__init__(code=ErrorCode.WORKFLOW_OPERATION_NOT_ALLOWED, message=message, status_code=status.HTTP_400_BAD_REQUEST, details=details)
 
 
 

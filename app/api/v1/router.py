@@ -54,6 +54,8 @@ from app.api.v1.endpoints import (
     diagnostic_reports,
     diagnostic_webhooks,
     alerts,
+    tasks,
+    workflows,
 )
 
 v1_router = APIRouter()
@@ -167,5 +169,11 @@ v1_router.include_router(diagnostic_webhooks.router)
 
 # Register Phase 35 Clinical Alerts, Safety Notifications & Escalation Management endpoints
 v1_router.include_router(alerts.router)
+
+# Register Phase 36 Clinical Tasks, Work Queues & Action Management endpoints
+v1_router.include_router(tasks.router)
+
+# Register Phase 37 Clinical Workflow Orchestration & Order Management endpoints
+v1_router.include_router(workflows.router)
 
 

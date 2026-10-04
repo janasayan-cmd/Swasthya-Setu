@@ -850,6 +850,29 @@ class Settings(BaseSettings):
     ALERT_DEDUPLICATION_WINDOW_SECONDS: int = Field(default=86400, description="Window in seconds for idempotent duplicate event suppression")
     ALERT_DEFAULT_ESCALATION_TIMEOUT_MINUTES: int = Field(default=15, description="Default timeout in minutes before escalating an unacknowledged critical alert")
 
+    # Phase 36: Clinical Tasks, Work Queues & Action Management
+    TASKS_ENABLED: bool = Field(default=True, description="Master switch for clinical task workflows")
+    TASK_ASSIGNMENT_ENABLED: bool = Field(default=True, description="Enable task assignment and reassignment")
+    TASK_ESCALATION_ENABLED: bool = Field(default=True, description="Enable task escalation workflows for overdue tasks")
+    TASK_NOTIFICATIONS_ENABLED: bool = Field(default=True, description="Enable notifications for task events")
+    TASK_OVERDUE_WORKER_ENABLED: bool = Field(default=True, description="Enable background worker for task overdue sweeps")
+    TASK_DEFAULT_PAGE_SIZE: int = Field(default=20, description="Default page size for task listings")
+    TASK_MAX_PAGE_SIZE: int = Field(default=100, description="Maximum page size for task listings")
+    TASK_MAX_RETRY_ATTEMPTS: int = Field(default=3, description="Maximum retry attempts for task worker processing")
+    TASK_DEDUPLICATION_WINDOW_SECONDS: int = Field(default=86400, description="Window in seconds for idempotent duplicate task suppression")
+    TASK_DEFAULT_DUE_HOURS: int = Field(default=24, description="Default deadline horizon in hours for tasks without explicit deadline")
+
+    # Phase 37: Clinical Workflow Orchestration, Order Management & Controlled Action Chains
+    WORKFLOWS_ENABLED: bool = Field(default=True, description="Master switch for clinical workflow orchestration")
+    WORKFLOW_ASYNC_EXECUTION_ENABLED: bool = Field(default=True, description="Enable async execution of workflow steps")
+    WORKFLOW_APPROVALS_ENABLED: bool = Field(default=True, description="Enable human approval gates for workflow steps")
+    WORKFLOW_ESCALATION_ENABLED: bool = Field(default=True, description="Enable escalation for stalled/overdue workflows")
+    WORKFLOW_MAX_RETRIES: int = Field(default=3, description="Maximum bounded retry attempts for failed workflow steps")
+    WORKFLOW_DEFAULT_TIMEOUT_MINUTES: int = Field(default=1440, description="Default timeout in minutes for active workflow instances")
+    WORKFLOW_DEFAULT_PAGE_SIZE: int = Field(default=20, description="Default page size for workflow listings")
+    WORKFLOW_MAX_PAGE_SIZE: int = Field(default=100, description="Maximum page size for workflow listings")
+    WORKFLOW_DEDUPLICATION_WINDOW_SECONDS: int = Field(default=86400, description="Window in seconds for idempotent duplicate workflow suppression")
+
     @property
     def max_document_size_bytes(self) -> int:
         """Maximum allowed document upload size in bytes."""

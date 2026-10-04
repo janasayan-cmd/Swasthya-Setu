@@ -303,6 +303,30 @@ class Permission(str, Enum):
     ADMIN_ALERT_POLICIES_MANAGE = "admin:alert_policies_manage"
     ADMIN_ALERT_ESCALATION_MANAGE = "admin:alert_escalation_manage"
 
+    # ---- Phase 36: Clinical Tasks, Work Queues & Action Management ----
+    TASK_CREATE = "task:create"
+    TASK_READ = "task:read"
+    TASK_ASSIGN = "task:assign"
+    TASK_ACCEPT = "task:accept"
+    TASK_START = "task:start"
+    TASK_COMPLETE = "task:complete"
+    TASK_VERIFY = "task:verify"
+    TASK_REJECT = "task:reject"
+    TASK_CANCEL = "task:cancel"
+    ADMIN_TASKS_VIEW = "admin:tasks_view"
+    ADMIN_TASKS_MANAGE = "admin:tasks_manage"
+
+    # ---- Phase 37: Clinical Workflow Orchestration, Order Management & Controlled Action Chains ----
+    WORKFLOW_CREATE = "workflow:create"
+    WORKFLOW_READ = "workflow:read"
+    WORKFLOW_EXECUTE = "workflow:execute"
+    WORKFLOW_APPROVE = "workflow:approve"
+    WORKFLOW_PAUSE = "workflow:pause"
+    WORKFLOW_RESUME = "workflow:resume"
+    WORKFLOW_CANCEL = "workflow:cancel"
+    ADMIN_WORKFLOWS_VIEW = "admin:workflows_view"
+    ADMIN_WORKFLOWS_MANAGE = "admin:workflows_manage"
+
 
 # ---------------------------------------------------------------------------
 # Role-to-Permission Mapping
@@ -420,6 +444,10 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         # Phase 35: Clinical Alerts & Notifications (Patient-facing)
         Permission.ALERT_READ,
         Permission.ALERT_ACKNOWLEDGE,
+        # Phase 36: Clinical Tasks (Patient-facing)
+        Permission.TASK_READ,
+        # Phase 37: Clinical Workflows (Patient-facing)
+        Permission.WORKFLOW_READ,
     }),
     "DOCTOR": frozenset({
         Permission.PATIENT_READ_SELF,         # can read patient profile in context
@@ -558,6 +586,24 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.ALERT_RESOLVE,
         Permission.ALERT_DISMISS,
         Permission.ALERT_POLICY_READ,
+        # Phase 36: Clinical Tasks, Work Queues & Action Management
+        Permission.TASK_CREATE,
+        Permission.TASK_READ,
+        Permission.TASK_ASSIGN,
+        Permission.TASK_ACCEPT,
+        Permission.TASK_START,
+        Permission.TASK_COMPLETE,
+        Permission.TASK_VERIFY,
+        Permission.TASK_REJECT,
+        Permission.TASK_CANCEL,
+        # Phase 37: Clinical Workflows
+        Permission.WORKFLOW_CREATE,
+        Permission.WORKFLOW_READ,
+        Permission.WORKFLOW_EXECUTE,
+        Permission.WORKFLOW_APPROVE,
+        Permission.WORKFLOW_PAUSE,
+        Permission.WORKFLOW_RESUME,
+        Permission.WORKFLOW_CANCEL,
     }),
     "ADMIN": frozenset({
         # Administrative capabilities ONLY — no automatic clinical data access
@@ -703,6 +749,27 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.ADMIN_ALERTS_MANAGE,
         Permission.ADMIN_ALERT_POLICIES_MANAGE,
         Permission.ADMIN_ALERT_ESCALATION_MANAGE,
+        # Phase 36: Clinical Tasks Administration
+        Permission.TASK_CREATE,
+        Permission.TASK_READ,
+        Permission.TASK_ASSIGN,
+        Permission.TASK_ACCEPT,
+        Permission.TASK_START,
+        Permission.TASK_COMPLETE,
+        Permission.TASK_VERIFY,
+        Permission.TASK_CANCEL,
+        Permission.ADMIN_TASKS_VIEW,
+        Permission.ADMIN_TASKS_MANAGE,
+        # Phase 37: Clinical Workflows Administration
+        Permission.WORKFLOW_CREATE,
+        Permission.WORKFLOW_READ,
+        Permission.WORKFLOW_EXECUTE,
+        Permission.WORKFLOW_APPROVE,
+        Permission.WORKFLOW_PAUSE,
+        Permission.WORKFLOW_RESUME,
+        Permission.WORKFLOW_CANCEL,
+        Permission.ADMIN_WORKFLOWS_VIEW,
+        Permission.ADMIN_WORKFLOWS_MANAGE,
     }),
     "SYSTEM_ADMIN": frozenset({
         Permission.ADMIN_USER_MANAGE,
@@ -830,6 +897,27 @@ ROLE_PERMISSIONS: dict[str, FrozenSet[Permission]] = {
         Permission.ADMIN_ALERTS_MANAGE,
         Permission.ADMIN_ALERT_POLICIES_MANAGE,
         Permission.ADMIN_ALERT_ESCALATION_MANAGE,
+        # Phase 36: Clinical Tasks Administration
+        Permission.TASK_CREATE,
+        Permission.TASK_READ,
+        Permission.TASK_ASSIGN,
+        Permission.TASK_ACCEPT,
+        Permission.TASK_START,
+        Permission.TASK_COMPLETE,
+        Permission.TASK_VERIFY,
+        Permission.TASK_CANCEL,
+        Permission.ADMIN_TASKS_VIEW,
+        Permission.ADMIN_TASKS_MANAGE,
+        # Phase 37: Clinical Workflows Administration
+        Permission.WORKFLOW_CREATE,
+        Permission.WORKFLOW_READ,
+        Permission.WORKFLOW_EXECUTE,
+        Permission.WORKFLOW_APPROVE,
+        Permission.WORKFLOW_PAUSE,
+        Permission.WORKFLOW_RESUME,
+        Permission.WORKFLOW_CANCEL,
+        Permission.ADMIN_WORKFLOWS_VIEW,
+        Permission.ADMIN_WORKFLOWS_MANAGE,
     }),
     "OPERATIONS_ADMIN": frozenset({
         Permission.ADMIN_SYSTEM_VIEW,
@@ -1145,6 +1233,29 @@ ACTION_PERMISSION_MAP: dict[tuple[str, str], Permission] = {
     ("alerts_admin", "manage"):           Permission.ADMIN_ALERTS_MANAGE,
     ("alert_policies_admin", "manage"):   Permission.ADMIN_ALERT_POLICIES_MANAGE,
     ("alert_escalation_admin", "manage"): Permission.ADMIN_ALERT_ESCALATION_MANAGE,
+    # Phase 36: Clinical Tasks & Queues
+    ("task", "create"):                   Permission.TASK_CREATE,
+    ("task", "read"):                     Permission.TASK_READ,
+    ("task", "assign"):                   Permission.TASK_ASSIGN,
+    ("task", "reassign"):                 Permission.TASK_ASSIGN,
+    ("task", "accept"):                   Permission.TASK_ACCEPT,
+    ("task", "start"):                    Permission.TASK_START,
+    ("task", "complete"):                 Permission.TASK_COMPLETE,
+    ("task", "verify"):                   Permission.TASK_VERIFY,
+    ("task", "reject"):                   Permission.TASK_REJECT,
+    ("task", "cancel"):                   Permission.TASK_CANCEL,
+    ("tasks_admin", "view"):              Permission.ADMIN_TASKS_VIEW,
+    ("tasks_admin", "manage"):            Permission.ADMIN_TASKS_MANAGE,
+    # Phase 37: Clinical Workflows & Orchestration
+    ("workflow", "create"):               Permission.WORKFLOW_CREATE,
+    ("workflow", "read"):                 Permission.WORKFLOW_READ,
+    ("workflow", "execute"):              Permission.WORKFLOW_EXECUTE,
+    ("workflow", "approve"):              Permission.WORKFLOW_APPROVE,
+    ("workflow", "pause"):                Permission.WORKFLOW_PAUSE,
+    ("workflow", "resume"):               Permission.WORKFLOW_RESUME,
+    ("workflow", "cancel"):               Permission.WORKFLOW_CANCEL,
+    ("workflows_admin", "view"):          Permission.ADMIN_WORKFLOWS_VIEW,
+    ("workflows_admin", "manage"):        Permission.ADMIN_WORKFLOWS_MANAGE,
 }
 
 
@@ -1195,6 +1306,8 @@ class ConsentScope(str, Enum):
     INTEROPERABILITY = "interoperability"
     DIAGNOSTICS = "diagnostics"
     ALERTS = "alerts"
+    TASKS = "tasks"
+    WORKFLOWS = "workflows"
     ALL_RECORDS = "all_records"   # broad scope — must require explicit grant
 
 

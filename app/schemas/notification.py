@@ -111,6 +111,22 @@ class NotificationType(str, Enum):
     CLINICAL_ALERT_ACKNOWLEDGED = "CLINICAL_ALERT_ACKNOWLEDGED"
     CLINICAL_ALERT_RESOLVED = "CLINICAL_ALERT_RESOLVED"
 
+    # Phase 36: Clinical Tasks, Work Queues & Action Management
+    TASK_ASSIGNED = "TASK_ASSIGNED"
+    TASK_REASSIGNED = "TASK_REASSIGNED"
+    TASK_OVERDUE = "TASK_OVERDUE"
+    TASK_COMPLETED = "TASK_COMPLETED"
+    TASK_VERIFICATION_REQUIRED = "TASK_VERIFICATION_REQUIRED"
+
+    # Phase 37: Clinical Workflow Orchestration, Order Management & Controlled Action Chains
+    WORKFLOW_STARTED = "WORKFLOW_STARTED"
+    WORKFLOW_APPROVAL_REQUIRED = "WORKFLOW_APPROVAL_REQUIRED"
+    WORKFLOW_STEP_ASSIGNED = "WORKFLOW_STEP_ASSIGNED"
+    WORKFLOW_BLOCKED = "WORKFLOW_BLOCKED"
+    WORKFLOW_FAILED = "WORKFLOW_FAILED"
+    WORKFLOW_COMPLETED = "WORKFLOW_COMPLETED"
+    WORKFLOW_ESCALATED = "WORKFLOW_ESCALATED"
+
 
 class NotificationCategory(str, Enum):
     """Broad categorization for governance and preference management."""
@@ -121,6 +137,8 @@ class NotificationCategory(str, Enum):
     ADMINISTRATIVE = "ADMINISTRATIVE"
     DIAGNOSTIC = "DIAGNOSTIC"
     ALERT = "ALERT"
+    TASK = "TASK"
+    WORKFLOW = "WORKFLOW"
 
 
 class NotificationStatus(str, Enum):

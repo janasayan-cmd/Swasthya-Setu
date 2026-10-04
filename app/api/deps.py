@@ -259,6 +259,24 @@ from app.services.alert_policy_service import AlertPolicyService
 from app.services.alert_escalation_service import AlertEscalationService
 from app.services.alert_service import AlertService
 
+# Phase 36: Clinical Tasks, Work Queues & Action Management imports
+from app.repositories.task_repository import TaskRepository
+from app.repositories.task_assignment_repository import TaskAssignmentRepository
+from app.services.task_validation_service import TaskValidationService
+from app.services.task_assignment_service import TaskAssignmentService
+from app.services.task_dependency_service import TaskDependencyService
+from app.services.task_escalation_service import TaskEscalationService
+from app.services.task_service import TaskService
+
+# Phase 37: Clinical Workflow Orchestration, Order Management & Controlled Action Chains imports
+from app.repositories.workflow_repository import WorkflowRepository
+from app.repositories.workflow_step_repository import WorkflowStepRepository
+from app.services.workflow_definition_service import WorkflowDefinitionService
+from app.services.workflow_validation_service import WorkflowValidationService
+from app.services.workflow_step_service import WorkflowStepService
+from app.services.workflow_approval_service import WorkflowApprovalService
+from app.services.workflow_service import WorkflowService
+
 # ---------------------------------------------------------------------------
 # HTTP Bearer scheme
 # ---------------------------------------------------------------------------
@@ -748,6 +766,65 @@ _global_alert_service = AlertService(
     notification_service=_global_notification_service,
     audit_service=_global_audit_service,
     alert_provider=_global_local_alert_provider,
+)
+
+# ---------------------------------------------------------------------------
+# Phase 36: Clinical Tasks, Work Queues & Action Management singletons
+# ---------------------------------------------------------------------------
+_global_task_repo = TaskRepository()
+_global_task_assignment_repo = TaskAssignmentRepository()
+_global_task_validation_service = TaskValidationService()
+_global_task_assignment_service = TaskAssignmentService(assignment_repo=_global_task_assignment_repo)
+_global_task_dependency_service = TaskDependencyService(task_repo=_global_task_repo)
+_global_task_escalation_service = TaskEscalationService(
+    task_repo=_global_task_repo,
+    alert_service=_global_alert_service,
+    notification_service=_global_notification_service,
+    audit_service=_global_audit_service,
+)
+_global_task_service = TaskService(
+    task_repo=_global_task_repo,
+    assignment_repo=_global_task_assignment_repo,
+    validation_service=_global_task_validation_service,
+    assignment_service=_global_task_assignment_service,
+    dependency_service=_global_task_dependency_service,
+    alert_service=_global_alert_service,
+    notification_service=_global_notification_service,
+    audit_service=_global_audit_service,
+)
+
+# ---------------------------------------------------------------------------
+# Phase 37: Clinical Workflow Orchestration singletons
+# ---------------------------------------------------------------------------
+_global_workflow_repo = WorkflowRepository()
+_global_workflow_step_repo = WorkflowStepRepository()
+_global_workflow_def_service = WorkflowDefinitionService()
+_global_workflow_val_service = WorkflowValidationService()
+_global_workflow_step_service = WorkflowStepService(
+    step_repo=_global_workflow_step_repo,
+    val_service=_global_workflow_val_service,
+    task_service=_global_task_service,
+    alert_service=_global_alert_service,
+    notification_service=_global_notification_service,
+    audit_service=_global_audit_service,
+)
+_global_workflow_approval_service = WorkflowApprovalService(
+    workflow_repo=_global_workflow_repo,
+    step_repo=_global_workflow_step_repo,
+    val_service=_global_workflow_val_service,
+    audit_service=_global_audit_service,
+)
+_global_workflow_service = WorkflowService(
+    workflow_repo=_global_workflow_repo,
+    step_repo=_global_workflow_step_repo,
+    def_service=_global_workflow_def_service,
+    step_service=_global_workflow_step_service,
+    val_service=_global_workflow_val_service,
+    approval_service=_global_workflow_approval_service,
+    task_service=_global_task_service,
+    alert_service=_global_alert_service,
+    notification_service=_global_notification_service,
+    audit_service=_global_audit_service,
 )
 
 
@@ -2349,5 +2426,83 @@ def get_alert_escalation_service() -> AlertEscalationService:
 def get_alert_service() -> AlertService:
     """Dependency provider for AlertService."""
     return _global_alert_service
+
+
+# ---------------------------------------------------------------------------
+# Phase 36: Clinical Tasks & Work Queues Getters
+# ---------------------------------------------------------------------------
+
+def get_task_repository() -> TaskRepository:
+    """Dependency provider for TaskRepository."""
+    return _global_task_repo
+
+
+def get_task_assignment_repository() -> TaskAssignmentRepository:
+    """Dependency provider for TaskAssignmentRepository."""
+    return _global_task_assignment_repo
+
+
+def get_task_validation_service() -> TaskValidationService:
+    """Dependency provider for TaskValidationService."""
+    return _global_task_validation_service
+
+
+def get_task_assignment_service() -> TaskAssignmentService:
+    """Dependency provider for TaskAssignmentService."""
+    return _global_task_assignment_service
+
+
+def get_task_dependency_service() -> TaskDependencyService:
+    """Dependency provider for TaskDependencyService."""
+    return _global_task_dependency_service
+
+
+def get_task_escalation_service() -> TaskEscalationService:
+    """Dependency provider for TaskEscalationService."""
+    return _global_task_escalation_service
+
+
+def get_task_service() -> TaskService:
+    """Dependency provider for TaskService."""
+    return _global_task_service
+
+
+# ---------------------------------------------------------------------------
+# Phase 37: Clinical Workflow Orchestration Getters
+# ---------------------------------------------------------------------------
+
+def get_workflow_repository() -> WorkflowRepository:
+    """Dependency provider for WorkflowRepository."""
+    return _global_workflow_repo
+
+
+def get_workflow_step_repository() -> WorkflowStepRepository:
+    """Dependency provider for WorkflowStepRepository."""
+    return _global_workflow_step_repo
+
+
+def get_workflow_definition_service() -> WorkflowDefinitionService:
+    """Dependency provider for WorkflowDefinitionService."""
+    return _global_workflow_def_service
+
+
+def get_workflow_validation_service() -> WorkflowValidationService:
+    """Dependency provider for WorkflowValidationService."""
+    return _global_workflow_val_service
+
+
+def get_workflow_step_service() -> WorkflowStepService:
+    """Dependency provider for WorkflowStepService."""
+    return _global_workflow_step_service
+
+
+def get_workflow_approval_service() -> WorkflowApprovalService:
+    """Dependency provider for WorkflowApprovalService."""
+    return _global_workflow_approval_service
+
+
+def get_workflow_service() -> WorkflowService:
+    """Dependency provider for WorkflowService."""
+    return _global_workflow_service
 
 
