@@ -296,6 +296,18 @@ from app.services.approval_policy_service import ApprovalPolicyService
 from app.services.approval_authorization_service import ApprovalAuthorizationService
 from app.services.approval_service import ApprovalService
 
+# Phase 41: Clinical Communication, Patient–Provider Messaging & Secure Conversation Management imports
+from app.repositories.conversation_repository import ConversationRepository
+from app.repositories.message_repository import MessageRepository
+from app.integrations.communication.providers.mock import MockCommunicationProvider
+from app.services.conversation_authorization_service import ConversationAuthorizationService
+from app.services.communication_policy_service import CommunicationPolicyService
+from app.services.conversation_service import ConversationService
+from app.services.message_authorization_service import MessageAuthorizationService
+from app.services.message_delivery_service import MessageDeliveryService
+from app.services.message_search_service import MessageSearchService
+from app.services.message_service import MessageService
+
 # ---------------------------------------------------------------------------
 # HTTP Bearer scheme
 # ---------------------------------------------------------------------------
@@ -904,6 +916,58 @@ _global_approval_service = ApprovalService(
     delegation_enabled=_settings.APPROVAL_DELEGATION_ENABLED,
     tasks_enabled=_settings.APPROVAL_REVIEW_TASKS_ENABLED,
     default_expiration_hours=_settings.APPROVAL_DEFAULT_EXPIRATION_HOURS,
+)
+
+# Phase 41: Clinical Communication, Patient–Provider Messaging singletons
+_global_conversation_repo = ConversationRepository()
+_global_message_repo = MessageRepository()
+_global_comm_provider = MockCommunicationProvider(name=_settings.COMMUNICATION_PROVIDER)
+_global_conversation_authz_service = ConversationAuthorizationService(enabled=_settings.MESSAGING_ENABLED)
+_global_comm_policy_service = CommunicationPolicyService(
+    max_message_length=_settings.MESSAGE_MAX_LENGTH,
+    max_attachment_size_bytes=_settings.MESSAGE_ATTACHMENT_MAX_SIZE_MB * 1024 * 1024,
+    message_rate_limit=_settings.MESSAGE_RATE_LIMIT,
+    conversation_rate_limit=_settings.CONVERSATION_RATE_LIMIT,
+    enabled=_settings.MESSAGING_ENABLED,
+)
+_global_conversation_service = ConversationService(
+    conversation_repository=_global_conversation_repo,
+    authorization_service=_global_conversation_authz_service,
+    policy_service=_global_comm_policy_service,
+    audit_service=_global_audit_service,
+    max_participants=_settings.CONVERSATION_MAX_PARTICIPANTS,
+    enabled=_settings.MESSAGING_ENABLED,
+)
+_global_message_authz_service = MessageAuthorizationService(enabled=_settings.MESSAGING_ENABLED)
+_global_message_delivery_service = MessageDeliveryService(
+    message_repository=_global_message_repo,
+    provider=_global_comm_provider,
+    audit_service=_global_audit_service,
+    webhook_secret=_settings.COMMUNICATION_WEBHOOK_SECRET,
+    max_retries=_settings.MESSAGE_MAX_RETRIES,
+    enabled=_settings.COMMUNICATION_PROVIDER_ENABLED,
+)
+_global_message_search_service = MessageSearchService(
+    conversation_repository=_global_conversation_repo,
+    message_repository=_global_message_repo,
+    authorization_service=_global_conversation_authz_service,
+    enabled=_settings.MESSAGING_ENABLED,
+)
+_global_message_service = MessageService(
+    conversation_repository=_global_conversation_repo,
+    message_repository=_global_message_repo,
+    delivery_service=_global_message_delivery_service,
+    conversation_authorization_service=_global_conversation_authz_service,
+    message_authorization_service=_global_message_authz_service,
+    policy_service=_global_comm_policy_service,
+    audit_service=_global_audit_service,
+    notification_service=_global_notification_service,
+    task_service=_global_task_service,
+    alert_service=_global_alert_service,
+    workflow_service=_global_workflow_service,
+    enabled=_settings.MESSAGING_ENABLED,
+    ai_drafting_enabled=_settings.AI_MESSAGE_DRAFTING_ENABLED,
+    translation_enabled=_settings.MESSAGE_TRANSLATION_ENABLED,
 )
 
 
@@ -2660,5 +2724,59 @@ def get_approval_authorization_service() -> ApprovalAuthorizationService:
 def get_approval_service() -> ApprovalService:
     """Dependency provider for ApprovalService."""
     return _global_approval_service
+
+
+# ---------------------------------------------------------------------------
+# Phase 41: Clinical Communication, Patient–Provider Messaging Getters
+# ---------------------------------------------------------------------------
+
+def get_conversation_repository() -> ConversationRepository:
+    """Dependency provider for ConversationRepository."""
+    return _global_conversation_repo
+
+
+def get_message_repository() -> MessageRepository:
+    """Dependency provider for MessageRepository."""
+    return _global_message_repo
+
+
+def get_communication_provider() -> MockCommunicationProvider:
+    """Dependency provider for CommunicationProvider."""
+    return _global_comm_provider
+
+
+def get_conversation_authorization_service() -> ConversationAuthorizationService:
+    """Dependency provider for ConversationAuthorizationService."""
+    return _global_conversation_authz_service
+
+
+def get_communication_policy_service() -> CommunicationPolicyService:
+    """Dependency provider for CommunicationPolicyService."""
+    return _global_comm_policy_service
+
+
+def get_conversation_service() -> ConversationService:
+    """Dependency provider for ConversationService."""
+    return _global_conversation_service
+
+
+def get_message_authorization_service() -> MessageAuthorizationService:
+    """Dependency provider for MessageAuthorizationService."""
+    return _global_message_authz_service
+
+
+def get_message_delivery_service() -> MessageDeliveryService:
+    """Dependency provider for MessageDeliveryService."""
+    return _global_message_delivery_service
+
+
+def get_message_search_service() -> MessageSearchService:
+    """Dependency provider for MessageSearchService."""
+    return _global_message_search_service
+
+
+def get_message_service() -> MessageService:
+    """Dependency provider for MessageService."""
+    return _global_message_service
 
 

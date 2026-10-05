@@ -59,6 +59,8 @@ from app.api.v1.endpoints import (
     orders,
     order_sets,
     approvals,
+    conversations,
+    messages,
 )
 
 v1_router = APIRouter()
@@ -190,5 +192,9 @@ v1_router.include_router(order_sets.execution_router)
 
 # Register Phase 40 Clinical Order Review, Approval Gates & Controlled Authorization Management endpoints
 v1_router.include_router(approvals.router)
+
+# Register Phase 41 Clinical Communication, Patient–Provider Messaging & Secure Conversations endpoints
+v1_router.include_router(conversations.router)
+v1_router.include_router(messages.router)
 
 

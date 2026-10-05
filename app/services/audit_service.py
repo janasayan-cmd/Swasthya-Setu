@@ -1191,7 +1191,8 @@ class AuditService(BaseService[AuditRepository]):
         outcome: str = "ALLOW",
     ) -> None:
         if isinstance(event_type, AuditEventRecord):
-            await self.audit_repo.append(event_type)
+            if self.audit_repo:
+                await self.audit_repo.append(event_type)
             return
 
         actor_id = getattr(actor, "actor_id", None) or getattr(actor, "user_id", None) or (str(actor) if actor else None)

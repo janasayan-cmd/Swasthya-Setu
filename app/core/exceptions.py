@@ -562,6 +562,39 @@ class ErrorCode(str, Enum):
     APPROVAL_DELEGATION_INVALID = "APPROVAL_DELEGATION_INVALID"
     APPROVAL_ESCALATION_INVALID = "APPROVAL_ESCALATION_INVALID"
 
+    # Phase 41: Clinical Communication, Patient–Provider Messaging & Secure Conversation Management Error Codes
+    MESSAGING_DISABLED = "MESSAGING_DISABLED"
+    CONVERSATION_NOT_FOUND = "CONVERSATION_NOT_FOUND"
+    CONVERSATION_ACCESS_DENIED = "CONVERSATION_ACCESS_DENIED"
+    CONVERSATION_CLOSED = "CONVERSATION_CLOSED"
+    CONVERSATION_LOCKED = "CONVERSATION_LOCKED"
+    CONVERSATION_ARCHIVED = "CONVERSATION_ARCHIVED"
+    CONVERSATION_INVALID_STATE = "CONVERSATION_INVALID_STATE"
+    PARTICIPANT_NOT_AUTHORIZED = "PARTICIPANT_NOT_AUTHORIZED"
+    PARTICIPANT_NOT_FOUND = "PARTICIPANT_NOT_FOUND"
+    PARTICIPANT_ALREADY_EXISTS = "PARTICIPANT_ALREADY_EXISTS"
+    PARTICIPANT_LIMIT_EXCEEDED = "PARTICIPANT_LIMIT_EXCEEDED"
+    MESSAGE_NOT_FOUND = "MESSAGE_NOT_FOUND"
+    MESSAGE_ACCESS_DENIED = "MESSAGE_ACCESS_DENIED"
+    MESSAGE_INVALID = "MESSAGE_INVALID"
+    MESSAGE_TOO_LARGE = "MESSAGE_TOO_LARGE"
+    MESSAGE_ALREADY_PROCESSED = "MESSAGE_ALREADY_PROCESSED"
+    MESSAGE_SEND_FAILED = "MESSAGE_SEND_FAILED"
+    MESSAGE_DELIVERY_UNKNOWN = "MESSAGE_DELIVERY_UNKNOWN"
+    MESSAGE_RETRY_NOT_ALLOWED = "MESSAGE_RETRY_NOT_ALLOWED"
+    ATTACHMENT_NOT_FOUND = "ATTACHMENT_NOT_FOUND"
+    ATTACHMENT_ACCESS_DENIED = "ATTACHMENT_ACCESS_DENIED"
+    ATTACHMENT_INVALID = "ATTACHMENT_INVALID"
+    COMMUNICATION_PROVIDER_UNAVAILABLE = "COMMUNICATION_PROVIDER_UNAVAILABLE"
+    COMMUNICATION_PROVIDER_TIMEOUT = "COMMUNICATION_PROVIDER_TIMEOUT"
+    COMMUNICATION_WEBHOOK_INVALID = "COMMUNICATION_WEBHOOK_INVALID"
+    COMMUNICATION_WEBHOOK_REPLAY = "COMMUNICATION_WEBHOOK_REPLAY"
+    COMMUNICATION_RATE_LIMIT_EXCEEDED = "COMMUNICATION_RATE_LIMIT_EXCEEDED"
+    MESSAGE_IDEMPOTENCY_CONFLICT = "MESSAGE_IDEMPOTENCY_CONFLICT"
+    INVALID_MESSAGE_STATE = "INVALID_MESSAGE_STATE"
+    AI_CLINICAL_APPROVAL_REQUIRED = "AI_CLINICAL_APPROVAL_REQUIRED"
+    AI_AUTONOMOUS_ACTION_PROHIBITED = "AI_AUTONOMOUS_ACTION_PROHIBITED"
+
 
 class AppException(Exception):
     """Base application exception for all domain and operational errors."""
@@ -4818,5 +4851,334 @@ class ApprovalEscalationInvalidException(AppException):
             status_code=status.HTTP_400_BAD_REQUEST,
             details=details,
         )
+
+
+# ---------------------------------------------------------------------------
+# Phase 41: Clinical Communication, Patient–Provider Messaging Exceptions
+# ---------------------------------------------------------------------------
+
+class MessagingDisabledException(AppException):
+    """Messaging and secure conversations are disabled (HTTP 503)."""
+
+    def __init__(self, message: str = "Clinical messaging service is currently disabled.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.MESSAGING_DISABLED,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            details=details,
+        )
+
+
+class ConversationNotFoundException(AppException):
+    """Conversation was not found (HTTP 404)."""
+
+    def __init__(self, message: str = "Conversation not found.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.CONVERSATION_NOT_FOUND,
+            message=message,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details=details,
+        )
+
+
+class ConversationAccessDeniedException(AppException):
+    """Access to conversation is denied (HTTP 403)."""
+
+    def __init__(self, message: str = "You are not authorized to access this conversation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.CONVERSATION_ACCESS_DENIED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class ConversationClosedException(AppException):
+    """Conversation is closed and does not accept new messages (HTTP 409)."""
+
+    def __init__(self, message: str = "Conversation is closed and cannot accept new messages.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.CONVERSATION_CLOSED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class ConversationLockedException(AppException):
+    """Conversation is locked against modifications (HTTP 423)."""
+
+    def __init__(self, message: str = "Conversation is locked and cannot be modified.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.CONVERSATION_LOCKED,
+            message=message,
+            status_code=status.HTTP_423_LOCKED,
+            details=details,
+        )
+
+
+class ParticipantNotAuthorizedException(AppException):
+    """Participant is not authorized for this conversation (HTTP 403)."""
+
+    def __init__(self, message: str = "Participant is not authorized for this conversation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.PARTICIPANT_NOT_AUTHORIZED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class ParticipantNotFoundException(AppException):
+    """Participant was not found in conversation (HTTP 404)."""
+
+    def __init__(self, message: str = "Participant not found in conversation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.PARTICIPANT_NOT_FOUND,
+            message=message,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details=details,
+        )
+
+
+class ParticipantAlreadyExistsException(AppException):
+    """Participant already exists in this conversation (HTTP 409)."""
+
+    def __init__(self, message: str = "Participant is already active in this conversation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.PARTICIPANT_ALREADY_EXISTS,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class ParticipantLimitExceededException(AppException):
+    """Maximum participants limit reached for conversation (HTTP 422)."""
+
+    def __init__(self, message: str = "Conversation has reached maximum allowed participants.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.PARTICIPANT_LIMIT_EXCEEDED,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            details=details,
+        )
+
+
+class MessageNotFoundException(AppException):
+    """Message was not found (HTTP 404)."""
+
+    def __init__(self, message: str = "Message not found.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.MESSAGE_NOT_FOUND,
+            message=message,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details=details,
+        )
+
+
+class MessageAccessDeniedException(AppException):
+    """Access to message is denied (HTTP 403)."""
+
+    def __init__(self, message: str = "You are not authorized to access this message.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.MESSAGE_ACCESS_DENIED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class MessageInvalidException(AppException):
+    """Message payload is invalid (HTTP 422)."""
+
+    def __init__(self, message: str = "Message payload is invalid or malformed.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.MESSAGE_INVALID,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            details=details,
+        )
+
+
+class MessageTooLargeException(AppException):
+    """Message content exceeds maximum allowed size (HTTP 413)."""
+
+    def __init__(self, message: str = "Message content exceeds maximum allowable length.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.MESSAGE_TOO_LARGE,
+            message=message,
+            status_code=413,
+            details=details,
+        )
+
+
+class MessageSendFailedException(AppException):
+    """Message sending or delivery failed (HTTP 502)."""
+
+    def __init__(self, message: str = "Failed to deliver message via communication provider.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.MESSAGE_SEND_FAILED,
+            message=message,
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            details=details,
+        )
+
+
+class MessageDeliveryUnknownException(AppException):
+    """Message delivery status is indeterminate (HTTP 504)."""
+
+    def __init__(self, message: str = "Message delivery status is currently unknown or timed out.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.MESSAGE_DELIVERY_UNKNOWN,
+            message=message,
+            status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+            details=details,
+        )
+
+
+class MessageRetryNotAllowedException(AppException):
+    """Message retry is not permitted (HTTP 400)."""
+
+    def __init__(self, message: str = "Message cannot be retried from its current state.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.MESSAGE_RETRY_NOT_ALLOWED,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class AttachmentNotFoundException(AppException):
+    """Message attachment was not found (HTTP 404)."""
+
+    def __init__(self, message: str = "Attachment not found.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ATTACHMENT_NOT_FOUND,
+            message=message,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details=details,
+        )
+
+
+class AttachmentAccessDeniedException(AppException):
+    """Access to attachment is denied (HTTP 403)."""
+
+    def __init__(self, message: str = "You are not authorized to access this attachment.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ATTACHMENT_ACCESS_DENIED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class AttachmentInvalidException(AppException):
+    """Attachment reference is invalid (HTTP 422)."""
+
+    def __init__(self, message: str = "Attachment reference is invalid or exceeds permitted size.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ATTACHMENT_INVALID,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            details=details,
+        )
+
+
+class CommunicationProviderUnavailableException(AppException):
+    """Communication provider is unavailable (HTTP 503)."""
+
+    def __init__(self, message: str = "Communication provider is temporarily unavailable.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.COMMUNICATION_PROVIDER_UNAVAILABLE,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            details=details,
+        )
+
+
+class CommunicationProviderTimeoutException(AppException):
+    """Communication provider timed out (HTTP 504)."""
+
+    def __init__(self, message: str = "Communication provider timed out.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.COMMUNICATION_PROVIDER_TIMEOUT,
+            message=message,
+            status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+            details=details,
+        )
+
+
+class CommunicationWebhookInvalidException(AppException):
+    """Webhook payload or signature is invalid (HTTP 400)."""
+
+    def __init__(self, message: str = "Webhook payload or signature verification failed.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.COMMUNICATION_WEBHOOK_INVALID,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class CommunicationWebhookReplayException(AppException):
+    """Webhook event has already been processed (HTTP 409)."""
+
+    def __init__(self, message: str = "Webhook event already processed (replay detected).", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.COMMUNICATION_WEBHOOK_REPLAY,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class CommunicationRateLimitExceededException(AppException):
+    """Communication rate limit exceeded (HTTP 429)."""
+
+    def __init__(self, message: str = "Communication rate limit exceeded. Please wait before retrying.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.COMMUNICATION_RATE_LIMIT_EXCEEDED,
+            message=message,
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            details=details,
+        )
+
+
+class MessageIdempotencyConflictException(AppException):
+    """Message idempotency conflict (HTTP 409)."""
+
+    def __init__(self, message: str = "A message with this idempotency key already exists with differing payload.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.MESSAGE_IDEMPOTENCY_CONFLICT,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class AIClinicalApprovalRequiredException(AppException):
+    """AI-drafted clinical communication requires explicit human clinician review and approval (HTTP 403)."""
+
+    def __init__(self, message: str = "AI-drafted clinical communication requires explicit human clinician approval before sending.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.AI_CLINICAL_APPROVAL_REQUIRED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class AIAutonomousActionProhibitedException(AppException):
+    """Autonomous clinical action by AI is prohibited (HTTP 403)."""
+
+    def __init__(self, message: str = "AI is strictly prohibited from autonomously diagnosing, triaging, prescribing, or altering medications.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.AI_AUTONOMOUS_ACTION_PROHIBITED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
 
 

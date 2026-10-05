@@ -907,6 +907,25 @@ class Settings(BaseSettings):
     APPROVAL_REVIEW_TASKS_ENABLED: bool = Field(default=True, description="Enable automatic review task creation in Phase 36")
     APPROVAL_DEFAULT_EXPIRATION_HOURS: int = Field(default=48, description="Default expiration window in hours for approval requests")
 
+    # Phase 41: Clinical Communication, Patient–Provider Messaging & Secure Conversation Management
+    MESSAGING_ENABLED: bool = Field(default=True, description="Enable clinical messaging and secure conversations")
+    MESSAGE_MAX_LENGTH: int = Field(default=10000, description="Maximum characters allowed in a message body")
+    MESSAGE_PAGE_SIZE: int = Field(default=50, description="Default page size for message listing")
+    MESSAGE_MAX_PAGE_SIZE: int = Field(default=100, description="Maximum allowed page size for messages")
+    CONVERSATION_MAX_PARTICIPANTS: int = Field(default=50, description="Maximum participants per conversation")
+    MESSAGE_RATE_LIMIT: int = Field(default=60, description="Max messages per minute per actor")
+    CONVERSATION_RATE_LIMIT: int = Field(default=20, description="Max conversations per minute per actor")
+    COMMUNICATION_PROVIDER: str = Field(default="mock", description="Default communication provider adapter")
+    COMMUNICATION_PROVIDER_ENABLED: bool = Field(default=True, description="Enable communication provider integrations")
+    MESSAGE_TRANSLATION_ENABLED: bool = Field(default=True, description="Enable message translation assistance")
+    AI_MESSAGE_DRAFTING_ENABLED: bool = Field(default=True, description="Enable AI draft generation for clinician approval")
+    MESSAGE_ATTACHMENT_ENABLED: bool = Field(default=True, description="Enable secure document attachments in messages")
+    MESSAGE_ATTACHMENT_MAX_SIZE_MB: int = Field(default=10, description="Max attachment size in MB")
+    MESSAGE_RETRY_ENABLED: bool = Field(default=True, description="Enable message retry mechanisms")
+    MESSAGE_MAX_RETRIES: int = Field(default=3, description="Maximum retry count for failed message delivery")
+    MESSAGE_RETENTION_POLICY: str = Field(default="STANDARD_7_YEARS", description="Retention policy classification")
+    COMMUNICATION_WEBHOOK_SECRET: str = Field(default="dev-comm-webhook-secret-32-bytes-minimum!", description="Shared secret for communication provider webhook HMAC signature verification")
+
     @property
     def max_document_size_bytes(self) -> int:
         """Maximum allowed document upload size in bytes."""
