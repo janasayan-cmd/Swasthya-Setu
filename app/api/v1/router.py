@@ -63,6 +63,8 @@ from app.api.v1.endpoints import (
     messages,
     patient_actions,
     patient_questionnaires,
+    consent_requests,
+    access_evaluation,
 )
 
 v1_router = APIRouter()
@@ -202,5 +204,9 @@ v1_router.include_router(messages.router)
 # Register Phase 42 Patient Engagement, Consented Self-Service & Care Journey Action Management endpoints
 v1_router.include_router(patient_actions.router)
 v1_router.include_router(patient_questionnaires.router)
+
+# Register Phase 43 Patient Consent, Sharing Authorization & Access Control endpoints
+v1_router.include_router(consent_requests.router)
+v1_router.include_router(access_evaluation.router)
 
 

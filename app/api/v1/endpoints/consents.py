@@ -31,6 +31,13 @@ from app.schemas.authorization import (
     ConsentRevokeRequest,
     ConsentStatus,
 )
+from app.schemas.consent import (
+    ConsentDenyAction,
+    ConsentGrantAction,
+    ConsentHistoryResponse,
+    ConsentRenewAction,
+    ConsentWithdrawAction,
+)
 from app.schemas.response import StandardErrorResponse, StandardSuccessResponse
 from app.schemas.user import AuthenticatedUserContext
 from app.services.audit_service import AuditService
@@ -179,3 +186,177 @@ async def revoke_consent(
         reason=body.reason,
     )
     return StandardSuccessResponse(data=consent, request_id=_req_id(request))
+
+
+@router.post(
+    "/{consent_id}/grant",
+    response_model=StandardSuccessResponse[ConsentResponse],
+    summary="Explicitly grant consent",
+    description="Explicitly activates a draft or requested consent. Only the patient subject can grant consent.",
+)
+async def grant_consent(
+    request: Request,
+    consent_id: str,
+    body: ConsentGrantAction,
+    current_user: Annotated[AuthenticatedUserContext, Depends(get_current_user)],
+    consent_service: Annotated[ConsentService, Depends(get_consent_service)],
+    audit_service: Annotated[AuditService, Depends(get_audit_service)],
+) -> StandardSuccessResponse[ConsentResponse]:
+    """Explicitly grant consent."""
+    consent = await consent_service.grant_consent(
+        actor_id=current_user.user_id,
+        actor_role=current_user.role.value,
+        consent_id=consent_id,
+        action=body,
+    )
+    await audit_service.log_event(
+        action="CONSENT_GRANTED",
+        actor_id=current_user.user_id,
+        resource_id=consent.id,
+        patient_id=consent.patient_id,
+        metadata={"grantee_id": consent.grantee_id, "evidence": body.evidence},
+    )
+    return StandardSuccessResponse(data=consent, request_id=_req_id(request))
+
+
+@router.post(
+    "/{consent_id}/deny",
+    response_model=StandardSuccessResponse[ConsentResponse],
+    summary="Deny consent",
+    description="Explicitly marks consent as DENIED. Only the patient subject can deny consent.",
+)
+async def deny_consent(
+    request: Request,
+    consent_id: str,
+    body: ConsentDenyAction,
+    current_user: Annotated[AuthenticatedUserContext, Depends(get_current_user)],
+    consent_service: Annotated[ConsentService, Depends(get_consent_service)],
+    audit_service: Annotated[AuditService, Depends(get_audit_service)],
+) -> StandardSuccessResponse[ConsentResponse]:
+    """Explicitly deny consent."""
+    consent = await consent_service.deny_consent(
+        actor_id=current_user.user_id,
+        actor_role=current_user.role.value,
+        consent_id=consent_id,
+        action=body,
+    )
+    await audit_service.log_event(
+        action="CONSENT_DENIED",
+        actor_id=current_user.user_id,
+        resource_id=consent.id,
+        patient_id=consent.patient_id,
+        metadata={"reason": body.reason},
+    )
+    return StandardSuccessResponse(data=consent, request_id=_req_id(request))
+
+
+@router.post(
+    "/{consent_id}/withdraw",
+    response_model=StandardSuccessResponse[ConsentResponse],
+    summary="Withdraw consent",
+    description=(
+        "Explicitly withdraws an active consent grant. Immediately halts all future access. "
+        "Historical audit records and underlying medical records are retained per Phase 24 policy."
+    ),
+)
+async def withdraw_consent(
+    request: Request,
+    consent_id: str,
+    body: ConsentWithdrawAction,
+    current_user: Annotated[AuthenticatedUserContext, Depends(get_current_user)],
+    consent_service: Annotated[ConsentService, Depends(get_consent_service)],
+    audit_service: Annotated[AuditService, Depends(get_audit_service)],
+) -> StandardSuccessResponse[ConsentResponse]:
+    """Withdraw an active consent grant."""
+    consent = await consent_service.withdraw_consent(
+        actor_id=current_user.user_id,
+        actor_role=current_user.role.value,
+        consent_id=consent_id,
+        action=body,
+    )
+    await audit_service.log_event(
+        action="CONSENT_WITHDRAWN",
+        actor_id=current_user.user_id,
+        resource_id=consent.id,
+        patient_id=consent.patient_id,
+        metadata={"reason": body.reason},
+    )
+    return StandardSuccessResponse(data=consent, request_id=_req_id(request))
+
+
+@router.post(
+    "/{consent_id}/renew",
+    response_model=StandardSuccessResponse[ConsentResponse],
+    summary="Renew expired consent",
+    description="Explicitly renews an expired consent grant. Creates a new version with updated validity period.",
+)
+async def renew_consent(
+    request: Request,
+    consent_id: str,
+    body: ConsentRenewAction,
+    current_user: Annotated[AuthenticatedUserContext, Depends(get_current_user)],
+    consent_service: Annotated[ConsentService, Depends(get_consent_service)],
+    audit_service: Annotated[AuditService, Depends(get_audit_service)],
+) -> StandardSuccessResponse[ConsentResponse]:
+    """Renew an expired consent grant."""
+    consent = await consent_service.renew_consent(
+        actor_id=current_user.user_id,
+        actor_role=current_user.role.value,
+        consent_id=consent_id,
+        action=body,
+    )
+    await audit_service.log_event(
+        action="CONSENT_RENEWED",
+        actor_id=current_user.user_id,
+        resource_id=consent.id,
+        patient_id=consent.patient_id,
+        metadata={"version": consent.version, "expires_at": str(consent.expires_at)},
+    )
+    return StandardSuccessResponse(data=consent, request_id=_req_id(request))
+
+
+@router.get(
+    "/{consent_id}/history",
+    response_model=StandardSuccessResponse[ConsentHistoryResponse],
+    summary="Get consent provenance and history",
+    description="Retrieves the complete audit history, versioning, and provenance records for a consent grant.",
+)
+async def get_consent_history(
+    request: Request,
+    consent_id: str,
+    current_user: Annotated[AuthenticatedUserContext, Depends(get_current_user)],
+    consent_service: Annotated[ConsentService, Depends(get_consent_service)],
+) -> StandardSuccessResponse[ConsentHistoryResponse]:
+    """Retrieve history and audit provenance for a specific consent record."""
+    history = await consent_service.get_consent_history(
+        actor_id=current_user.user_id,
+        actor_role=current_user.role.value,
+        consent_id=consent_id,
+    )
+    return StandardSuccessResponse(data=history, request_id=_req_id(request))
+
+
+@router.get(
+    "/patient/{patient_id}",
+    response_model=StandardSuccessResponse[ConsentListResponse],
+    summary="List patient consents",
+    description="Returns all consents for a patient. Patient can list own consents; clinicians/admins subject to authorization.",
+)
+async def list_patient_consents(
+    request: Request,
+    patient_id: str,
+    current_user: Annotated[AuthenticatedUserContext, Depends(get_current_user)],
+    consent_service: Annotated[ConsentService, Depends(get_consent_service)],
+    status_filter: ConsentStatus | None = None,
+) -> StandardSuccessResponse[ConsentListResponse]:
+    """List all consents for a given patient."""
+    items = await consent_service.list_patient_consents(
+        actor_id=current_user.user_id,
+        actor_role=current_user.role.value,
+        patient_id=patient_id,
+        status_filter=status_filter,
+    )
+    return StandardSuccessResponse(
+        data=ConsentListResponse(items=items, total=len(items)),
+        request_id=_req_id(request),
+    )

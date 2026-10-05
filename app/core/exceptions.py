@@ -618,6 +618,20 @@ class ErrorCode(str, Enum):
     PATIENT_ACTION_RATE_LIMIT_EXCEEDED = "PATIENT_ACTION_RATE_LIMIT_EXCEEDED"
     PATIENT_ACTION_AUTONOMOUS_CLINICAL_PROHIBITED = "PATIENT_ACTION_AUTONOMOUS_CLINICAL_PROHIBITED"
 
+    # Phase 43: Patient Consent, Sharing Authorization & Clinical Data Access Control Error Codes
+    CONSENT_DISABLED = "CONSENT_DISABLED"
+    CONSENT_NOT_FOUND = "CONSENT_NOT_FOUND"
+    CONSENT_ACCESS_DENIED = "CONSENT_ACCESS_DENIED"
+    CONSENT_EXPIRED = "CONSENT_EXPIRED"
+    CONSENT_WITHDRAWN = "CONSENT_WITHDRAWN"
+    CONSENT_ALREADY_REVOKED = "CONSENT_ALREADY_REVOKED"
+    CONSENT_SCOPE_ESCALATION_PROHIBITED = "CONSENT_SCOPE_ESCALATION_PROHIBITED"
+    CONSENT_REQUEST_NOT_FOUND = "CONSENT_REQUEST_NOT_FOUND"
+    CONSENT_REQUEST_ALREADY_DECIDED = "CONSENT_REQUEST_ALREADY_DECIDED"
+    BREAK_GLASS_UNAUTHORIZED = "BREAK_GLASS_UNAUTHORIZED"
+    AI_CONSENT_AUTHORITY_PROHIBITED = "AI_CONSENT_AUTHORITY_PROHIBITED"
+    CONSENT_AUTONOMOUS_CLINICAL_PROHIBITED = "CONSENT_AUTONOMOUS_CLINICAL_PROHIBITED"
+
 
 class AppException(Exception):
     """Base application exception for all domain and operational errors."""
@@ -5434,6 +5448,140 @@ class PatientActionAutonomousClinicalProhibitedException(AppException):
             status_code=status.HTTP_403_FORBIDDEN,
             details=details,
         )
+
+
+# Phase 43: Patient Consent, Sharing Authorization & Clinical Data Access Control Exceptions
+class ConsentDisabledException(AppException):
+    """Consent management disabled by system configuration (HTTP 503)."""
+
+    def __init__(self, message: str = "Consent management is currently disabled by configuration.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.CONSENT_DISABLED,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            details=details,
+        )
+
+
+class ConsentNotFoundException(AppException):
+    """Consent record not found (HTTP 404)."""
+
+    def __init__(self, message: str = "Consent record not found.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.CONSENT_NOT_FOUND,
+            message=message,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details=details,
+        )
+
+
+class ConsentAccessDeniedException(AppException):
+    """Access denied under applicable consent policy (HTTP 403)."""
+
+    def __init__(self, message: str = "Access denied under applicable consent policy.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.CONSENT_ACCESS_DENIED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class ConsentExpiredException(AppException):
+    """Consent has expired (HTTP 403)."""
+
+    def __init__(self, message: str = "Consent has expired and requires explicit renewal.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.CONSENT_EXPIRED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class ConsentWithdrawnException(AppException):
+    """Consent has been withdrawn by patient (HTTP 403)."""
+
+    def __init__(self, message: str = "Consent has been withdrawn by patient.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.CONSENT_WITHDRAWN,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class ConsentScopeEscalationProhibitedException(AppException):
+    """Attempted consent scope escalation prohibited (HTTP 403)."""
+
+    def __init__(self, message: str = "Consent scope escalation is strictly prohibited.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.CONSENT_SCOPE_ESCALATION_PROHIBITED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class ConsentRequestNotFoundException(AppException):
+    """Consent request not found (HTTP 404)."""
+
+    def __init__(self, message: str = "Consent request not found.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.CONSENT_REQUEST_NOT_FOUND,
+            message=message,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details=details,
+        )
+
+
+class ConsentRequestAlreadyDecidedException(AppException):
+    """Consent request already approved or denied (HTTP 400)."""
+
+    def __init__(self, message: str = "Consent request has already been decided.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.CONSENT_REQUEST_ALREADY_DECIDED,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class BreakGlassUnauthorizedException(AppException):
+    """Emergency break-glass authorization failure (HTTP 403)."""
+
+    def __init__(self, message: str = "Emergency break-glass access unauthorized or invalid reason.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.BREAK_GLASS_UNAUTHORIZED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class AIConsentAuthorityProhibitedException(AppException):
+    """AI attempting to declare or alter consent authority (HTTP 403)."""
+
+    def __init__(self, message: str = "AI is not a consent authority and cannot grant, withdraw, or interpret consent.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.AI_CONSENT_AUTHORITY_PROHIBITED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class ConsentAutonomousClinicalProhibitedException(AppException):
+    """Attempt to use consent to imply clinical decision/orders (HTTP 403)."""
+
+    def __init__(self, message: str = "Consent does not create diagnosis, treatment, prescription, triage, or emergency dispatch authority.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.CONSENT_AUTONOMOUS_CLINICAL_PROHIBITED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
 
 
 

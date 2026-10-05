@@ -941,6 +941,21 @@ class Settings(BaseSettings):
     AI_ACTION_ASSISTANCE_ENABLED: bool = Field(default=True, description="Enable non-authoritative AI assistance for form explanation")
     AI_TRANSLATION_ENABLED: bool = Field(default=True, description="Enable translation assistance for patient actions")
 
+    # Phase 43: Patient Consent, Sharing Authorization & Clinical Data Access Control
+    CONSENT_ENABLED: bool = Field(default=True, description="Master toggle for patient consent and sharing authorization system")
+    CONSENT_REQUEST_ENABLED: bool = Field(default=True, description="Enable clinician/organization consent request workflows")
+    CONSENT_WITHDRAWAL_ENABLED: bool = Field(default=True, description="Enable patient consent withdrawal workflows")
+    CONSENT_RENEWAL_ENABLED: bool = Field(default=True, description="Enable patient consent renewal workflows")
+    CONSENT_DEFAULT_DURATION_DAYS: int = Field(default=90, description="Default consent duration in days")
+    CONSENT_MAX_DURATION_DAYS: int = Field(default=365, description="Maximum consent duration ceiling in days")
+    BREAK_GLASS_ENABLED: bool = Field(default=True, description="Enable emergency break-glass protocol with enhanced auditing")
+    BREAK_GLASS_EXPIRATION_HOURS: int = Field(default=24, description="Expiration in hours for emergency break-glass authorizations")
+    CONSENT_EXPIRATION_PROCESSING_ENABLED: bool = Field(default=True, description="Enable background worker expiration sweeps")
+    CONSENT_EXPIRATION_REMINDER_ENABLED: bool = Field(default=True, description="Enable expiration reminder notifications")
+    EXTERNAL_SHARING_ENABLED: bool = Field(default=True, description="Enable controlled external partner data sharing")
+    FHIR_EXPORT_REQUIRES_CONSENT: bool = Field(default=True, description="Require valid active patient consent before FHIR resource export")
+    CONSENT_RATE_LIMIT: int = Field(default=60, description="Rate limit for consent requests and evaluations per minute")
+
     @property
     def max_document_size_bytes(self) -> int:
         """Maximum allowed document upload size in bytes."""

@@ -139,6 +139,14 @@ class ConsentStatus(str, Enum):
     EXPIRED = "EXPIRED"
     PENDING = "PENDING"
     DENIED = "DENIED"
+    DRAFT = "DRAFT"
+    REQUESTED = "REQUESTED"
+    GRANTED = "GRANTED"
+    WITHDRAWN = "WITHDRAWN"
+    CANCELLED = "CANCELLED"
+    SUPERSEDED = "SUPERSEDED"
+    SUSPENDED = "SUSPENDED"
+    INVALID = "INVALID"
 
 
 class ConsentCreateRequest(BaseModel):
@@ -164,6 +172,14 @@ class ConsentCreateRequest(BaseModel):
         ...,
         description="Resource scope covered by this consent (e.g., clinical_records)",
         examples=["clinical_records"],
+    )
+    patient_id: str | None = Field(
+        default=None,
+        description="Optional patient ID. If omitted, defaults to the authenticated requester.",
+    )
+    duration_days: int | None = Field(
+        default=None,
+        description="Optional validity duration in days.",
     )
     expires_at: datetime | None = Field(
         default=None,
@@ -202,6 +218,9 @@ class ConsentResponse(BaseModel):
     expires_at: datetime | None = Field(default=None, description="Consent expiry timestamp")
     revoked_at: datetime | None = Field(default=None, description="Revocation timestamp if applicable")
     version: int = Field(default=1, description="Consent version")
+    recipient_type: Optional[str] = Field(default="CLINICIAN", description="Recipient category")
+    resource_scopes: List[str] = Field(default_factory=list, description="Permitted resource categories")
+    action_scopes: List[str] = Field(default_factory=lambda: ["READ"], description="Permitted action types")
 
 
 class ConsentListResponse(BaseModel):

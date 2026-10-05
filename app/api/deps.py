@@ -319,6 +319,12 @@ from app.services.patient_action_workflow_service import PatientActionWorkflowSe
 from app.services.patient_action_service import PatientActionService
 from app.workers.patient_action_worker import PatientActionWorker
 
+# Phase 43: Patient Consent, Sharing Authorization & Access Control imports
+from app.repositories.consent_request_repository import ConsentRequestRepository
+from app.services.consent_request_service import ConsentRequestService
+from app.services.consent_access_service import ConsentAccessService
+from app.workers.consent_worker import ConsentWorker
+
 # ---------------------------------------------------------------------------
 # HTTP Bearer scheme
 # ---------------------------------------------------------------------------
@@ -1005,6 +1011,23 @@ _global_patient_action_service = PatientActionService(
 _global_patient_action_worker = PatientActionWorker(
     action_repo=_global_patient_action_repo,
     workflow_service=_global_patient_action_workflow_service,
+)
+
+# Phase 43: Patient Consent, Sharing Authorization & Access Control singletons
+_global_consent_request_repo = ConsentRequestRepository()
+_global_consent_access_service = ConsentAccessService(
+    consent_repository=_global_consent_repo,
+    audit_service=_global_audit_service,
+)
+_global_consent_request_service = ConsentRequestService(
+    consent_request_repository=_global_consent_request_repo,
+    consent_repository=_global_consent_repo,
+    audit_service=_global_audit_service,
+)
+_global_consent_worker = ConsentWorker(
+    consent_repository=_global_consent_repo,
+    access_service=_global_consent_access_service,
+    audit_service=_global_audit_service,
 )
 
 
@@ -2864,5 +2887,29 @@ def get_patient_action_service() -> PatientActionService:
 def get_patient_action_worker() -> PatientActionWorker:
     """Dependency provider for PatientActionWorker."""
     return _global_patient_action_worker
+
+
+# ---------------------------------------------------------------------------
+# Phase 43: Patient Consent, Sharing Authorization & Clinical Data Access Control Getters
+# ---------------------------------------------------------------------------
+
+def get_consent_request_repository() -> ConsentRequestRepository:
+    """Dependency provider for ConsentRequestRepository."""
+    return _global_consent_request_repo
+
+
+def get_consent_request_service() -> ConsentRequestService:
+    """Dependency provider for ConsentRequestService."""
+    return _global_consent_request_service
+
+
+def get_consent_access_service() -> ConsentAccessService:
+    """Dependency provider for ConsentAccessService."""
+    return _global_consent_access_service
+
+
+def get_consent_worker() -> ConsentWorker:
+    """Dependency provider for ConsentWorker."""
+    return _global_consent_worker
 
 
