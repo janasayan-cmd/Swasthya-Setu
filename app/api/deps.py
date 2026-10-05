@@ -290,6 +290,12 @@ from app.services.order_set_validation_service import OrderSetValidationService
 from app.services.order_set_authorization_service import OrderSetAuthorizationService
 from app.services.order_set_service import OrderSetService
 
+# Phase 40: Clinical Order Review, Approval Gates & Controlled Authorization Management imports
+from app.repositories.approval_repository import ApprovalRepository
+from app.services.approval_policy_service import ApprovalPolicyService
+from app.services.approval_authorization_service import ApprovalAuthorizationService
+from app.services.approval_service import ApprovalService
+
 # ---------------------------------------------------------------------------
 # HTTP Bearer scheme
 # ---------------------------------------------------------------------------
@@ -869,6 +875,35 @@ _global_order_set_service = OrderSetService(
     execution_enabled=_settings.ORDER_SET_EXECUTION_ENABLED,
     preview_enabled=_settings.ORDER_SET_PREVIEW_ENABLED,
     default_batch_policy=_settings.ORDER_SET_BATCH_POLICY,
+)
+
+# Phase 40: Clinical Order Review & Approvals globals
+_global_approval_repo = ApprovalRepository()
+_global_approval_policy_service = ApprovalPolicyService(enabled=_settings.APPROVALS_ENABLED)
+_global_approval_authz_service = ApprovalAuthorizationService(
+    user_repository=_global_user_repo,
+    patient_repository=_global_patient_repo,
+    enabled=_settings.APPROVALS_ENABLED,
+)
+_global_approval_service = ApprovalService(
+    approval_repository=_global_approval_repo,
+    policy_service=_global_approval_policy_service,
+    authorization_service=_global_approval_authz_service,
+    order_repository=_global_order_repo,
+    order_service=_global_order_service,
+    order_set_service=_global_order_set_service,
+    task_service=_global_task_service,
+    alert_service=_global_alert_service,
+    notification_service=_global_notification_service,
+    audit_service=_global_audit_service,
+    enabled=_settings.APPROVALS_ENABLED,
+    clinical_approvals_enabled=_settings.CLINICAL_APPROVALS_ENABLED,
+    multi_approval_enabled=_settings.MULTI_APPROVAL_ENABLED,
+    escalation_enabled=_settings.APPROVAL_ESCALATION_ENABLED,
+    expiration_enabled=_settings.APPROVAL_EXPIRATION_ENABLED,
+    delegation_enabled=_settings.APPROVAL_DELEGATION_ENABLED,
+    tasks_enabled=_settings.APPROVAL_REVIEW_TASKS_ENABLED,
+    default_expiration_hours=_settings.APPROVAL_DEFAULT_EXPIRATION_HOURS,
 )
 
 
@@ -2601,5 +2636,29 @@ def get_order_set_authorization_service() -> OrderSetAuthorizationService:
 def get_order_set_service() -> OrderSetService:
     """Dependency provider for OrderSetService."""
     return _global_order_set_service
+
+
+# ---------------------------------------------------------------------------
+# Phase 40: Clinical Order Review & Approvals Getters
+# ---------------------------------------------------------------------------
+
+def get_approval_repository() -> ApprovalRepository:
+    """Dependency provider for ApprovalRepository."""
+    return _global_approval_repo
+
+
+def get_approval_policy_service() -> ApprovalPolicyService:
+    """Dependency provider for ApprovalPolicyService."""
+    return _global_approval_policy_service
+
+
+def get_approval_authorization_service() -> ApprovalAuthorizationService:
+    """Dependency provider for ApprovalAuthorizationService."""
+    return _global_approval_authz_service
+
+
+def get_approval_service() -> ApprovalService:
+    """Dependency provider for ApprovalService."""
+    return _global_approval_service
 
 

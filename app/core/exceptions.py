@@ -539,6 +539,29 @@ class ErrorCode(str, Enum):
     ORDER_SET_RECONCILIATION_REQUIRED = "ORDER_SET_RECONCILIATION_REQUIRED"
     ORDER_SET_EXECUTION_FAILED = "ORDER_SET_EXECUTION_FAILED"
 
+    # Phase 40: Clinical Order Review, Approval Gates & Controlled Authorization Management Error Codes
+    APPROVALS_DISABLED = "APPROVALS_DISABLED"
+    APPROVAL_NOT_FOUND = "APPROVAL_NOT_FOUND"
+    APPROVAL_INVALID = "APPROVAL_INVALID"
+    APPROVAL_ALREADY_DECIDED = "APPROVAL_ALREADY_DECIDED"
+    APPROVAL_EXPIRED = "APPROVAL_EXPIRED"
+    APPROVAL_CANCELLED = "APPROVAL_CANCELLED"
+    APPROVAL_SUPERSEDED = "APPROVAL_SUPERSEDED"
+    APPROVAL_UNAUTHORIZED = "APPROVAL_UNAUTHORIZED"
+    APPROVAL_FORBIDDEN = "APPROVAL_FORBIDDEN"
+    APPROVAL_REVIEWER_INVALID = "APPROVAL_REVIEWER_INVALID"
+    APPROVAL_SELF_CONFLICT = "APPROVAL_SELF_CONFLICT"
+    APPROVAL_POLICY_REQUIRED = "APPROVAL_POLICY_REQUIRED"
+    APPROVAL_POLICY_INVALID = "APPROVAL_POLICY_INVALID"
+    APPROVAL_TARGET_NOT_FOUND = "APPROVAL_TARGET_NOT_FOUND"
+    APPROVAL_TARGET_CHANGED = "APPROVAL_TARGET_CHANGED"
+    APPROVAL_TARGET_INVALID = "APPROVAL_TARGET_INVALID"
+    APPROVAL_VERSION_CONFLICT = "APPROVAL_VERSION_CONFLICT"
+    APPROVAL_EXECUTION_BLOCKED = "APPROVAL_EXECUTION_BLOCKED"
+    APPROVAL_IDEMPOTENCY_CONFLICT = "APPROVAL_IDEMPOTENCY_CONFLICT"
+    APPROVAL_DELEGATION_INVALID = "APPROVAL_DELEGATION_INVALID"
+    APPROVAL_ESCALATION_INVALID = "APPROVAL_ESCALATION_INVALID"
+
 
 class AppException(Exception):
     """Base application exception for all domain and operational errors."""
@@ -4016,7 +4039,7 @@ class OrderInvalidException(AppException):
         super().__init__(
             code=ErrorCode.ORDER_INVALID,
             message=message,
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             details=details,
         )
 
@@ -4148,7 +4171,7 @@ class OrderProviderRejectedException(AppException):
         super().__init__(
             code=ErrorCode.ORDER_PROVIDER_REJECTED,
             message=message,
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             details=details,
         )
 
@@ -4196,7 +4219,7 @@ class OrderRevisionInvalidException(AppException):
         super().__init__(
             code=ErrorCode.ORDER_REVISION_INVALID,
             message=message,
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             details=details,
         )
 
@@ -4537,6 +4560,262 @@ class OrderSetExecutionFailedException(AppException):
             code=ErrorCode.ORDER_SET_EXECUTION_FAILED,
             message=message,
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            details=details,
+        )
+
+
+# ===========================================================================
+# Phase 40: Clinical Order Review & Approval Gates Exceptions
+# ===========================================================================
+
+class ApprovalsDisabledException(AppException):
+    """Clinical approvals feature is disabled (HTTP 503)."""
+
+    def __init__(self, message: str = "Clinical approvals and authorization gates feature is currently disabled.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.APPROVALS_DISABLED,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            details=details,
+        )
+
+
+class ApprovalNotFoundException(AppException):
+    """The requested approval record was not found (HTTP 404)."""
+
+    def __init__(self, message: str = "The requested approval record was not found.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.APPROVAL_NOT_FOUND,
+            message=message,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details=details,
+        )
+
+
+class ApprovalInvalidException(AppException):
+    """The approval request or payload is invalid (HTTP 422)."""
+
+    def __init__(self, message: str = "The approval request or decision payload is invalid.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.APPROVAL_INVALID,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            details=details,
+        )
+
+
+class ApprovalAlreadyDecidedException(AppException):
+    """The approval request has already reached a terminal decision (HTTP 409)."""
+
+    def __init__(self, message: str = "This approval request has already been decided and cannot be modified.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.APPROVAL_ALREADY_DECIDED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class ApprovalExpiredException(AppException):
+    """The approval request has expired and can no longer authorize execution (HTTP 400)."""
+
+    def __init__(self, message: str = "The approval request has expired. Re-approval is required.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.APPROVAL_EXPIRED,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class ApprovalCancelledException(AppException):
+    """The approval request was cancelled (HTTP 400)."""
+
+    def __init__(self, message: str = "The approval request has been cancelled.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.APPROVAL_CANCELLED,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class ApprovalSupersededException(AppException):
+    """The approval was superseded by a newer version (HTTP 400)."""
+
+    def __init__(self, message: str = "This approval has been superseded by a newer version or decision.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.APPROVAL_SUPERSEDED,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class ApprovalUnauthorizedException(AppException):
+    """Caller is unauthenticated for this approval operation (HTTP 401)."""
+
+    def __init__(self, message: str = "Authentication required for this approval operation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.APPROVAL_UNAUTHORIZED,
+            message=message,
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            details=details,
+        )
+
+
+class ApprovalForbiddenException(AppException):
+    """Caller lacks permission for this approval operation (HTTP 403)."""
+
+    def __init__(self, message: str = "Forbidden from performing this approval operation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.APPROVAL_FORBIDDEN,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class ApprovalReviewerInvalidException(AppException):
+    """Reviewer is not eligible to review or approve this action (HTTP 403)."""
+
+    def __init__(self, message: str = "Reviewer is not eligible to approve this action under the active policy.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.APPROVAL_REVIEWER_INVALID,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class ApprovalSelfConflictException(AppException):
+    """Self-approval is disallowed for this safety-critical action (HTTP 403)."""
+
+    def __init__(self, message: str = "Self-approval is forbidden. Requester cannot approve their own clinical action.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.APPROVAL_SELF_CONFLICT,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class ApprovalPolicyRequiredException(AppException):
+    """An applicable approval policy is required but missing (HTTP 422)."""
+
+    def __init__(self, message: str = "An active approval policy is required. Missing configuration must fail closed.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.APPROVAL_POLICY_REQUIRED,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            details=details,
+        )
+
+
+class ApprovalPolicyInvalidException(AppException):
+    """Approval policy configuration is invalid (HTTP 422)."""
+
+    def __init__(self, message: str = "Approval policy configuration is invalid.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.APPROVAL_POLICY_INVALID,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            details=details,
+        )
+
+
+class ApprovalTargetNotFoundException(AppException):
+    """The underlying action targeted for approval was not found (HTTP 404)."""
+
+    def __init__(self, message: str = "Target clinical action was not found.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.APPROVAL_TARGET_NOT_FOUND,
+            message=message,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details=details,
+        )
+
+
+class ApprovalTargetChangedException(AppException):
+    """The underlying action changed materially during or after review (HTTP 409)."""
+
+    def __init__(self, message: str = "Target action has changed materially since approval was requested. Re-approval required.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.APPROVAL_TARGET_CHANGED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class ApprovalTargetInvalidException(AppException):
+    """Target clinical action is invalid or in an unapprovable state (HTTP 422)."""
+
+    def __init__(self, message: str = "Target clinical action is invalid or in an unapprovable state.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.APPROVAL_TARGET_INVALID,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            details=details,
+        )
+
+
+class ApprovalVersionConflictException(AppException):
+    """Approval version mismatch detected (HTTP 409)."""
+
+    def __init__(self, message: str = "Approval version conflict. Action version does not match approved version.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.APPROVAL_VERSION_CONFLICT,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class ApprovalExecutionBlockedException(AppException):
+    """Execution is blocked pending required approval (HTTP 403)."""
+
+    def __init__(self, message: str = "Clinical execution is blocked because required approval has not been granted.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.APPROVAL_EXECUTION_BLOCKED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class ApprovalIdempotencyConflictException(AppException):
+    """Approval idempotency key conflict (HTTP 409)."""
+
+    def __init__(self, message: str = "An approval with this idempotency key already exists with different payload.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.APPROVAL_IDEMPOTENCY_CONFLICT,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class ApprovalDelegationInvalidException(AppException):
+    """Approval delegation request is invalid or unauthorized (HTTP 400)."""
+
+    def __init__(self, message: str = "Approval delegation is invalid, unauthorized, or expired.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.APPROVAL_DELEGATION_INVALID,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class ApprovalEscalationInvalidException(AppException):
+    """Approval escalation request is invalid or not allowed (HTTP 400)."""
+
+    def __init__(self, message: str = "Approval escalation request is invalid or not permitted by policy.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.APPROVAL_ESCALATION_INVALID,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
             details=details,
         )
 

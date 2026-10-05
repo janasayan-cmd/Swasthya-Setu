@@ -897,6 +897,16 @@ class Settings(BaseSettings):
     ORDER_SET_PROVIDER_ROUTING_ENABLED: bool = Field(default=True, description="Enable provider routing and capability validation for order sets")
     ORDER_SET_BATCH_POLICY: str = Field(default="PARTIAL", description="Default batch failure policy for order sets: ATOMIC, PARTIAL, or REVIEW_REQUIRED")
 
+    # Phase 40: Clinical Order Review, Approval Gates & Controlled Authorization Management
+    APPROVALS_ENABLED: bool = Field(default=True, description="Enable clinical approval gates and authorization management")
+    CLINICAL_APPROVALS_ENABLED: bool = Field(default=True, description="Enable clinical review and approval workflows")
+    MULTI_APPROVAL_ENABLED: bool = Field(default=True, description="Enable multi-level and multi-approver approval chains")
+    APPROVAL_ESCALATION_ENABLED: bool = Field(default=True, description="Enable approval escalation on SLA breaches")
+    APPROVAL_EXPIRATION_ENABLED: bool = Field(default=True, description="Enable automatic expiration for overdue approvals")
+    APPROVAL_DELEGATION_ENABLED: bool = Field(default=True, description="Enable controlled approval delegation")
+    APPROVAL_REVIEW_TASKS_ENABLED: bool = Field(default=True, description="Enable automatic review task creation in Phase 36")
+    APPROVAL_DEFAULT_EXPIRATION_HOURS: int = Field(default=48, description="Default expiration window in hours for approval requests")
+
     @property
     def max_document_size_bytes(self) -> int:
         """Maximum allowed document upload size in bytes."""
