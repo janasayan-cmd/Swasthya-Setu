@@ -926,6 +926,21 @@ class Settings(BaseSettings):
     MESSAGE_RETENTION_POLICY: str = Field(default="STANDARD_7_YEARS", description="Retention policy classification")
     COMMUNICATION_WEBHOOK_SECRET: str = Field(default="dev-comm-webhook-secret-32-bytes-minimum!", description="Shared secret for communication provider webhook HMAC signature verification")
 
+    # Phase 42: Patient Engagement, Consented Self-Service & Care Journey Action Management
+    PATIENT_ACTIONS_ENABLED: bool = Field(default=True, description="Enable patient engagement and self-service action layer")
+    PATIENT_ACTION_DEFAULT_PAGE_SIZE: int = Field(default=20, description="Default page size for patient action listings")
+    PATIENT_ACTION_MAX_PAGE_SIZE: int = Field(default=100, description="Maximum allowed page size for patient actions")
+    PATIENT_ACTION_DEFAULT_EXPIRATION_HOURS: int = Field(default=72, description="Default expiration window in hours for uncompleted patient actions")
+    PATIENT_ACTION_RATE_LIMIT: int = Field(default=60, description="Max patient action submissions per minute per user")
+    QUESTIONNAIRES_ENABLED: bool = Field(default=True, description="Enable structured patient questionnaire submissions")
+    DOCUMENT_SUBMISSIONS_ENABLED: bool = Field(default=True, description="Enable patient document submissions via existing document store")
+    APPOINTMENT_CONFIRMATIONS_ENABLED: bool = Field(default=True, description="Enable patient appointment self-service confirmation")
+    CARE_PLAN_ACKNOWLEDGEMENT_ENABLED: bool = Field(default=True, description="Enable patient care plan receipt acknowledgement")
+    ACTION_REMINDERS_ENABLED: bool = Field(default=True, description="Enable automated reminders for pending patient actions")
+    ACTION_REMINDER_MAX_COUNT: int = Field(default=3, description="Maximum number of automated reminders per action")
+    AI_ACTION_ASSISTANCE_ENABLED: bool = Field(default=True, description="Enable non-authoritative AI assistance for form explanation")
+    AI_TRANSLATION_ENABLED: bool = Field(default=True, description="Enable translation assistance for patient actions")
+
     @property
     def max_document_size_bytes(self) -> int:
         """Maximum allowed document upload size in bytes."""

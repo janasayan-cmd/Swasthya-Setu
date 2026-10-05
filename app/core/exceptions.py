@@ -595,6 +595,29 @@ class ErrorCode(str, Enum):
     AI_CLINICAL_APPROVAL_REQUIRED = "AI_CLINICAL_APPROVAL_REQUIRED"
     AI_AUTONOMOUS_ACTION_PROHIBITED = "AI_AUTONOMOUS_ACTION_PROHIBITED"
 
+    # Phase 42: Patient Engagement, Consented Self-Service & Care Journey Action Management Error Codes
+    PATIENT_ACTIONS_DISABLED = "PATIENT_ACTIONS_DISABLED"
+    PATIENT_ACTION_NOT_FOUND = "PATIENT_ACTION_NOT_FOUND"
+    PATIENT_ACTION_NOT_AUTHORIZED = "PATIENT_ACTION_NOT_AUTHORIZED"
+    PATIENT_ACTION_EXPIRED = "PATIENT_ACTION_EXPIRED"
+    PATIENT_ACTION_CANCELLED = "PATIENT_ACTION_CANCELLED"
+    PATIENT_ACTION_COMPLETED = "PATIENT_ACTION_COMPLETED"
+    PATIENT_ACTION_INVALID = "PATIENT_ACTION_INVALID"
+    PATIENT_ACTION_INVALID_STATE = "PATIENT_ACTION_INVALID_STATE"
+    PATIENT_ACTION_VALIDATION_FAILED = "PATIENT_ACTION_VALIDATION_FAILED"
+    PATIENT_ACTION_SUBMISSION_FAILED = "PATIENT_ACTION_SUBMISSION_FAILED"
+    PATIENT_ACTION_ALREADY_SUBMITTED = "PATIENT_ACTION_ALREADY_SUBMITTED"
+    QUESTIONNAIRE_NOT_FOUND = "QUESTIONNAIRE_NOT_FOUND"
+    QUESTIONNAIRE_VERSION_INVALID = "QUESTIONNAIRE_VERSION_INVALID"
+    QUESTIONNAIRE_RESPONSE_INVALID = "QUESTIONNAIRE_RESPONSE_INVALID"
+    DOCUMENT_SUBMISSION_INVALID = "DOCUMENT_SUBMISSION_INVALID"
+    DOCUMENT_SUBMISSION_NOT_AUTHORIZED = "DOCUMENT_SUBMISSION_NOT_AUTHORIZED"
+    ACTION_CONSENT_REQUIRED = "ACTION_CONSENT_REQUIRED"
+    ACTION_CONSENT_NOT_VALID = "ACTION_CONSENT_NOT_VALID"
+    PATIENT_ACTION_IDEMPOTENCY_CONFLICT = "PATIENT_ACTION_IDEMPOTENCY_CONFLICT"
+    PATIENT_ACTION_RATE_LIMIT_EXCEEDED = "PATIENT_ACTION_RATE_LIMIT_EXCEEDED"
+    PATIENT_ACTION_AUTONOMOUS_CLINICAL_PROHIBITED = "PATIENT_ACTION_AUTONOMOUS_CLINICAL_PROHIBITED"
+
 
 class AppException(Exception):
     """Base application exception for all domain and operational errors."""
@@ -5175,6 +5198,238 @@ class AIAutonomousActionProhibitedException(AppException):
     def __init__(self, message: str = "AI is strictly prohibited from autonomously diagnosing, triaging, prescribing, or altering medications.", details: Any = None) -> None:
         super().__init__(
             code=ErrorCode.AI_AUTONOMOUS_ACTION_PROHIBITED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+# ============================================================================
+# Phase 42: Patient Engagement, Consented Self-Service & Care Journey Action Management Exceptions
+# ============================================================================
+
+class PatientActionsDisabledException(AppException):
+    """Patient action subsystem is disabled by configuration (HTTP 503)."""
+
+    def __init__(self, message: str = "Patient engagement and self-service actions are currently disabled.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.PATIENT_ACTIONS_DISABLED,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            details=details,
+        )
+
+
+class PatientActionNotFoundException(AppException):
+    """Patient action not found (HTTP 404)."""
+
+    def __init__(self, message: str = "The requested patient action could not be found.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.PATIENT_ACTION_NOT_FOUND,
+            message=message,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details=details,
+        )
+
+
+class PatientActionNotAuthorizedException(AppException):
+    """Caller is not authorized to access or perform this patient action (HTTP 403)."""
+
+    def __init__(self, message: str = "You are not authorized to perform or access this patient action.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.PATIENT_ACTION_NOT_AUTHORIZED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class PatientActionExpiredException(AppException):
+    """Patient action has expired and cannot be submitted (HTTP 400)."""
+
+    def __init__(self, message: str = "This patient action has expired. Expired actions cannot accept submissions.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.PATIENT_ACTION_EXPIRED,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class PatientActionCancelledException(AppException):
+    """Patient action has been cancelled (HTTP 400)."""
+
+    def __init__(self, message: str = "This patient action has been cancelled.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.PATIENT_ACTION_CANCELLED,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class PatientActionCompletedException(AppException):
+    """Patient action has already been completed (HTTP 400)."""
+
+    def __init__(self, message: str = "This patient action is already completed.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.PATIENT_ACTION_COMPLETED,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class PatientActionInvalidStateException(AppException):
+    """Patient action is in an invalid state for the requested operation (HTTP 400)."""
+
+    def __init__(self, message: str = "The action is not in a valid state for this operation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.PATIENT_ACTION_INVALID_STATE,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class PatientActionValidationFailedException(AppException):
+    """Patient action submission payload failed validation (HTTP 422)."""
+
+    def __init__(self, message: str = "Patient action submission failed validation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.PATIENT_ACTION_VALIDATION_FAILED,
+            message=message,
+            status_code=getattr(status, "HTTP_422_UNPROCESSABLE_CONTENT", 422),
+            details=details,
+        )
+
+
+class PatientActionAlreadySubmittedException(AppException):
+    """Patient action has already been submitted and cannot be resubmitted without correction workflow (HTTP 409)."""
+
+    def __init__(self, message: str = "This action has already been submitted. Use the correction workflow to submit updates.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.PATIENT_ACTION_ALREADY_SUBMITTED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class QuestionnaireNotFoundException(AppException):
+    """Questionnaire not found (HTTP 404)."""
+
+    def __init__(self, message: str = "The requested questionnaire could not be found.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.QUESTIONNAIRE_NOT_FOUND,
+            message=message,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details=details,
+        )
+
+
+class QuestionnaireVersionInvalidException(AppException):
+    """Questionnaire version invalid or obsolete (HTTP 400)."""
+
+    def __init__(self, message: str = "The requested questionnaire version is invalid or no longer active.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.QUESTIONNAIRE_VERSION_INVALID,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class QuestionnaireResponseInvalidException(AppException):
+    """Questionnaire response failed structural or value validation (HTTP 422)."""
+
+    def __init__(self, message: str = "Questionnaire response contains missing required answers or invalid data types.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.QUESTIONNAIRE_RESPONSE_INVALID,
+            message=message,
+            status_code=getattr(status, "HTTP_422_UNPROCESSABLE_CONTENT", 422),
+            details=details,
+        )
+
+
+class DocumentSubmissionInvalidException(AppException):
+    """Document reference for submission is invalid or missing (HTTP 422)."""
+
+    def __init__(self, message: str = "Referenced document for submission is invalid or inaccessible.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.DOCUMENT_SUBMISSION_INVALID,
+            message=message,
+            status_code=getattr(status, "HTTP_422_UNPROCESSABLE_CONTENT", 422),
+            details=details,
+        )
+
+
+class DocumentSubmissionNotAuthorizedException(AppException):
+    """Caller is not authorized to submit or link this document (HTTP 403)."""
+
+    def __init__(self, message: str = "You do not have permission to attach or submit this document.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.DOCUMENT_SUBMISSION_NOT_AUTHORIZED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class ActionConsentRequiredException(AppException):
+    """Explicit patient consent required before performing action (HTTP 403)."""
+
+    def __init__(self, message: str = "Explicit consent is required before performing this action.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ACTION_CONSENT_REQUIRED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class ActionConsentNotValidException(AppException):
+    """Provided consent is revoked or invalid (HTTP 403)."""
+
+    def __init__(self, message: str = "The consent associated with this action is invalid or has expired.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ACTION_CONSENT_NOT_VALID,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class PatientActionIdempotencyConflictException(AppException):
+    """Idempotency conflict on action submission (HTTP 409)."""
+
+    def __init__(self, message: str = "A submission with this idempotency key already exists with differing payload.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.PATIENT_ACTION_IDEMPOTENCY_CONFLICT,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class PatientActionRateLimitExceededException(AppException):
+    """Patient action rate limit exceeded (HTTP 429)."""
+
+    def __init__(self, message: str = "Patient action rate limit exceeded. Please wait before retrying.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.PATIENT_ACTION_RATE_LIMIT_EXCEEDED,
+            message=message,
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            details=details,
+        )
+
+
+class PatientActionAutonomousClinicalProhibitedException(AppException):
+    """Attempted autonomous conversion of patient self-service into clinical orders/prescriptions (HTTP 403)."""
+
+    def __init__(self, message: str = "Patient self-service is an operational layer and cannot directly create diagnoses, triage, prescriptions, or emergency dispatch.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.PATIENT_ACTION_AUTONOMOUS_CLINICAL_PROHIBITED,
             message=message,
             status_code=status.HTTP_403_FORBIDDEN,
             details=details,

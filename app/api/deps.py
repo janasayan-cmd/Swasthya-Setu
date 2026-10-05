@@ -308,6 +308,17 @@ from app.services.message_delivery_service import MessageDeliveryService
 from app.services.message_search_service import MessageSearchService
 from app.services.message_service import MessageService
 
+# Phase 42: Patient Engagement, Consented Self-Service & Care Journey Action Management imports
+from app.repositories.patient_action_repository import PatientActionRepository
+from app.repositories.questionnaire_repository import QuestionnaireRepository
+from app.services.patient_action_authorization_service import PatientActionAuthorizationService
+from app.services.patient_action_validation_service import PatientActionValidationService
+from app.services.questionnaire_service import QuestionnaireService
+from app.services.patient_submission_service import PatientSubmissionService
+from app.services.patient_action_workflow_service import PatientActionWorkflowService
+from app.services.patient_action_service import PatientActionService
+from app.workers.patient_action_worker import PatientActionWorker
+
 # ---------------------------------------------------------------------------
 # HTTP Bearer scheme
 # ---------------------------------------------------------------------------
@@ -968,6 +979,32 @@ _global_message_service = MessageService(
     enabled=_settings.MESSAGING_ENABLED,
     ai_drafting_enabled=_settings.AI_MESSAGE_DRAFTING_ENABLED,
     translation_enabled=_settings.MESSAGE_TRANSLATION_ENABLED,
+)
+
+# Phase 42: Patient Engagement, Consented Self-Service & Care Journey Action Management singletons
+_global_patient_action_repo = PatientActionRepository()
+_global_questionnaire_repo = QuestionnaireRepository()
+_global_patient_action_authz_service = PatientActionAuthorizationService()
+_global_patient_action_val_service = PatientActionValidationService()
+_global_questionnaire_service = QuestionnaireService(questionnaire_repo=_global_questionnaire_repo)
+_global_patient_submission_service = PatientSubmissionService(action_repo=_global_patient_action_repo)
+_global_patient_action_workflow_service = PatientActionWorkflowService(
+    notification_service=_global_notification_service,
+    task_service=_global_task_service,
+    workflow_service=_global_workflow_service,
+)
+_global_patient_action_service = PatientActionService(
+    action_repo=_global_patient_action_repo,
+    auth_service=_global_patient_action_authz_service,
+    validation_service=_global_patient_action_val_service,
+    submission_service=_global_patient_submission_service,
+    questionnaire_service=_global_questionnaire_service,
+    workflow_service=_global_patient_action_workflow_service,
+    audit_service=_global_audit_service,
+)
+_global_patient_action_worker = PatientActionWorker(
+    action_repo=_global_patient_action_repo,
+    workflow_service=_global_patient_action_workflow_service,
 )
 
 
@@ -2778,5 +2815,54 @@ def get_message_search_service() -> MessageSearchService:
 def get_message_service() -> MessageService:
     """Dependency provider for MessageService."""
     return _global_message_service
+
+
+# ---------------------------------------------------------------------------
+# Phase 42: Patient Engagement, Consented Self-Service & Care Journey Action Management Getters
+# ---------------------------------------------------------------------------
+
+def get_patient_action_repository() -> PatientActionRepository:
+    """Dependency provider for PatientActionRepository."""
+    return _global_patient_action_repo
+
+
+def get_questionnaire_repository() -> QuestionnaireRepository:
+    """Dependency provider for QuestionnaireRepository."""
+    return _global_questionnaire_repo
+
+
+def get_patient_action_authorization_service() -> PatientActionAuthorizationService:
+    """Dependency provider for PatientActionAuthorizationService."""
+    return _global_patient_action_authz_service
+
+
+def get_patient_action_validation_service() -> PatientActionValidationService:
+    """Dependency provider for PatientActionValidationService."""
+    return _global_patient_action_val_service
+
+
+def get_questionnaire_service() -> QuestionnaireService:
+    """Dependency provider for QuestionnaireService."""
+    return _global_questionnaire_service
+
+
+def get_patient_submission_service() -> PatientSubmissionService:
+    """Dependency provider for PatientSubmissionService."""
+    return _global_patient_submission_service
+
+
+def get_patient_action_workflow_service() -> PatientActionWorkflowService:
+    """Dependency provider for PatientActionWorkflowService."""
+    return _global_patient_action_workflow_service
+
+
+def get_patient_action_service() -> PatientActionService:
+    """Dependency provider for PatientActionService."""
+    return _global_patient_action_service
+
+
+def get_patient_action_worker() -> PatientActionWorker:
+    """Dependency provider for PatientActionWorker."""
+    return _global_patient_action_worker
 
 
