@@ -277,6 +277,19 @@ from app.services.workflow_step_service import WorkflowStepService
 from app.services.workflow_approval_service import WorkflowApprovalService
 from app.services.workflow_service import WorkflowService
 
+# Phase 38: Clinical Orders, Results & Controlled Action Execution imports
+from app.repositories.order_repository import OrderRepository
+from app.services.order_validation_service import OrderValidationService
+from app.services.order_authorization_service import OrderAuthorizationService
+from app.services.order_service import OrderService
+from app.integrations.orders.providers.mock import MockOrderProvider
+
+# Phase 39: Clinical Order Sets, Protocol Templates & Controlled Order Composition imports
+from app.repositories.order_set_repository import OrderSetRepository
+from app.services.order_set_validation_service import OrderSetValidationService
+from app.services.order_set_authorization_service import OrderSetAuthorizationService
+from app.services.order_set_service import OrderSetService
+
 # ---------------------------------------------------------------------------
 # HTTP Bearer scheme
 # ---------------------------------------------------------------------------
@@ -825,6 +838,37 @@ _global_workflow_service = WorkflowService(
     alert_service=_global_alert_service,
     notification_service=_global_notification_service,
     audit_service=_global_audit_service,
+)
+
+# Phase 38: Clinical Orders globals
+_global_order_repo = OrderRepository()
+_global_order_val_service = OrderValidationService()
+_global_order_authz_service = OrderAuthorizationService()
+_global_order_provider = MockOrderProvider()
+_global_order_service = OrderService(
+    order_repository=_global_order_repo,
+    validation_service=_global_order_val_service,
+    authorization_service=_global_order_authz_service,
+    audit_service=_global_audit_service,
+    notification_service=_global_notification_service,
+    provider=_global_order_provider,
+    enabled=_settings.CLINICAL_ORDERS_ENABLED,
+)
+
+# Phase 39: Clinical Order Sets globals
+_global_order_set_repo = OrderSetRepository()
+_global_order_set_val_service = OrderSetValidationService()
+_global_order_set_authz_service = OrderSetAuthorizationService()
+_global_order_set_service = OrderSetService(
+    order_set_repository=_global_order_set_repo,
+    validation_service=_global_order_set_val_service,
+    authorization_service=_global_order_set_authz_service,
+    order_service=_global_order_service,
+    audit_service=_global_audit_service,
+    enabled=_settings.ORDER_SETS_ENABLED,
+    execution_enabled=_settings.ORDER_SET_EXECUTION_ENABLED,
+    preview_enabled=_settings.ORDER_SET_PREVIEW_ENABLED,
+    default_batch_policy=_settings.ORDER_SET_BATCH_POLICY,
 )
 
 
@@ -2504,5 +2548,58 @@ def get_workflow_approval_service() -> WorkflowApprovalService:
 def get_workflow_service() -> WorkflowService:
     """Dependency provider for WorkflowService."""
     return _global_workflow_service
+
+
+# ---------------------------------------------------------------------------
+# Phase 38: Clinical Orders, Results & Controlled Action Execution Getters
+# ---------------------------------------------------------------------------
+
+def get_order_repository() -> OrderRepository:
+    """Dependency provider for OrderRepository."""
+    return _global_order_repo
+
+
+def get_order_validation_service() -> OrderValidationService:
+    """Dependency provider for OrderValidationService."""
+    return _global_order_val_service
+
+
+def get_order_authorization_service() -> OrderAuthorizationService:
+    """Dependency provider for OrderAuthorizationService."""
+    return _global_order_authz_service
+
+
+def get_order_provider() -> MockOrderProvider:
+    """Dependency provider for OrderProvider."""
+    return _global_order_provider
+
+
+def get_order_service() -> OrderService:
+    """Dependency provider for OrderService."""
+    return _global_order_service
+
+
+# ---------------------------------------------------------------------------
+# Phase 39: Clinical Order Sets Getters
+# ---------------------------------------------------------------------------
+
+def get_order_set_repository() -> OrderSetRepository:
+    """Dependency provider for OrderSetRepository."""
+    return _global_order_set_repo
+
+
+def get_order_set_validation_service() -> OrderSetValidationService:
+    """Dependency provider for OrderSetValidationService."""
+    return _global_order_set_val_service
+
+
+def get_order_set_authorization_service() -> OrderSetAuthorizationService:
+    """Dependency provider for OrderSetAuthorizationService."""
+    return _global_order_set_authz_service
+
+
+def get_order_set_service() -> OrderSetService:
+    """Dependency provider for OrderSetService."""
+    return _global_order_set_service
 
 

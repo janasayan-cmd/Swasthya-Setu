@@ -47,8 +47,8 @@ class AuditService(BaseService[AuditRepository]):
 
     async def record(
         self,
-        event_type: AuditEventType,
-        outcome: str,
+        event_type: AuditEventType | AuditEventRecord,
+        outcome: str = "ALLOW",
         actor_id: str | None = None,
         action: str | None = None,
         resource_type: str | None = None,
@@ -58,9 +58,14 @@ class AuditService(BaseService[AuditRepository]):
     ) -> None:
         """Record an audit event.
 
+        Supports both explicit parameter kwargs and pre-constructed AuditEventRecord.
         PHI exclusion is enforced on metadata before persistence.
         Tokens and secrets are NEVER valid metadata fields.
         """
+        if isinstance(event_type, AuditEventRecord):
+            await self.record_event(event_type)
+            return
+
         clean_metadata = _sanitize_metadata(metadata)
         event = AuditEventRecord(
             event_type=event_type,
@@ -73,11 +78,13 @@ class AuditService(BaseService[AuditRepository]):
             request_id=request_id_ctx_var.get(),
             metadata=clean_metadata,
         )
-        await self.audit_repo.append(event)
+        if self.audit_repo:
+            await self.audit_repo.append(event)
 
     async def record_event(self, event: AuditEventRecord) -> None:
         """Record an already constructed AuditEventRecord into the audit repository."""
-        await self.audit_repo.append(event)
+        if self.audit_repo:
+            await self.audit_repo.append(event)
 
     async def record_access_granted(
         self,

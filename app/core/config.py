@@ -873,6 +873,30 @@ class Settings(BaseSettings):
     WORKFLOW_MAX_PAGE_SIZE: int = Field(default=100, description="Maximum page size for workflow listings")
     WORKFLOW_DEDUPLICATION_WINDOW_SECONDS: int = Field(default=86400, description="Window in seconds for idempotent duplicate workflow suppression")
 
+    # Phase 38: Clinical Orders, Results & Controlled Action Execution
+    CLINICAL_ORDERS_ENABLED: bool = Field(default=True, description="Master switch for clinical orders subsystem")
+    ORDER_ASYNC_PROCESSING_ENABLED: bool = Field(default=True, description="Enable async background processing for orders")
+    ORDER_RECONCILIATION_ENABLED: bool = Field(default=True, description="Enable order reconciliation engine")
+    ORDER_PROVIDER_ENABLED: bool = Field(default=True, description="Enable external provider order execution integration")
+    ORDER_STATUS_SYNC_ENABLED: bool = Field(default=True, description="Enable order status synchronization")
+    ORDER_RESULT_LINKING_ENABLED: bool = Field(default=True, description="Enable linking results to clinical orders")
+    ORDER_PROVIDER_BASE_URL: str = Field(default="http://localhost:8000/mock/orders", description="Base URL for external order provider")
+    ORDER_PROVIDER_API_KEY: str = Field(default="", description="API key for external order provider")
+    ORDER_PROVIDER_TIMEOUT_SECONDS: int = Field(default=30, description="Timeout in seconds for external order provider requests")
+    ORDER_PROVIDER_RETRY_LIMIT: int = Field(default=3, description="Maximum retry attempts for order transmission")
+    ORDER_DEFAULT_PAGE_SIZE: int = Field(default=20, description="Default page size for order listings")
+    ORDER_MAX_PAGE_SIZE: int = Field(default=100, description="Maximum page size for order listings")
+    ORDER_DEDUPLICATION_WINDOW_SECONDS: int = Field(default=86400, description="Window in seconds for idempotent duplicate order suppression")
+
+    # Phase 39: Clinical Order Sets & Protocol Templates Configuration
+    ORDER_SETS_ENABLED: bool = Field(default=True, description="Enable clinical order sets and protocol templates system")
+    ORDER_SET_EXECUTION_ENABLED: bool = Field(default=True, description="Enable execution of clinical order sets")
+    ORDER_SET_PREVIEW_ENABLED: bool = Field(default=True, description="Enable preview of order sets without execution")
+    ORDER_SET_VERSIONING_ENABLED: bool = Field(default=True, description="Enable versioning of order set templates")
+    ORDER_SET_RECONCILIATION_ENABLED: bool = Field(default=True, description="Enable reconciliation of order set executions")
+    ORDER_SET_PROVIDER_ROUTING_ENABLED: bool = Field(default=True, description="Enable provider routing and capability validation for order sets")
+    ORDER_SET_BATCH_POLICY: str = Field(default="PARTIAL", description="Default batch failure policy for order sets: ATOMIC, PARTIAL, or REVIEW_REQUIRED")
+
     @property
     def max_document_size_bytes(self) -> int:
         """Maximum allowed document upload size in bytes."""

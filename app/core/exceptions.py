@@ -489,6 +489,56 @@ class ErrorCode(str, Enum):
     WORKFLOW_CANNOT_CANCEL = "WORKFLOW_CANNOT_CANCEL"
     WORKFLOW_OPERATION_NOT_ALLOWED = "WORKFLOW_OPERATION_NOT_ALLOWED"
 
+    # Phase 38: Clinical Orders, Results & Controlled Action Execution Error Codes
+    CLINICAL_ORDERS_DISABLED = "CLINICAL_ORDERS_DISABLED"
+    ORDER_NOT_FOUND = "ORDER_NOT_FOUND"
+    ORDER_INVALID = "ORDER_INVALID"
+    ORDER_TYPE_UNSUPPORTED = "ORDER_TYPE_UNSUPPORTED"
+    ORDER_AUTHORIZATION_REQUIRED = "ORDER_AUTHORIZATION_REQUIRED"
+    ORDER_UNAUTHORIZED = "ORDER_UNAUTHORIZED"
+    ORDER_FORBIDDEN = "ORDER_FORBIDDEN"
+    ORDER_INVALID_STATE = "ORDER_INVALID_STATE"
+    ORDER_INVALID_TRANSITION = "ORDER_INVALID_TRANSITION"
+    ORDER_ALREADY_CANCELLED = "ORDER_ALREADY_CANCELLED"
+    ORDER_ALREADY_COMPLETED = "ORDER_ALREADY_COMPLETED"
+    ORDER_PROVIDER_UNAVAILABLE = "ORDER_PROVIDER_UNAVAILABLE"
+    ORDER_PROVIDER_TIMEOUT = "ORDER_PROVIDER_TIMEOUT"
+    ORDER_PROVIDER_REJECTED = "ORDER_PROVIDER_REJECTED"
+    ORDER_SUBMISSION_UNKNOWN = "ORDER_SUBMISSION_UNKNOWN"
+    ORDER_RECONCILIATION_REQUIRED = "ORDER_RECONCILIATION_REQUIRED"
+    ORDER_DUPLICATE = "ORDER_DUPLICATE"
+    ORDER_REVISION_INVALID = "ORDER_REVISION_INVALID"
+    ORDER_CANCELLATION_NOT_SUPPORTED = "ORDER_CANCELLATION_NOT_SUPPORTED"
+    ORDER_MODIFICATION_NOT_SUPPORTED = "ORDER_MODIFICATION_NOT_SUPPORTED"
+    ORDER_RESULT_NOT_AVAILABLE = "ORDER_RESULT_NOT_AVAILABLE"
+    ORDER_VERIFICATION_REQUIRED = "ORDER_VERIFICATION_REQUIRED"
+    ORDER_IDEMPOTENCY_CONFLICT = "ORDER_IDEMPOTENCY_CONFLICT"
+    ORDER_ACCESS_DENIED = "ORDER_ACCESS_DENIED"
+    ORDER_PATIENT_MISMATCH = "ORDER_PATIENT_MISMATCH"
+    ORDER_MISSING_CLINICAL_CONTEXT = "ORDER_MISSING_CLINICAL_CONTEXT"
+
+    # Phase 39: Clinical Order Sets, Protocol Templates & Controlled Order Composition Error Codes
+    ORDER_SETS_DISABLED = "ORDER_SETS_DISABLED"
+    ORDER_SET_NOT_FOUND = "ORDER_SET_NOT_FOUND"
+    ORDER_SET_VERSION_NOT_FOUND = "ORDER_SET_VERSION_NOT_FOUND"
+    ORDER_SET_UNAVAILABLE = "ORDER_SET_UNAVAILABLE"
+    ORDER_SET_NOT_APPROVED = "ORDER_SET_NOT_APPROVED"
+    ORDER_SET_NOT_ACTIVE = "ORDER_SET_NOT_ACTIVE"
+    ORDER_SET_SUSPENDED = "ORDER_SET_SUSPENDED"
+    ORDER_SET_EXPIRED = "ORDER_SET_EXPIRED"
+    ORDER_SET_UNAUTHORIZED = "ORDER_SET_UNAUTHORIZED"
+    ORDER_SET_FORBIDDEN = "ORDER_SET_FORBIDDEN"
+    ORDER_SET_INVALID = "ORDER_SET_INVALID"
+    ORDER_SET_PARAMETER_INVALID = "ORDER_SET_PARAMETER_INVALID"
+    ORDER_SET_SCOPE_INVALID = "ORDER_SET_SCOPE_INVALID"
+    ORDER_SET_PROVIDER_UNSUPPORTED = "ORDER_SET_PROVIDER_UNSUPPORTED"
+    ORDER_SET_AUTHORIZATION_REQUIRED = "ORDER_SET_AUTHORIZATION_REQUIRED"
+    ORDER_SET_EXECUTION_CONFLICT = "ORDER_SET_EXECUTION_CONFLICT"
+    ORDER_SET_DUPLICATE_EXECUTION = "ORDER_SET_DUPLICATE_EXECUTION"
+    ORDER_SET_PARTIAL_FAILURE = "ORDER_SET_PARTIAL_FAILURE"
+    ORDER_SET_RECONCILIATION_REQUIRED = "ORDER_SET_RECONCILIATION_REQUIRED"
+    ORDER_SET_EXECUTION_FAILED = "ORDER_SET_EXECUTION_FAILED"
+
 
 class AppException(Exception):
     """Base application exception for all domain and operational errors."""
@@ -3929,3 +3979,565 @@ def register_exception_handlers(app: FastAPI) -> None:
     app.add_exception_handler(RequestValidationError, validation_exception_handler)
     app.add_exception_handler(StarletteHTTPException, http_exception_handler)
     app.add_exception_handler(Exception, unhandled_exception_handler)
+
+
+# ---------------------------------------------------------------------------
+# Phase 38: Clinical Orders, Results & Controlled Action Execution Exceptions
+# ---------------------------------------------------------------------------
+
+class ClinicalOrdersDisabledException(AppException):
+    """Clinical orders feature disabled (HTTP 503)."""
+
+    def __init__(self, message: str = "Clinical ordering capability is currently disabled.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.CLINICAL_ORDERS_DISABLED,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            details=details,
+        )
+
+
+class OrderNotFoundException(AppException):
+    """Clinical order not found (HTTP 404)."""
+
+    def __init__(self, message: str = "The requested clinical order could not be found.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_NOT_FOUND,
+            message=message,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details=details,
+        )
+
+
+class OrderInvalidException(AppException):
+    """Clinical order structurally or operationally invalid (HTTP 422)."""
+
+    def __init__(self, message: str = "The clinical order is invalid and cannot be processed.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_INVALID,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details=details,
+        )
+
+
+class OrderTypeUnsupportedException(AppException):
+    """Order type is not supported by the domain contract (HTTP 400)."""
+
+    def __init__(self, message: str = "The requested order type is not supported.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_TYPE_UNSUPPORTED,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class OrderAuthorizationRequiredException(AppException):
+    """Order requires clinical authorization before it can be processed (HTTP 403)."""
+
+    def __init__(self, message: str = "Clinical authorization is required before this order can be executed.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_AUTHORIZATION_REQUIRED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class OrderUnauthorizedException(AppException):
+    """Caller is not authorized to create or modify this order (HTTP 403)."""
+
+    def __init__(self, message: str = "You are not authorized to perform this clinical order action.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_UNAUTHORIZED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class OrderForbiddenException(AppException):
+    """Order access is forbidden for this caller (HTTP 403)."""
+
+    def __init__(self, message: str = "Access to this clinical order is forbidden.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_FORBIDDEN,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class OrderInvalidStateException(AppException):
+    """Order is in an invalid state for the requested operation (HTTP 409)."""
+
+    def __init__(self, message: str = "The clinical order is in an invalid state for the requested operation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_INVALID_STATE,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class OrderInvalidTransitionException(AppException):
+    """Requested order state transition is not permitted (HTTP 409)."""
+
+    def __init__(self, message: str = "The requested state transition for this clinical order is not permitted.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_INVALID_TRANSITION,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class OrderAlreadyCancelledException(AppException):
+    """Order has already been cancelled (HTTP 409)."""
+
+    def __init__(self, message: str = "This clinical order has already been cancelled.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_ALREADY_CANCELLED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class OrderAlreadyCompletedException(AppException):
+    """Order has already been completed and cannot be modified (HTTP 409)."""
+
+    def __init__(self, message: str = "This clinical order has already been completed.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_ALREADY_COMPLETED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class OrderProviderUnavailableException(AppException):
+    """External order provider is unavailable (HTTP 503)."""
+
+    def __init__(self, message: str = "The external order provider is temporarily unavailable.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_PROVIDER_UNAVAILABLE,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            details=details,
+        )
+
+
+class OrderProviderTimeoutException(AppException):
+    """External order provider timed out (HTTP 504)."""
+
+    def __init__(self, message: str = "The external order provider did not respond within the expected time.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_PROVIDER_TIMEOUT,
+            message=message,
+            status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+            details=details,
+        )
+
+
+class OrderProviderRejectedException(AppException):
+    """External provider explicitly rejected the order (HTTP 422)."""
+
+    def __init__(self, message: str = "The external provider rejected this clinical order.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_PROVIDER_REJECTED,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details=details,
+        )
+
+
+class OrderSubmissionUnknownException(AppException):
+    """Order submission result is unknown — provider state uncertain (HTTP 502)."""
+
+    def __init__(self, message: str = "Order submission result is uncertain. Reconciliation is required.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_SUBMISSION_UNKNOWN,
+            message=message,
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            details=details,
+        )
+
+
+class OrderReconciliationRequiredException(AppException):
+    """Order requires reconciliation between internal and external state (HTTP 409)."""
+
+    def __init__(self, message: str = "This order requires reconciliation before proceeding.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_RECONCILIATION_REQUIRED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class OrderDuplicateException(AppException):
+    """A duplicate order already exists for this idempotency key (HTTP 409)."""
+
+    def __init__(self, message: str = "A duplicate clinical order already exists.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_DUPLICATE,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class OrderRevisionInvalidException(AppException):
+    """Order revision is structurally or operationally invalid (HTTP 422)."""
+
+    def __init__(self, message: str = "The order revision is invalid.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_REVISION_INVALID,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details=details,
+        )
+
+
+class OrderCancellationNotSupportedException(AppException):
+    """The provider does not support cancellation for this order (HTTP 400)."""
+
+    def __init__(self, message: str = "Cancellation is not supported for this order type or provider.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_CANCELLATION_NOT_SUPPORTED,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class OrderModificationNotSupportedException(AppException):
+    """The provider does not support modification for this order (HTTP 400)."""
+
+    def __init__(self, message: str = "Modification is not supported for this order type or provider.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_MODIFICATION_NOT_SUPPORTED,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class OrderResultNotAvailableException(AppException):
+    """Order result is not yet available (HTTP 404)."""
+
+    def __init__(self, message: str = "Results for this order are not yet available.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_RESULT_NOT_AVAILABLE,
+            message=message,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details=details,
+        )
+
+
+class OrderVerificationRequiredException(AppException):
+    """Order or its result requires clinical verification before proceeding (HTTP 403)."""
+
+    def __init__(self, message: str = "Clinical verification is required before this action can proceed.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_VERIFICATION_REQUIRED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class OrderIdempotencyConflictException(AppException):
+    """Idempotency key conflict — different payload presented for same key (HTTP 409)."""
+
+    def __init__(self, message: str = "An order with this idempotency key already exists with a different payload.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_IDEMPOTENCY_CONFLICT,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class OrderAccessDeniedException(AppException):
+    """Cross-patient or cross-organization order access denied (HTTP 403)."""
+
+    def __init__(self, message: str = "Access to this clinical order is denied.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_ACCESS_DENIED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class OrderPatientMismatchException(AppException):
+    """Order patient does not match the requested context (HTTP 403)."""
+
+    def __init__(self, message: str = "The order does not belong to the requested patient context.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_PATIENT_MISMATCH,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class OrderMissingClinicalContextException(OrderInvalidException):
+    """Order is missing required clinical context and cannot proceed (HTTP 422)."""
+
+    def __init__(self, message: str = "The order is missing required clinical context. Missing information must not be silently inferred.", details: Any = None) -> None:
+        super().__init__(
+            message=message,
+            details=details,
+        )
+        self.code = ErrorCode.ORDER_MISSING_CLINICAL_CONTEXT
+        self.status_code = status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
+# ===========================================================================
+# Phase 39: Clinical Order Sets & Protocol Templates Exceptions
+# ===========================================================================
+
+class OrderSetsDisabledException(AppException):
+    """Clinical order sets feature is disabled (HTTP 503)."""
+
+    def __init__(self, message: str = "Clinical order sets and protocol templates feature is currently disabled.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_SETS_DISABLED,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            details=details,
+        )
+
+
+class OrderSetNotFoundException(AppException):
+    """The requested order set template was not found (HTTP 404)."""
+
+    def __init__(self, message: str = "The requested order set template was not found.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_SET_NOT_FOUND,
+            message=message,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details=details,
+        )
+
+
+class OrderSetVersionNotFoundException(AppException):
+    """The requested version of the order set was not found (HTTP 404)."""
+
+    def __init__(self, message: str = "The specified version of the order set template was not found.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_SET_VERSION_NOT_FOUND,
+            message=message,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details=details,
+        )
+
+
+class OrderSetUnavailableException(AppException):
+    """Order set is unavailable for execution (HTTP 400)."""
+
+    def __init__(self, message: str = "The order set is currently unavailable.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_SET_UNAVAILABLE,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class OrderSetNotApprovedException(AppException):
+    """Order set template or version is not approved (HTTP 400)."""
+
+    def __init__(self, message: str = "Order set template version must be approved before execution.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_SET_NOT_APPROVED,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class OrderSetNotActiveException(AppException):
+    """Order set template version is not active (HTTP 400)."""
+
+    def __init__(self, message: str = "Order set template version is not currently active.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_SET_NOT_ACTIVE,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class OrderSetSuspendedException(AppException):
+    """Order set template or version is suspended (HTTP 400)."""
+
+    def __init__(self, message: str = "Order set template is suspended. New executions are blocked.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_SET_SUSPENDED,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class OrderSetExpiredException(AppException):
+    """Order set template version has expired (HTTP 400)."""
+
+    def __init__(self, message: str = "Order set template version has expired.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_SET_EXPIRED,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class OrderSetUnauthorizedException(AppException):
+    """Caller is unauthorized for this order set operation (HTTP 401)."""
+
+    def __init__(self, message: str = "Unauthorized to perform this order set operation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_SET_UNAUTHORIZED,
+            message=message,
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            details=details,
+        )
+
+
+class OrderSetForbiddenException(AppException):
+    """Caller does not have permission for this order set operation (HTTP 403)."""
+
+    def __init__(self, message: str = "Forbidden from performing this order set operation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_SET_FORBIDDEN,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class OrderSetInvalidException(AppException):
+    """Order set request or configuration is invalid (HTTP 422)."""
+
+    def __init__(self, message: str = "The order set payload or configuration is invalid.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_SET_INVALID,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            details=details,
+        )
+
+
+class OrderSetParameterInvalidException(AppException):
+    """A parameter override is not permitted or invalid (HTTP 422)."""
+
+    def __init__(self, message: str = "Parameter override is not allowed or invalid for this template.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_SET_PARAMETER_INVALID,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            details=details,
+        )
+
+
+class OrderSetScopeInvalidException(AppException):
+    """Order set scope does not match the execution context (HTTP 403)."""
+
+    def __init__(self, message: str = "The order set template is not valid for this facility or organization scope.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_SET_SCOPE_INVALID,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class OrderSetProviderUnsupportedException(AppException):
+    """Target provider does not support order set order types (HTTP 400)."""
+
+    def __init__(self, message: str = "The selected provider does not support one or more order types in this set.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_SET_PROVIDER_UNSUPPORTED,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class OrderSetAuthorizationRequiredException(AppException):
+    """Clinical authorization is required to execute this order set (HTTP 403)."""
+
+    def __init__(self, message: str = "Clinical authorization is required. AI or non-clinical actors cannot execute order sets.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_SET_AUTHORIZATION_REQUIRED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class OrderSetExecutionConflictException(AppException):
+    """Order set execution conflict occurred (HTTP 409)."""
+
+    def __init__(self, message: str = "Order set execution conflict detected.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_SET_EXECUTION_CONFLICT,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class OrderSetDuplicateExecutionException(AppException):
+    """Duplicate execution request detected (HTTP 409)."""
+
+    def __init__(self, message: str = "A duplicate execution request was detected for this idempotency key.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_SET_DUPLICATE_EXECUTION,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class OrderSetPartialFailureException(AppException):
+    """Partial failure during order set child order creation (HTTP 400)."""
+
+    def __init__(self, message: str = "One or more child orders failed during order set execution.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_SET_PARTIAL_FAILURE,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class OrderSetReconciliationRequiredException(AppException):
+    """Order set execution requires reconciliation (HTTP 409)."""
+
+    def __init__(self, message: str = "Order set execution state requires clinical or technical reconciliation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_SET_RECONCILIATION_REQUIRED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class OrderSetExecutionFailedException(AppException):
+    """Order set execution failed completely (HTTP 500)."""
+
+    def __init__(self, message: str = "Order set execution failed.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.ORDER_SET_EXECUTION_FAILED,
+            message=message,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            details=details,
+        )
+
+

@@ -30,6 +30,10 @@ from app.schemas.workflow_step import (
     WorkflowStepStatus,
 )
 
+# Backward-compatibility aliases for Phase 22 async workflow tests
+StepStatus = WorkflowStepStatus
+WorkflowStep = WorkflowStepRecord
+
 
 class WorkflowCategory(str, Enum):
     """Broad category governing workflow policies and routing."""

@@ -56,6 +56,8 @@ from app.api.v1.endpoints import (
     alerts,
     tasks,
     workflows,
+    orders,
+    order_sets,
 )
 
 v1_router = APIRouter()
@@ -175,5 +177,14 @@ v1_router.include_router(tasks.router)
 
 # Register Phase 37 Clinical Workflow Orchestration & Order Management endpoints
 v1_router.include_router(workflows.router)
+
+# Register Phase 38 Clinical Orders, Results & Controlled Action Execution endpoints
+v1_router.include_router(orders.router)
+v1_router.include_router(orders.admin_router)
+
+# Register Phase 39 Clinical Order Sets, Protocol Templates & Controlled Order Composition endpoints
+v1_router.include_router(order_sets.router)
+v1_router.include_router(order_sets.admin_router)
+v1_router.include_router(order_sets.execution_router)
 
 

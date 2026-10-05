@@ -19,12 +19,15 @@ class AuthenticatedUserContext(BaseModel):
     IMPORTANT: Contains NO clinical data (diagnoses, prescriptions, history).
     """
 
+    model_config = {"extra": "allow"}
+
     user_id: str = Field(default="", description="Unique user identifier")
     role: UserRole
     account_status: AccountStatus = Field(default=AccountStatus.ACTIVE)
     organization_id: Optional[str] = Field(default=None, description="Optional tenant organization reference")
     facility_id: Optional[str] = Field(default=None, description="Optional facility reference")
     patient_id: Optional[str] = Field(default=None, description="Optional patient reference")
+    is_ai: bool = Field(default=False, description="Flag indicating if the caller is an autonomous AI agent")
 
     def __init__(self, **data: Any) -> None:
         if "id" in data and "user_id" not in data:
