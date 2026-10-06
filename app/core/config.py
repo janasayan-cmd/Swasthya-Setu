@@ -1010,6 +1010,13 @@ class Settings(BaseSettings):
     INCIDENT_REQUIRE_CORRECTIVE_ACTION_FOR_CLOSURE: bool = Field(default=True, description="Require verified corrective action before closing incidents")
     INCIDENT_ALLOW_AI_ASSISTED_INVESTIGATION: bool = Field(default=True, description="Allow AI-assisted summarization and anomaly clustering")
 
+    # Phase 50: Clinical Safety Learning, Trend Analysis & Preventive Risk Improvement
+    SAFETY_LEARNING_ENABLED: bool = Field(default=True, description="Master toggle for safety learning and trend analysis subsystem")
+    SAFETY_LEARNING_MIN_SAMPLE_SIZE: int = Field(default=3, description="Minimum incident/event count required to infer recurrence candidate")
+    SAFETY_LEARNING_ALLOW_AI_DRAFTS: bool = Field(default=True, description="Allow AI-assisted recommendation drafting and evidence summarization")
+    SAFETY_LEARNING_DEFAULT_WINDOW_DAYS: int = Field(default=30, description="Default historical observation window in days")
+    SAFETY_LEARNING_STALE_EVALUATION_DAYS: int = Field(default=90, description="Age in days beyond which recommendations require re-validation")
+
 
     @property
     def max_document_size_bytes(self) -> int:

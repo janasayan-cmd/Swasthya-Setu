@@ -3272,3 +3272,44 @@ def get_incident_closure_service() -> IncidentClosureService:
     return incident_closure_service
 
 
+# ---------------------------------------------------------------------------
+# Phase 50: Clinical Safety Learning & Trend Analysis Dependencies
+# ---------------------------------------------------------------------------
+from app.repositories.safety_learning_repository import SafetyLearningRepository, safety_learning_repository
+from app.services.safety_trend_service import SafetyTrendService, safety_trend_service
+from app.services.safety_pattern_service import SafetyPatternService, safety_pattern_service
+from app.services.safety_effectiveness_service import SafetyEffectivenessService, safety_effectiveness_service
+from app.services.safety_recommendation_service import SafetyRecommendationService, safety_recommendation_service
+from app.services.safety_learning_service import SafetyLearningService, safety_learning_service
+
+
+def get_safety_learning_repository() -> SafetyLearningRepository:
+    """Dependency provider for SafetyLearningRepository."""
+    return safety_learning_repository
+
+
+def get_safety_trend_service() -> SafetyTrendService:
+    """Dependency provider for SafetyTrendService."""
+    return safety_trend_service
+
+
+def get_safety_pattern_service() -> SafetyPatternService:
+    """Dependency provider for SafetyPatternService."""
+    return safety_pattern_service
+
+
+def get_safety_effectiveness_service() -> SafetyEffectivenessService:
+    """Dependency provider for SafetyEffectivenessService."""
+    return safety_effectiveness_service
+
+
+def get_safety_recommendation_service() -> SafetyRecommendationService:
+    """Dependency provider for SafetyRecommendationService."""
+    return safety_recommendation_service
+
+
+def get_safety_learning_service() -> SafetyLearningService:
+    """Dependency provider for SafetyLearningService."""
+    return safety_learning_service
+
+

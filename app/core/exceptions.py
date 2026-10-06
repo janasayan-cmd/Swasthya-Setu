@@ -759,6 +759,30 @@ class ErrorCode(str, Enum):
     INCIDENT_EXPORT_DENIED = "INCIDENT_EXPORT_DENIED"
     AI_INCIDENT_AUTHORITY_PROHIBITED = "AI_INCIDENT_AUTHORITY_PROHIBITED"
 
+    # Phase 50: Clinical Safety Learning, Trend Analysis & Preventive Risk Improvement
+    SAFETY_LEARNING_NOT_FOUND = "SAFETY_LEARNING_NOT_FOUND"
+    SAFETY_LEARNING_ACCESS_DENIED = "SAFETY_LEARNING_ACCESS_DENIED"
+    SAFETY_LEARNING_INVALID_SCOPE = "SAFETY_LEARNING_INVALID_SCOPE"
+    SAFETY_LEARNING_INVALID_TIME_WINDOW = "SAFETY_LEARNING_INVALID_TIME_WINDOW"
+    SAFETY_LEARNING_INVALID_ANALYSIS_TYPE = "SAFETY_LEARNING_INVALID_ANALYSIS_TYPE"
+    SAFETY_LEARNING_INSUFFICIENT_DATA = "SAFETY_LEARNING_INSUFFICIENT_DATA"
+    SAFETY_LEARNING_RATE_UNAVAILABLE = "SAFETY_LEARNING_RATE_UNAVAILABLE"
+    SAFETY_LEARNING_ANALYSIS_CONFLICT = "SAFETY_LEARNING_ANALYSIS_CONFLICT"
+    SAFETY_LEARNING_ALREADY_RUNNING = "SAFETY_LEARNING_ALREADY_RUNNING"
+    SAFETY_LEARNING_IDEMPOTENCY_CONFLICT = "SAFETY_LEARNING_IDEMPOTENCY_CONFLICT"
+    SAFETY_LEARNING_SOURCE_UNAVAILABLE = "SAFETY_LEARNING_SOURCE_UNAVAILABLE"
+    SAFETY_LEARNING_SOURCE_INVALID = "SAFETY_LEARNING_SOURCE_INVALID"
+    SAFETY_LEARNING_EVIDENCE_UNAVAILABLE = "SAFETY_LEARNING_EVIDENCE_UNAVAILABLE"
+    SAFETY_LEARNING_PRIVACY_RESTRICTED = "SAFETY_LEARNING_PRIVACY_RESTRICTED"
+    SAFETY_LEARNING_RECOMMENDATION_NOT_FOUND = "SAFETY_LEARNING_RECOMMENDATION_NOT_FOUND"
+    SAFETY_LEARNING_REVIEW_REQUIRED = "SAFETY_LEARNING_REVIEW_REQUIRED"
+    SAFETY_LEARNING_INVALID_STATE = "SAFETY_LEARNING_INVALID_STATE"
+    SAFETY_LEARNING_APPROVAL_DENIED = "SAFETY_LEARNING_APPROVAL_DENIED"
+    SAFETY_LEARNING_CHANGE_NOT_AUTHORIZED = "SAFETY_LEARNING_CHANGE_NOT_AUTHORIZED"
+    SAFETY_LEARNING_VALIDATION_REQUIRED = "SAFETY_LEARNING_VALIDATION_REQUIRED"
+    SAFETY_LEARNING_RESULT_STALE = "SAFETY_LEARNING_RESULT_STALE"
+    AI_SAFETY_LEARNING_AUTHORITY_PROHIBITED = "AI_SAFETY_LEARNING_AUTHORITY_PROHIBITED"
+
 
 class AppException(Exception):
     """Base application exception for all domain and operational errors."""
@@ -7080,6 +7104,142 @@ class AIIncidentAuthorityProhibitedException(AppException):
             status_code=status.HTTP_403_FORBIDDEN,
             details=details,
         )
+
+
+# Phase 50: Clinical Safety Learning, Trend Analysis & Preventive Risk Improvement Exceptions
+
+
+class SafetyLearningNotFoundException(AppException):
+    """Requested safety learning analysis, pattern, or recommendation not found (HTTP 404)."""
+
+    def __init__(self, message: str = "Safety learning entity not found.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_LEARNING_NOT_FOUND,
+            message=message,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details=details,
+        )
+
+
+class SafetyLearningAccessDeniedException(AppException):
+    """Unauthorized attempt to access or trigger safety learning analysis (HTTP 403)."""
+
+    def __init__(self, message: str = "Access to safety learning analytics is denied.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_LEARNING_ACCESS_DENIED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class SafetyLearningInvalidScopeException(AppException):
+    """Invalid analysis scope requested (HTTP 400)."""
+
+    def __init__(self, message: str = "Invalid safety learning analysis scope.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_LEARNING_INVALID_SCOPE,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class SafetyLearningInvalidTimeWindowException(AppException):
+    """Invalid or unsupported time window specified (HTTP 400)."""
+
+    def __init__(self, message: str = "Invalid time window for safety learning analysis.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_LEARNING_INVALID_TIME_WINDOW,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class SafetyLearningIdempotencyConflictException(AppException):
+    """Analysis request with same idempotency key is already running or completed (HTTP 409)."""
+
+    def __init__(self, message: str = "Duplicate safety learning analysis request with identical idempotency key.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_LEARNING_IDEMPOTENCY_CONFLICT,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class SafetyLearningInsufficientDataException(AppException):
+    """Sample size or observation data is insufficient to compute valid safety trends (HTTP 422)."""
+
+    def __init__(self, message: str = "Insufficient data to compute statistically valid safety learning trends.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_LEARNING_INSUFFICIENT_DATA,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details=details,
+        )
+
+
+class SafetyLearningRateUnavailableException(AppException):
+    """Rate calculation cannot be performed because valid denominator is unavailable (HTTP 422)."""
+
+    def __init__(self, message: str = "Rate calculation unavailable: valid denominator cannot be established.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_LEARNING_RATE_UNAVAILABLE,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details=details,
+        )
+
+
+class SafetyLearningSourceUnavailableException(AppException):
+    """One or more required historical safety sources are unavailable (HTTP 503)."""
+
+    def __init__(self, message: str = "Safety source unavailable; partial data cannot be presented as complete.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_LEARNING_SOURCE_UNAVAILABLE,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            details=details,
+        )
+
+
+class SafetyLearningInvalidStateException(AppException):
+    """Recommendation or analysis is in an invalid lifecycle state for this transition (HTTP 409)."""
+
+    def __init__(self, message: str = "Safety learning entity is in an invalid state for requested action.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_LEARNING_INVALID_STATE,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class SafetyLearningResultStaleException(AppException):
+    """Underlying policy, configuration, or workflow version changed since analysis (HTTP 409)."""
+
+    def __init__(self, message: str = "Safety recommendation is stale due to upstream configuration/policy changes.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_LEARNING_RESULT_STALE,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class AISafetyLearningAuthorityProhibitedException(AppException):
+    """AI attempted unauthorized autonomous approval, policy mutation, or clinical modification (HTTP 403)."""
+
+    def __init__(self, message: str = "AI cannot autonomously approve safety recommendations, modify safety policies, or change clinical records.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.AI_SAFETY_LEARNING_AUTHORITY_PROHIBITED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
 
 
 
