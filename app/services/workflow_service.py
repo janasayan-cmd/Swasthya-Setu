@@ -81,8 +81,9 @@ class WorkflowService:
         alert_service: Optional[AlertService] = None,
         notification_service: Optional[NotificationService] = None,
         audit_service: Optional[AuditService] = None,
+        repository: Optional[WorkflowRepository] = None,
     ) -> None:
-        self.workflow_repo = workflow_repo or WorkflowRepository()
+        self.workflow_repo = workflow_repo or repository or WorkflowRepository()
         self.step_repo = step_repo or WorkflowStepRepository()
         self.def_service = def_service or WorkflowDefinitionService()
         self.val_service = val_service or WorkflowValidationService()
@@ -108,6 +109,127 @@ class WorkflowService:
         )
 
         self._execution_lock = threading.RLock()
+
+    async def create_workflow(
+        self,
+        workflow_type: str,
+        steps: List[WorkflowStepRecord],
+        patient_id: Optional[str] = None,
+        initiating_user_id: Optional[str] = None,
+        metadata: Optional[Dict[str, Any]] = None,
+    ) -> WorkflowRecord:
+        """Initialize a new multi-step asynchronous workflow (Phase 22 backward compatibility)."""
+        import uuid
+        wf_id = f"WF-{uuid.uuid4().hex[:8]}"
+        now = datetime.now(timezone.utc)
+        for s in steps:
+            s.workflow_id = wf_id
+            if not s.name and s.step_name:
+                s.name = s.step_name
+            if not s.step_id:
+                s.step_id = s.name or f"step-{s.order}"
+
+        workflow = WorkflowRecord(
+            workflow_id=wf_id,
+            definition_id="DOCUMENT_TO_PRESCRIPTION_PIPELINE",
+            definition_version="1.0",
+            name=workflow_type,
+            workflow_type=workflow_type,
+            initiating_user_id=initiating_user_id,
+            status=WorkflowStatus.RUNNING,
+            patient_id=patient_id,
+            correlation_id=f"CORR-{wf_id}",
+            steps=steps,
+            context=metadata or {},
+            provenance=WorkflowProvenance(
+                source_event_id="MANUAL",
+                source_event_type="USER_ACTION",
+                initiated_by=initiating_user_id or "system",
+                definition_id="DOCUMENT_TO_PRESCRIPTION_PIPELINE",
+                definition_version="1.0",
+                correlation_id=f"CORR-{wf_id}",
+            ),
+        )
+        saved = await self.workflow_repo.create(workflow)
+
+        if self.audit_service:
+            await self.audit_service.record(
+                event_type=AuditEventType.WORKFLOW_STARTED,
+                outcome="ALLOW",
+                actor_id=initiating_user_id,
+                action=f"workflow:create:{workflow_type}",
+                resource_type="workflow",
+                resource_id=saved.id,
+                metadata={"workflow_id": saved.id, "step_count": len(steps)},
+            )
+        return saved
+
+    async def advance_step(
+        self,
+        workflow_id: str,
+        step_order: int,
+        step_status: WorkflowStepStatus,
+        result: Optional[Dict[str, Any]] = None,
+        error_message: Optional[str] = None,
+    ) -> WorkflowRecord:
+        """Update individual workflow step and advance pipeline (Phase 22 backward compatibility)."""
+        workflow = await self.workflow_repo.get(workflow_id)
+        if not workflow:
+            raise WorkflowNotFoundException(workflow_id=workflow_id)
+
+        target_step: Optional[WorkflowStepRecord] = None
+        for step in workflow.steps:
+            if step.order == step_order:
+                target_step = step
+                break
+
+        if not target_step:
+            raise WorkflowInvalidStateException(
+                workflow_id=workflow_id,
+                current_state=workflow.status.value,
+                attempted_action=f"advance_step_order_{step_order}",
+            )
+
+        now = datetime.now(timezone.utc)
+        target_step.status = step_status
+        target_step.result = result
+        target_step.error_message = error_message
+
+        if step_status == WorkflowStepStatus.RUNNING:
+            target_step.started_at = now
+            workflow.status = WorkflowStatus.RUNNING
+        elif step_status == WorkflowStepStatus.COMPLETED:
+            target_step.completed_at = now
+        elif step_status == WorkflowStepStatus.FAILED:
+            target_step.completed_at = now
+            if target_step.required:
+                workflow.status = WorkflowStatus.PARTIALLY_FAILED
+
+        all_done = all(s.status in (WorkflowStepStatus.COMPLETED, WorkflowStepStatus.SKIPPED, WorkflowStepStatus.FAILED) for s in workflow.steps)
+        if all_done:
+            has_required_failures = any(s.status == WorkflowStepStatus.FAILED and s.required for s in workflow.steps)
+            if has_required_failures:
+                workflow.status = WorkflowStatus.PARTIALLY_FAILED
+            else:
+                workflow.status = WorkflowStatus.COMPLETED
+            workflow.completed_at = now
+
+            if self.audit_service:
+                await self.audit_service.record(
+                    event_type=(
+                        AuditEventType.WORKFLOW_COMPLETED
+                        if workflow.status == WorkflowStatus.COMPLETED
+                        else AuditEventType.WORKFLOW_FAILED
+                    ),
+                    outcome="ALLOW" if workflow.status == WorkflowStatus.COMPLETED else "DENY",
+                    actor_id=workflow.initiating_user_id,
+                    action=f"workflow:finish:{workflow.name}",
+                    resource_type="workflow",
+                    resource_id=workflow.id,
+                    metadata={"status": workflow.status.value},
+                )
+
+        return await self.workflow_repo.update(workflow)
 
     async def start_workflow(
         self,

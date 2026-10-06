@@ -13,6 +13,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
+from uuid import uuid4
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -80,14 +81,29 @@ class WorkflowStepRecord(BaseModel):
 
     model_config = ConfigDict(extra="ignore")
 
-    step_instance_id: str = Field(description="Unique runtime instance ID for step")
-    workflow_id: str = Field(description="Parent workflow instance identifier")
-    step_id: str = Field(description="Definition step ID")
-    name: str = Field(description="Step name")
+    step_instance_id: str = Field(
+        default_factory=lambda: f"step-{uuid4().hex[:8]}",
+        description="Unique runtime instance ID for step",
+    )
+    workflow_id: str = Field(default="", description="Parent workflow instance identifier")
+    step_id: str = Field(default="", description="Definition step ID")
+    name: str = Field(default="", description="Step name")
+    step_name: Optional[str] = Field(default=None, description="Step name alias for backwards compatibility")
     order: int = Field(default=1, description="Step order index")
-    action_type: WorkflowStepActionType = Field(description="Action type")
+    required: bool = Field(default=True, description="Whether step failure marks workflow partially failed")
+    result: Optional[Dict[str, Any]] = Field(default=None, description="Step execution output/result")
+    action_type: WorkflowStepActionType = Field(
+        default=WorkflowStepActionType.DOMAIN_ACTION,
+        description="Action type",
+    )
     action_config: Dict[str, Any] = Field(default_factory=dict, description="Action parameters")
     status: WorkflowStepStatus = Field(default=WorkflowStepStatus.PENDING, description="Current step status")
+
+    def model_post_init(self, __context: Any) -> None:
+        if self.step_name and not self.name:
+            self.name = self.step_name
+        if not self.step_id:
+            self.step_id = self.name or self.step_name or f"step-{self.order}"
     dependencies: List[WorkflowStepDependency] = Field(default_factory=list, description="Step dependencies")
     approval_required: bool = Field(default=False, description="Approval gate required")
     required_approval_role: Optional[str] = Field(default=None, description="Required role for approval")

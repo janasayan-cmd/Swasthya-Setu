@@ -62,6 +62,7 @@ class WorkflowStatus(str, Enum):
     AWAITING_APPROVAL = "AWAITING_APPROVAL"
     COMPLETED = "COMPLETED"
     FAILED = "FAILED"
+    PARTIALLY_FAILED = "PARTIALLY_FAILED"
     CANCELLED = "CANCELLED"
     EXPIRED = "EXPIRED"
 
@@ -174,22 +175,28 @@ class WorkflowRecord(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
     workflow_id: str = Field(description="Unique workflow instance identifier e.g. WF-12345")
-    definition_id: str = Field(description="Workflow definition identifier")
-    definition_version: str = Field(description="Pinned definition version")
-    name: str = Field(description="Workflow title")
-    category: WorkflowCategory = Field(description="Workflow category")
+    definition_id: str = Field(default="DEFAULT", description="Workflow definition identifier")
+    definition_version: str = Field(default="1.0", description="Pinned definition version")
+    name: str = Field(default="Workflow", description="Workflow title")
+    category: WorkflowCategory = Field(default=WorkflowCategory.GENERAL, description="Workflow category")
     status: WorkflowStatus = Field(default=WorkflowStatus.CREATED, description="Current workflow state")
     current_step_id: Optional[str] = Field(default=None, description="Currently active step ID")
     patient_id: Optional[str] = Field(default=None, description="Referenced Patient ID")
     encounter_id: Optional[str] = Field(default=None, description="Referenced Encounter ID")
     resource_id: Optional[str] = Field(default=None, description="Referenced Resource ID")
     facility_id: Optional[str] = Field(default=None, description="Referenced Facility ID")
-    correlation_id: str = Field(description="Tracing correlation ID")
+    correlation_id: str = Field(default="", description="Tracing correlation ID")
     source_event_id: Optional[str] = Field(default=None, description="Source trigger ID")
     source_event_type: Optional[str] = Field(default=None, description="Source trigger type")
     idempotency_key: Optional[str] = Field(default=None, description="Computed idempotency key")
-    provenance: WorkflowProvenance = Field(description="Provenance audit trail")
+    provenance: Optional[WorkflowProvenance] = Field(default=None, description="Provenance audit trail")
     steps: List[WorkflowStepRecord] = Field(default_factory=list, description="Ordered step instances")
+    workflow_type: Optional[str] = Field(default=None, description="Workflow type alias")
+    initiating_user_id: Optional[str] = Field(default=None, description="Initiating user ID")
+
+    @property
+    def id(self) -> str:
+        return self.workflow_id
     context: Dict[str, Any] = Field(default_factory=dict, description="Workflow context references")
     failure_reason: Optional[str] = Field(default=None, description="Sanitized failure description")
     error_code: Optional[str] = Field(default=None, description="Failure error code")

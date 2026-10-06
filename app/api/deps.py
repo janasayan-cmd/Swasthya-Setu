@@ -325,6 +325,22 @@ from app.services.consent_request_service import ConsentRequestService
 from app.services.consent_access_service import ConsentAccessService
 from app.workers.consent_worker import ConsentWorker
 
+# Phase 44: Clinical Data Sharing, External Access & Controlled Data Exchange imports
+from app.repositories.sharing_repository import SharingRepository
+from app.repositories.export_repository import ExportRepository
+from app.services.sharing_provenance_service import SharingProvenanceService
+from app.services.sharing_policy_service import SharingPolicyService
+from app.services.sharing_service import SharingService
+from app.workers.sharing_worker import SharingWorker
+
+# Phase 45: External Data Ingestion & Clinical Reconciliation imports
+from app.repositories.ingestion_repository import IngestionRepository
+from app.services.ingestion_provenance_service import IngestionProvenanceService
+from app.services.identity_resolution_service import IdentityResolutionService
+from app.services.ingestion_validation_service import IngestionValidationService
+from app.services.ingestion_service import IngestionService
+
+
 # ---------------------------------------------------------------------------
 # HTTP Bearer scheme
 # ---------------------------------------------------------------------------
@@ -1029,6 +1045,44 @@ _global_consent_worker = ConsentWorker(
     access_service=_global_consent_access_service,
     audit_service=_global_audit_service,
 )
+
+# Phase 44: Clinical Data Sharing, External Access & Controlled Data Exchange singletons
+_global_sharing_repo = SharingRepository()
+_global_export_repo = ExportRepository()
+_global_sharing_provenance_service = SharingProvenanceService()
+_global_sharing_policy_service = SharingPolicyService(consent_access_service=_global_consent_access_service)
+_global_sharing_service = SharingService(
+    sharing_repository=_global_sharing_repo,
+    export_repository=_global_export_repo,
+    sharing_policy_service=_global_sharing_policy_service,
+    sharing_provenance_service=_global_sharing_provenance_service,
+    audit_service=_global_audit_service,
+)
+_global_sharing_worker = SharingWorker(
+    sharing_service=_global_sharing_service,
+    sharing_repository=_global_sharing_repo,
+)
+
+# Phase 45: External Data Ingestion & Clinical Reconciliation singletons
+_global_ingestion_repo = IngestionRepository()
+_global_ingestion_provenance_service = IngestionProvenanceService()
+_global_identity_resolution_service = IdentityResolutionService(
+    interop_repo=_global_interoperability_repo,
+    patient_repo=_global_patient_repo,
+)
+_global_ingestion_validation_service = IngestionValidationService(
+    ingestion_repo=_global_ingestion_repo,
+)
+_global_ingestion_service = IngestionService(
+    ingestion_repo=_global_ingestion_repo,
+    validation_service=_global_ingestion_validation_service,
+    identity_service=_global_identity_resolution_service,
+    provenance_service=_global_ingestion_provenance_service,
+    consent_access_service=_global_consent_access_service,
+    reconciliation_service=_global_reconciliation_service,
+    audit_service=_global_audit_service,
+)
+
 
 
 def get_user_repository() -> UserRepository:
@@ -2912,4 +2966,255 @@ def get_consent_worker() -> ConsentWorker:
     """Dependency provider for ConsentWorker."""
     return _global_consent_worker
 
+
+# ---------------------------------------------------------------------------
+# Phase 44: Clinical Data Sharing, External Access & Controlled Data Exchange Getters
+# ---------------------------------------------------------------------------
+
+def get_sharing_repository() -> SharingRepository:
+    """Dependency provider for SharingRepository."""
+    return _global_sharing_repo
+
+
+def get_export_repository() -> ExportRepository:
+    """Dependency provider for ExportRepository."""
+    return _global_export_repo
+
+
+def get_sharing_provenance_service() -> SharingProvenanceService:
+    """Dependency provider for SharingProvenanceService."""
+    return _global_sharing_provenance_service
+
+
+def get_sharing_policy_service() -> SharingPolicyService:
+    """Dependency provider for SharingPolicyService."""
+    return _global_sharing_policy_service
+
+
+def get_sharing_service() -> SharingService:
+    """Dependency provider for SharingService."""
+    return _global_sharing_service
+
+
+def get_sharing_worker() -> SharingWorker:
+    """Dependency provider for SharingWorker."""
+    return _global_sharing_worker
+
+
+def get_ingestion_repository() -> IngestionRepository:
+    """Dependency provider for IngestionRepository."""
+    return _global_ingestion_repo
+
+
+def get_ingestion_provenance_service() -> IngestionProvenanceService:
+    """Dependency provider for IngestionProvenanceService."""
+    return _global_ingestion_provenance_service
+
+
+def get_identity_resolution_service() -> IdentityResolutionService:
+    """Dependency provider for IdentityResolutionService."""
+    return _global_identity_resolution_service
+
+
+def get_ingestion_validation_service() -> IngestionValidationService:
+    """Dependency provider for IngestionValidationService."""
+    return _global_ingestion_validation_service
+
+
+def get_ingestion_service() -> IngestionService:
+    """Dependency provider for IngestionService."""
+    return _global_ingestion_service
+
+
+# ---------------------------------------------------------------------------
+# Phase 46: Service and Repository Providers
+# ---------------------------------------------------------------------------
+from app.repositories.versioning_repository import VersioningRepository, versioning_repository
+from app.services.concurrency_service import ConcurrencyService, concurrency_service
+from app.services.change_validation_service import ChangeValidationService, change_validation_service
+from app.services.versioning_service import VersioningService, versioning_service
+from app.services.history_service import HistoryService, history_service
+
+
+def get_versioning_repository() -> VersioningRepository:
+    """Dependency provider for VersioningRepository."""
+    return versioning_repository
+
+
+def get_concurrency_service() -> ConcurrencyService:
+    """Dependency provider for ConcurrencyService."""
+    return concurrency_service
+
+
+def get_change_validation_service() -> ChangeValidationService:
+    """Dependency provider for ChangeValidationService."""
+    return change_validation_service
+
+
+def get_versioning_service(
+    repo: Annotated[VersioningRepository, Depends(get_versioning_repository)],
+    conc_svc: Annotated[ConcurrencyService, Depends(get_concurrency_service)],
+    val_svc: Annotated[ChangeValidationService, Depends(get_change_validation_service)],
+    audit_svc: Annotated[AuditService, Depends(get_audit_service)],
+) -> VersioningService:
+    """Dependency provider for VersioningService."""
+    return VersioningService(
+        repository=repo,
+        concurrency_svc=conc_svc,
+        change_validator=val_svc,
+        audit_service=audit_svc,
+    )
+
+
+def get_history_service(
+    repo: Annotated[VersioningRepository, Depends(get_versioning_repository)],
+    audit_svc: Annotated[AuditService, Depends(get_audit_service)],
+) -> HistoryService:
+    """Dependency provider for HistoryService."""
+    return HistoryService(
+        repository=repo,
+        audit_service=audit_svc,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Phase 47: Decision Traceability & Human Oversight Providers
+# ---------------------------------------------------------------------------
+from app.repositories.decision_repository import DecisionRepository, decision_repository
+from app.services.decision_service import DecisionService, decision_service
+from app.services.decision_context_service import DecisionContextService, decision_context_service
+from app.services.decision_validation_service import DecisionValidationService, decision_validation_service
+from app.services.decision_review_service import DecisionReviewService, decision_review_service
+from app.services.explanation_service import ExplanationService, explanation_service
+from app.services.decision_application_service import DecisionApplicationService, decision_application_service
+from app.services.decision_replay_service import DecisionReplayService, decision_replay_service
+
+
+def get_decision_repository() -> DecisionRepository:
+    """Dependency provider for DecisionRepository."""
+    return decision_repository
+
+
+def get_decision_context_service(
+    versioning_repo: Annotated[VersioningRepository, Depends(get_versioning_repository)],
+) -> DecisionContextService:
+    """Dependency provider for DecisionContextService."""
+    return DecisionContextService(versioning_repo=versioning_repo)
+
+
+def get_decision_validation_service() -> DecisionValidationService:
+    """Dependency provider for DecisionValidationService."""
+    return decision_validation_service
+
+
+def get_decision_service(
+    repo: Annotated[DecisionRepository, Depends(get_decision_repository)],
+    ctx_svc: Annotated[DecisionContextService, Depends(get_decision_context_service)],
+    val_svc: Annotated[DecisionValidationService, Depends(get_decision_validation_service)],
+    audit_svc: Annotated[AuditService, Depends(get_audit_service)],
+) -> DecisionService:
+    """Dependency provider for DecisionService."""
+    return DecisionService(
+        repository=repo,
+        context_service=ctx_svc,
+        validation_service=val_svc,
+        audit_service=audit_svc,
+    )
+
+
+def get_decision_review_service(
+    repo: Annotated[DecisionRepository, Depends(get_decision_repository)],
+    val_svc: Annotated[DecisionValidationService, Depends(get_decision_validation_service)],
+    audit_svc: Annotated[AuditService, Depends(get_audit_service)],
+) -> DecisionReviewService:
+    """Dependency provider for DecisionReviewService."""
+    return DecisionReviewService(
+        repository=repo,
+        validation_service=val_svc,
+        audit_service=audit_svc,
+    )
+
+
+def get_decision_application_service(
+    repo: Annotated[DecisionRepository, Depends(get_decision_repository)],
+    ctx_svc: Annotated[DecisionContextService, Depends(get_decision_context_service)],
+    val_svc: Annotated[DecisionValidationService, Depends(get_decision_validation_service)],
+    audit_svc: Annotated[AuditService, Depends(get_audit_service)],
+) -> DecisionApplicationService:
+    """Dependency provider for DecisionApplicationService."""
+    return DecisionApplicationService(
+        repository=repo,
+        context_service=ctx_svc,
+        validation_service=val_svc,
+        audit_service=audit_svc,
+    )
+
+
+def get_explanation_service() -> ExplanationService:
+    """Dependency provider for ExplanationService."""
+    return explanation_service
+
+
+def get_decision_replay_service(
+    repo: Annotated[DecisionRepository, Depends(get_decision_repository)],
+    ctx_svc: Annotated[DecisionContextService, Depends(get_decision_context_service)],
+) -> DecisionReplayService:
+    """Dependency provider for DecisionReplayService."""
+    return DecisionReplayService(
+        repository=repo,
+        context_service=ctx_svc,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Phase 48: Clinical Decision Safety Controls & Guardrails Dependencies
+# ---------------------------------------------------------------------------
+from app.repositories.safety_repository import SafetyRepository, safety_repository
+from app.services.safety_policy_service import SafetyPolicyService, safety_policy_service
+from app.services.safety_validation_service import SafetyValidationService, safety_validation_service
+from app.services.safety_context_service import SafetyContextService, safety_context_service
+from app.services.safety_conflict_service import SafetyConflictService, safety_conflict_service
+from app.services.safety_fallback_service import SafetyFallbackService, safety_fallback_service
+from app.services.safety_retry_service import SafetyRetryService, safety_retry_service
+from app.services.safety_gate_service import SafetyGateService, safety_gate_service
+
+
+def get_safety_repository() -> SafetyRepository:
+    """Dependency provider for SafetyRepository."""
+    return safety_repository
+
+
+def get_safety_policy_service() -> SafetyPolicyService:
+    """Dependency provider for SafetyPolicyService."""
+    return safety_policy_service
+
+
+def get_safety_validation_service() -> SafetyValidationService:
+    """Dependency provider for SafetyValidationService."""
+    return safety_validation_service
+
+
+def get_safety_context_service() -> SafetyContextService:
+    """Dependency provider for SafetyContextService."""
+    return safety_context_service
+
+
+def get_safety_conflict_service() -> SafetyConflictService:
+    """Dependency provider for SafetyConflictService."""
+    return safety_conflict_service
+
+
+def get_safety_fallback_service() -> SafetyFallbackService:
+    """Dependency provider for SafetyFallbackService."""
+    return safety_fallback_service
+
+
+def get_safety_retry_service() -> SafetyRetryService:
+    """Dependency provider for SafetyRetryService."""
+    return safety_retry_service
+
+
+def get_safety_gate_service() -> SafetyGateService:
+    """Dependency provider for SafetyGateService."""
+    return safety_gate_service
 

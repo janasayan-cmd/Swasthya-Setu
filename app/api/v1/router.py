@@ -65,6 +65,13 @@ from app.api.v1.endpoints import (
     patient_questionnaires,
     consent_requests,
     access_evaluation,
+    sharing,
+    exports,
+    ingestion,
+    webhooks,
+    history,
+    decisions,
+    safety,
 )
 
 v1_router = APIRouter()
@@ -208,5 +215,23 @@ v1_router.include_router(patient_questionnaires.router)
 # Register Phase 43 Patient Consent, Sharing Authorization & Access Control endpoints
 v1_router.include_router(consent_requests.router)
 v1_router.include_router(access_evaluation.router)
+
+# Register Phase 44 Clinical Data Sharing & Controlled Data Exchange endpoints
+v1_router.include_router(sharing.router)
+v1_router.include_router(exports.router)
+
+# Register Phase 45 External Data Ingestion & Clinical Reconciliation endpoints
+v1_router.include_router(ingestion.router)
+v1_router.include_router(webhooks.router)
+
+# Register Phase 46 Clinical Record Versioning, Change History & Temporal Integrity endpoints
+v1_router.include_router(history.router)
+
+# Register Phase 47 Clinical Decision Traceability, Explanation & Human Oversight endpoints
+v1_router.include_router(decisions.router)
+
+# Register Phase 48 Clinical Decision Safety Controls, Guardrails & Fail-Safe Enforcement endpoints
+v1_router.include_router(safety.router)
+
 
 

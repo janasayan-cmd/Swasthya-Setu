@@ -132,7 +132,7 @@ class ConsentAccessService(BaseService[ConsentRepository]):
 
         # Check for explicitly withdrawn consents
         now = datetime.now(timezone.utc)
-        withdrawn = [c for c in matching_grantee if c.status == ConsentStatus.WITHDRAWN]
+        withdrawn = [c for c in matching_grantee if c.status in (ConsentStatus.WITHDRAWN, ConsentStatus.REVOKED)]
         # Check for expired consents
         expired = [
             c for c in matching_grantee

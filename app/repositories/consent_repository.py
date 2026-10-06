@@ -146,6 +146,8 @@ class ConsentRepository(BaseRepository[Any]):
         self._consents[record.id] = record
         return record
 
+    update = update_consent
+
     async def update_consent_status(
         self,
         consent_id: str,
@@ -304,4 +306,7 @@ class ConsentRepository(BaseRepository[Any]):
     async def list_all(self) -> list[ConsentRecord]:
         """List all consent records in store."""
         return list(self._consents.values())
+
+
+consent_repository = ConsentRepository()
 

@@ -22,6 +22,9 @@ class UserRole(str, Enum):
     AUDIT_OPERATOR = "AUDIT_OPERATOR"
     INTEGRATION_OPERATOR = "INTEGRATION_OPERATOR"
 
+    # Phase 44: AI agent identity boundary
+    AI = "AI"
+
 
 class AccountStatus(str, Enum):
     """Account operational statuses."""

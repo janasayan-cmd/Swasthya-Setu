@@ -85,6 +85,18 @@ class WorkflowRepository:
         with self._lock:
             return self._workflows.get(workflow_id)
 
+    async def create(self, workflow: WorkflowRecord) -> WorkflowRecord:
+        """Async adapter for save()."""
+        return self.save(workflow)
+
+    async def get(self, workflow_id: str) -> Optional[WorkflowRecord]:
+        """Async adapter for get_by_id()."""
+        return self.get_by_id(workflow_id)
+
+    async def update(self, workflow: WorkflowRecord) -> WorkflowRecord:
+        """Async adapter for save()."""
+        return self.save(workflow)
+
     def get_by_idempotency_key(self, idempotency_key: str) -> Optional[WorkflowRecord]:
         """Retrieve workflow by client idempotency key."""
         with self._lock:

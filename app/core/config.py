@@ -956,6 +956,54 @@ class Settings(BaseSettings):
     FHIR_EXPORT_REQUIRES_CONSENT: bool = Field(default=True, description="Require valid active patient consent before FHIR resource export")
     CONSENT_RATE_LIMIT: int = Field(default=60, description="Rate limit for consent requests and evaluations per minute")
 
+    # Phase 44: Clinical Data Sharing, External Access & Controlled Data Exchange
+    DATA_SHARING_ENABLED: bool = Field(default=True, description="Master toggle for clinical data sharing subsystem")
+    SHARING_DEFAULT_EXPIRATION_HOURS: int = Field(default=72, description="Default expiration in hours for sharing requests")
+    SHARING_MAX_PAYLOAD_MB: int = Field(default=25, description="Maximum allowed export/sharing payload size in MB")
+    SHARING_RATE_LIMIT: int = Field(default=30, description="Rate limit for sharing requests per minute")
+    SHARING_PROVIDER: str = Field(default="mock", description="Configured sharing adapter provider ('mock', 'direct_exchange', etc.)")
+    SHARING_PROVIDER_BASE_URL: str = Field(default="https://partner-exchange.example.org/api/v1", description="Base URL for external sharing provider")
+    SHARING_PROVIDER_API_KEY: str = Field(default="test-sharing-key-sec-44", description="API key for external sharing provider")
+    SHARING_PROVIDER_TIMEOUT_SECONDS: float = Field(default=15.0, description="Timeout ceiling in seconds for external sharing calls")
+    SHARING_MAX_RETRIES: int = Field(default=3, description="Maximum automated retries for transient sharing provider errors")
+    SHARING_ALLOWED_DESTINATIONS: str = Field(
+        default="https://partner-exchange.example.org,https://hie.state.gov,https://trusted-health-network.org",
+        description="Comma-separated allowlist of registered external sharing destination base URLs",
+    )
+
+    # Phase 45: External Data Ingestion & Clinical Reconciliation
+    DATA_INGESTION_ENABLED: bool = Field(default=True, description="Master toggle for external clinical data ingestion subsystem")
+    INGESTION_MAX_PAYLOAD_MB: int = Field(default=25, description="Maximum allowed inbound payload size in MB")
+    INGESTION_DEFAULT_RETENTION_DAYS: int = Field(default=365, description="Raw inbound payload retention period in days")
+    INGESTION_WEBHOOK_MAX_AGE_SECONDS: int = Field(default=300, description="Max age in seconds for inbound webhook timestamp replay protection")
+    INGESTION_WEBHOOK_SECRET: str = Field(default="test-webhook-secret-phase-45", description="Secret used to sign/verify inbound provider webhooks")
+    INGESTION_MAX_RETRIES: int = Field(default=3, description="Maximum automated retries for transient ingestion provider errors")
+    INGESTION_AUTO_RECONCILE: bool = Field(default=True, description="Flag indicating if ingestion automatically routes to Phase 26 reconciliation")
+    INGESTION_PROVIDER_TIMEOUT_SECONDS: float = Field(default=15.0, description="Timeout in seconds for external ingestion provider calls")
+
+    # Phase 46: Clinical Record Versioning, Change History & Temporal Data Integrity
+    VERSIONING_ENABLED: bool = Field(default=True, description="Master toggle for clinical record versioning subsystem")
+    VERSIONING_REQUIRE_CHANGE_REASON: bool = Field(default=True, description="Strictly require clinical change reason for updates/corrections")
+    VERSIONING_MAX_HISTORY_LIMIT: int = Field(default=100, description="Maximum number of historical versions retrieved per page")
+    VERSIONING_STRICT_CONCURRENCY: bool = Field(default=True, description="Enforce strict optimistic concurrency on versioned updates")
+
+    # Phase 47: Clinical Decision Traceability, Explanation & Human Oversight Management
+    DECISION_TRACEABILITY_ENABLED: bool = Field(default=True, description="Master toggle for clinical decision traceability")
+    DECISION_REQUIRE_HUMAN_OVERSIGHT: bool = Field(default=True, description="Strictly require human review on high-risk decision types")
+    DECISION_DEFAULT_EXPIRATION_HOURS: int = Field(default=24, description="Default TTL in hours for time-sensitive decisions")
+    DECISION_ALLOW_STALE_EVALUATION: bool = Field(default=False, description="Whether to allow applying decisions when underlying record version changed")
+
+    # Phase 48: Clinical Decision Safety Controls, Guardrails & Fail-Safe Enforcement
+    SAFETY_GATE_ENABLED: bool = Field(default=True, description="Master toggle for clinical safety gate enforcement")
+    SAFETY_ENFORCE_FAIL_SAFE: bool = Field(default=True, description="Enforce fail-safe defaults for missing/unverified/failed states")
+    SAFETY_BLOCK_STALE_DECISIONS: bool = Field(default=True, description="Block execution of decisions against stale clinical record versions")
+    SAFETY_BLOCK_AI_CLINICAL_ACTIONS: bool = Field(default=True, description="Block AI outputs from autonomously executing clinical actions")
+    SAFETY_REQUIRE_HUMAN_REVIEW: bool = Field(default=True, description="Enforce clinician review before high-risk clinical actions")
+    SAFETY_CIRCUIT_BREAKER_ENABLED: bool = Field(default=True, description="Circuit breaker for external clinical safety providers")
+    SAFETY_CIRCUIT_BREAKER_FAILURE_THRESHOLD: int = Field(default=3, description="Failure count threshold to open circuit breaker")
+    SAFETY_CIRCUIT_BREAKER_RESET_SECONDS: int = Field(default=60, description="Circuit breaker cooling period before half-open probe")
+
+
     @property
     def max_document_size_bytes(self) -> int:
         """Maximum allowed document upload size in bytes."""

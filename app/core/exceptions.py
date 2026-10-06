@@ -632,6 +632,114 @@ class ErrorCode(str, Enum):
     AI_CONSENT_AUTHORITY_PROHIBITED = "AI_CONSENT_AUTHORITY_PROHIBITED"
     CONSENT_AUTONOMOUS_CLINICAL_PROHIBITED = "CONSENT_AUTONOMOUS_CLINICAL_PROHIBITED"
 
+    # Phase 44: Clinical Data Sharing, External Access & Controlled Data Exchange Error Codes
+    SHARING_DISABLED = "SHARING_DISABLED"
+    SHARING_NOT_FOUND = "SHARING_NOT_FOUND"
+    SHARING_NOT_AUTHORIZED = "SHARING_NOT_AUTHORIZED"
+    SHARING_CONSENT_REQUIRED = "SHARING_CONSENT_REQUIRED"
+    SHARING_CONSENT_EXPIRED = "SHARING_CONSENT_EXPIRED"
+    SHARING_CONSENT_REVOKED = "SHARING_CONSENT_REVOKED"
+    SHARING_SCOPE_INVALID = "SHARING_SCOPE_INVALID"
+    SHARING_ACTION_NOT_ALLOWED = "SHARING_ACTION_NOT_ALLOWED"
+    SHARING_RECIPIENT_INVALID = "SHARING_RECIPIENT_INVALID"
+    SHARING_DESTINATION_INVALID = "SHARING_DESTINATION_INVALID"
+    SHARING_PURPOSE_INVALID = "SHARING_PURPOSE_INVALID"
+    SHARING_EXPORT_NOT_ALLOWED = "SHARING_EXPORT_NOT_ALLOWED"
+    SHARING_IDENTITY_UNRESOLVED = "SHARING_IDENTITY_UNRESOLVED"
+    SHARING_PROVIDER_UNAVAILABLE = "SHARING_PROVIDER_UNAVAILABLE"
+    SHARING_PROVIDER_TIMEOUT = "SHARING_PROVIDER_TIMEOUT"
+    SHARING_PROVIDER_FAILED = "SHARING_PROVIDER_FAILED"
+    SHARING_VALIDATION_FAILED = "SHARING_VALIDATION_FAILED"
+    SHARING_ALREADY_COMPLETED = "SHARING_ALREADY_COMPLETED"
+    SHARING_EXPIRED = "SHARING_EXPIRED"
+    SHARING_CANCELLED = "SHARING_CANCELLED"
+    SHARING_RETRY_EXHAUSTED = "SHARING_RETRY_EXHAUSTED"
+    SHARING_IDEMPOTENCY_CONFLICT = "SHARING_IDEMPOTENCY_CONFLICT"
+    SHARING_RATE_LIMIT_EXCEEDED = "SHARING_RATE_LIMIT_EXCEEDED"
+    AI_SHARING_AUTHORITY_PROHIBITED = "AI_SHARING_AUTHORITY_PROHIBITED"
+    SHARING_AUTONOMOUS_CLINICAL_PROHIBITED = "SHARING_AUTONOMOUS_CLINICAL_PROHIBITED"
+
+    # Phase 45: External Data Ingestion & Clinical Reconciliation
+    INGESTION_DISABLED = "INGESTION_DISABLED"
+    INGESTION_NOT_FOUND = "INGESTION_NOT_FOUND"
+    INGESTION_SOURCE_NOT_FOUND = "INGESTION_SOURCE_NOT_FOUND"
+    INGESTION_SOURCE_UNAUTHORIZED = "INGESTION_SOURCE_UNAUTHORIZED"
+    INGESTION_SOURCE_SUSPENDED = "INGESTION_SOURCE_SUSPENDED"
+    INGESTION_SOURCE_AUTHENTICATION_FAILED = "INGESTION_SOURCE_AUTHENTICATION_FAILED"
+    INGESTION_CONSENT_REQUIRED = "INGESTION_CONSENT_REQUIRED"
+    INGESTION_CONSENT_REVOKED = "INGESTION_CONSENT_REVOKED"
+    INGESTION_PAYLOAD_INVALID = "INGESTION_PAYLOAD_INVALID"
+    INGESTION_RESOURCE_UNSUPPORTED = "INGESTION_RESOURCE_UNSUPPORTED"
+    INGESTION_IDENTITY_UNRESOLVED = "INGESTION_IDENTITY_UNRESOLVED"
+    INGESTION_IDENTITY_CONFLICT = "INGESTION_IDENTITY_CONFLICT"
+    INGESTION_IDEMPOTENCY_CONFLICT = "INGESTION_IDEMPOTENCY_CONFLICT"
+    INGESTION_DUPLICATE_DETECTED = "INGESTION_DUPLICATE_DETECTED"
+    INGESTION_QUARANTINED = "INGESTION_QUARANTINED"
+    INGESTION_RECONCILIATION_FAILED = "INGESTION_RECONCILIATION_FAILED"
+    INGESTION_PROVIDER_UNAVAILABLE = "INGESTION_PROVIDER_UNAVAILABLE"
+    INGESTION_PROVIDER_TIMEOUT = "INGESTION_PROVIDER_TIMEOUT"
+    INGESTION_WEBHOOK_SIGNATURE_INVALID = "INGESTION_WEBHOOK_SIGNATURE_INVALID"
+    INGESTION_WEBHOOK_REPLAY_DETECTED = "INGESTION_WEBHOOK_REPLAY_DETECTED"
+    INGESTION_AUTONOMOUS_CLINICAL_PROHIBITED = "INGESTION_AUTONOMOUS_CLINICAL_PROHIBITED"
+    AI_INGESTION_AUTHORITY_PROHIBITED = "AI_INGESTION_AUTHORITY_PROHIBITED"
+    AI_PATIENT_MATCH_PROHIBITED = "AI_PATIENT_MATCH_PROHIBITED"
+    INGESTION_CANCELLED = "INGESTION_CANCELLED"
+
+    # Phase 46: Clinical Record Versioning, Change History & Temporal Data Integrity
+    VERSION_CONFLICT = "VERSION_CONFLICT"
+    STALE_RESOURCE = "STALE_RESOURCE"
+    RESOURCE_VERSION_NOT_FOUND = "RESOURCE_VERSION_NOT_FOUND"
+    HISTORY_ACCESS_DENIED = "HISTORY_ACCESS_DENIED"
+    INVALID_VERSION = "INVALID_VERSION"
+    INVALID_STATE_TRANSITION = "INVALID_STATE_TRANSITION"
+    HISTORICAL_RESOURCE_READ_ONLY = "HISTORICAL_RESOURCE_READ_ONLY"
+    CHANGE_NOT_AUTHORIZED = "CHANGE_NOT_AUTHORIZED"
+    CHANGE_REASON_REQUIRED = "CHANGE_REASON_REQUIRED"
+    AI_VERSIONING_AUTHORITY_PROHIBITED = "AI_VERSIONING_AUTHORITY_PROHIBITED"
+    VERSIONING_AUTONOMOUS_CLINICAL_PROHIBITED = "VERSIONING_AUTONOMOUS_CLINICAL_PROHIBITED"
+
+    # Phase 47: Clinical Decision Traceability, Explanation & Human Oversight Management
+    DECISION_NOT_FOUND = "DECISION_NOT_FOUND"
+    DECISION_ACCESS_DENIED = "DECISION_ACCESS_DENIED"
+    DECISION_CONSENT_REQUIRED = "DECISION_CONSENT_REQUIRED"
+    DECISION_INVALID_STATE = "DECISION_INVALID_STATE"
+    DECISION_ALREADY_REVIEWED = "DECISION_ALREADY_REVIEWED"
+    DECISION_ALREADY_SUPERSEDED = "DECISION_ALREADY_SUPERSEDED"
+    DECISION_CONTEXT_STALE = "DECISION_CONTEXT_STALE"
+    DECISION_VERSION_CONFLICT = "DECISION_VERSION_CONFLICT"
+    DECISION_EXPIRED = "DECISION_EXPIRED"
+    DECISION_CONFLICT = "DECISION_CONFLICT"
+    DECISION_REVIEW_REQUIRED = "DECISION_REVIEW_REQUIRED"
+    DECISION_NOT_APPROVED = "DECISION_NOT_APPROVED"
+    DECISION_APPLICATION_DENIED = "DECISION_APPLICATION_DENIED"
+    DECISION_PROVIDER_FAILURE = "DECISION_PROVIDER_FAILURE"
+    DECISION_PROVIDER_TIMEOUT = "DECISION_PROVIDER_TIMEOUT"
+    DECISION_VALIDATION_FAILED = "DECISION_VALIDATION_FAILED"
+    DECISION_IDEMPOTENCY_CONFLICT = "DECISION_IDEMPOTENCY_CONFLICT"
+    DECISION_NOT_APPLICABLE = "DECISION_NOT_APPLICABLE"
+    AI_CLINICAL_ACTION_PROHIBITED = "AI_CLINICAL_ACTION_PROHIBITED"
+    AUTONOMOUS_DECISION_EXECUTION_PROHIBITED = "AUTONOMOUS_DECISION_EXECUTION_PROHIBITED"
+
+    # Phase 48: Clinical Decision Safety Controls, Guardrails & Fail-Safe Enforcement
+    SAFETY_CHECK_REQUIRED = "SAFETY_CHECK_REQUIRED"
+    SAFETY_CHECK_FAILED = "SAFETY_CHECK_FAILED"
+    SAFETY_POLICY_BLOCKED = "SAFETY_POLICY_BLOCKED"
+    INSUFFICIENT_INFORMATION = "INSUFFICIENT_INFORMATION"
+    CLINICAL_CONTEXT_INCOMPLETE = "CLINICAL_CONTEXT_INCOMPLETE"
+    CLINICAL_CONTEXT_STALE = "CLINICAL_CONTEXT_STALE"
+    DECISION_STALE = "DECISION_STALE"
+    DECISION_CONFLICTED = "DECISION_CONFLICTED"
+    HUMAN_REVIEW_MISSING = "HUMAN_REVIEW_MISSING"
+    UNAUTHORIZED_CLINICAL_ACTION = "UNAUTHORIZED_CLINICAL_ACTION"
+    SAFETY_EVALUATION_UNAVAILABLE = "SAFETY_EVALUATION_UNAVAILABLE"
+    UNKNOWN_OUTCOME = "UNKNOWN_OUTCOME"
+    RECONCILIATION_REQUIRED = "RECONCILIATION_REQUIRED"
+    INVALID_CLINICAL_INPUT = "INVALID_CLINICAL_INPUT"
+    UNVERIFIED_DATA = "UNVERIFIED_DATA"
+    AMBIGUOUS_DATA = "AMBIGUOUS_DATA"
+    UNSAFE_RETRY = "UNSAFE_RETRY"
+    SAFETY_BYPASS_ATTEMPT_BLOCKED = "SAFETY_BYPASS_ATTEMPT_BLOCKED"
+
 
 class AppException(Exception):
     """Base application exception for all domain and operational errors."""
@@ -5581,6 +5689,1172 @@ class ConsentAutonomousClinicalProhibitedException(AppException):
             status_code=status.HTTP_403_FORBIDDEN,
             details=details,
         )
+
+
+# ============================================================================
+# Phase 44: Clinical Data Sharing, External Access & Controlled Data Exchange
+# ============================================================================
+
+class SharingDisabledException(AppException):
+    """Data sharing subsystem is disabled by configuration (HTTP 503)."""
+
+    def __init__(self, message: str = "Clinical data sharing is currently disabled by system policy.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SHARING_DISABLED,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            details=details,
+        )
+
+
+class SharingNotFoundException(AppException):
+    """Sharing request or export resource not found (HTTP 404)."""
+
+    def __init__(self, message: str = "The requested sharing request or export could not be found.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SHARING_NOT_FOUND,
+            message=message,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details=details,
+        )
+
+
+class SharingNotAuthorizedException(AppException):
+    """Caller not authorized to share or access sharing resource (HTTP 403)."""
+
+    def __init__(self, message: str = "Access to the requested sharing operation is not authorized.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SHARING_NOT_AUTHORIZED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class SharingConsentRequiredException(AppException):
+    """Sharing operation requires active patient consent (HTTP 403)."""
+
+    def __init__(self, message: str = "Active patient consent is required to share or export clinical data.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SHARING_CONSENT_REQUIRED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class SharingConsentExpiredException(AppException):
+    """Patient consent has expired (HTTP 403)."""
+
+    def __init__(self, message: str = "Patient consent has expired and cannot be used for data sharing.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SHARING_CONSENT_EXPIRED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class SharingConsentRevokedException(AppException):
+    """Patient consent has been withdrawn/revoked (HTTP 403)."""
+
+    def __init__(self, message: str = "Patient consent has been revoked and data cannot be shared.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SHARING_CONSENT_REVOKED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class SharingScopeInvalidException(AppException):
+    """Requested resource scope is invalid or exceeds authorization (HTTP 422)."""
+
+    def __init__(self, message: str = "Requested resource scope is invalid or exceeds granted authorization.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SHARING_SCOPE_INVALID,
+            message=message,
+            status_code=getattr(status, "HTTP_422_UNPROCESSABLE_CONTENT", 422),
+            details=details,
+        )
+
+
+class SharingActionNotAllowedException(AppException):
+    """Requested action is not allowed for sharing or export (HTTP 403)."""
+
+    def __init__(self, message: str = "The requested sharing action is not permitted.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SHARING_ACTION_NOT_ALLOWED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class SharingRecipientInvalidException(AppException):
+    """Recipient is invalid, unauthorized, or inactive (HTTP 400)."""
+
+    def __init__(self, message: str = "The recipient specified for sharing is invalid or unauthorized.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SHARING_RECIPIENT_INVALID,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class SharingDestinationInvalidException(AppException):
+    """Destination is invalid, unwhitelisted, or triggers SSRF protection (HTTP 400)."""
+
+    def __init__(self, message: str = "The sharing destination is invalid, untrusted, or violates security policies.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SHARING_DESTINATION_INVALID,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class SharingPurposeInvalidException(AppException):
+    """Purpose of sharing is invalid or outside consent grant (HTTP 422)."""
+
+    def __init__(self, message: str = "The sharing purpose is invalid or does not match consent purpose.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SHARING_PURPOSE_INVALID,
+            message=message,
+            status_code=getattr(status, "HTTP_422_UNPROCESSABLE_CONTENT", 422),
+            details=details,
+        )
+
+
+class SharingExportNotAllowedException(AppException):
+    """Export of requested resources is not permitted (HTTP 403)."""
+
+    def __init__(self, message: str = "Clinical data export is not permitted for the requested resources.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SHARING_EXPORT_NOT_ALLOWED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class SharingIdentityUnresolvedException(AppException):
+    """Patient identity could not be resolved with sufficient confidence (HTTP 422)."""
+
+    def __init__(self, message: str = "External patient identity cannot be resolved with sufficient confidence.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SHARING_IDENTITY_UNRESOLVED,
+            message=message,
+            status_code=getattr(status, "HTTP_422_UNPROCESSABLE_CONTENT", 422),
+            details=details,
+        )
+
+
+class SharingProviderUnavailableException(AppException):
+    """External sharing provider is temporarily unavailable (HTTP 503)."""
+
+    def __init__(self, message: str = "External sharing provider is currently unavailable.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SHARING_PROVIDER_UNAVAILABLE,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            details=details,
+        )
+
+
+class SharingProviderTimeoutException(AppException):
+    """External sharing provider timed out (HTTP 504)."""
+
+    def __init__(self, message: str = "External sharing provider request timed out.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SHARING_PROVIDER_TIMEOUT,
+            message=message,
+            status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+            details=details,
+        )
+
+
+class SharingProviderFailedException(AppException):
+    """External sharing provider returned an error (HTTP 502)."""
+
+    def __init__(self, message: str = "External sharing provider communication failed.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SHARING_PROVIDER_FAILED,
+            message=message,
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            details=details,
+        )
+
+
+class SharingValidationException(AppException):
+    """Sharing payload or request validation failed (HTTP 422)."""
+
+    def __init__(self, message: str = "Validation failed for clinical data sharing request or payload.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SHARING_VALIDATION_FAILED,
+            message=message,
+            status_code=getattr(status, "HTTP_422_UNPROCESSABLE_CONTENT", 422),
+            details=details,
+        )
+
+
+class SharingAlreadyCompletedException(AppException):
+    """Sharing request is already completed and cannot be modified or re-executed (HTTP 409)."""
+
+    def __init__(self, message: str = "The sharing request has already been completed.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SHARING_ALREADY_COMPLETED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class SharingExpiredException(AppException):
+    """Sharing request or export token has expired (HTTP 410)."""
+
+    def __init__(self, message: str = "The sharing request or export artifact has expired.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SHARING_EXPIRED,
+            message=message,
+            status_code=status.HTTP_410_GONE,
+            details=details,
+        )
+
+
+class SharingCancelledException(AppException):
+    """Sharing request was cancelled (HTTP 400)."""
+
+    def __init__(self, message: str = "The sharing request was cancelled.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SHARING_CANCELLED,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class SharingRetryExhaustedException(AppException):
+    """Maximum retry attempts exhausted for sharing operation (HTTP 500)."""
+
+    def __init__(self, message: str = "Maximum retry attempts exhausted for sharing operation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SHARING_RETRY_EXHAUSTED,
+            message=message,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            details=details,
+        )
+
+
+class AISharingAuthorityProhibitedException(AppException):
+    """AI attempting to authorize sharing or grant consent (HTTP 403)."""
+
+    def __init__(self, message: str = "AI is not an authorizing authority and cannot grant or approve data sharing.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.AI_SHARING_AUTHORITY_PROHIBITED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class SharingAutonomousClinicalProhibitedException(AppException):
+    """Attempting to use sharing operation to diagnose, prescribe, triage, or alter clinical orders (HTTP 403)."""
+
+    def __init__(self, message: str = "Clinical data sharing cannot diagnose, prescribe, modify medication, triage, or dispatch emergency care.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SHARING_AUTONOMOUS_CLINICAL_PROHIBITED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+# ==============================================================================
+# Phase 45: External Data Ingestion & Clinical Reconciliation Exceptions
+# ==============================================================================
+
+class IngestionDisabledException(AppException):
+    """External data ingestion subsystem disabled (HTTP 503)."""
+
+    def __init__(self, message: str = "External clinical data ingestion is disabled.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INGESTION_DISABLED,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            details=details,
+        )
+
+
+class IngestionNotFoundException(AppException):
+    """Ingestion record not found (HTTP 404)."""
+
+    def __init__(self, message: str = "Ingestion record not found.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INGESTION_NOT_FOUND,
+            message=message,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details=details,
+        )
+
+
+class IngestionSourceNotFoundException(AppException):
+    """External source not registered (HTTP 404)."""
+
+    def __init__(self, message: str = "External source is not registered or identified.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INGESTION_SOURCE_NOT_FOUND,
+            message=message,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details=details,
+        )
+
+
+class IngestionSourceUnauthorizedException(AppException):
+    """External source not authorized for scope (HTTP 403)."""
+
+    def __init__(self, message: str = "External source is not authorized to exchange clinical data for this resource scope.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INGESTION_SOURCE_UNAUTHORIZED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class IngestionSourceSuspendedException(AppException):
+    """External source is suspended or disabled (HTTP 403)."""
+
+    def __init__(self, message: str = "External source trust state is suspended, disabled, or revoked.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INGESTION_SOURCE_SUSPENDED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class IngestionSourceAuthenticationFailedException(AppException):
+    """External source authentication credentials invalid (HTTP 401)."""
+
+    def __init__(self, message: str = "External source authentication failed. Invalid API credentials or signature.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INGESTION_SOURCE_AUTHENTICATION_FAILED,
+            message=message,
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            details=details,
+        )
+
+
+class IngestionConsentRequiredException(AppException):
+    """Patient consent required or missing for external ingestion (HTTP 403)."""
+
+    def __init__(self, message: str = "Patient consent is required to ingest clinical data from this external source.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INGESTION_CONSENT_REQUIRED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class IngestionConsentRevokedException(AppException):
+    """Patient consent has been withdrawn/revoked (HTTP 403)."""
+
+    def __init__(self, message: str = "Patient consent has been withdrawn or revoked for this clinical exchange.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INGESTION_CONSENT_REVOKED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class IngestionPayloadInvalidException(AppException):
+    """External payload is malformed or invalid FHIR (HTTP 422)."""
+
+    def __init__(self, message: str = "External clinical payload failed schema or structural validation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INGESTION_PAYLOAD_INVALID,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details=details,
+        )
+
+
+class IngestionResourceUnsupportedException(AppException):
+    """External resource type is not supported for ingestion (HTTP 400)."""
+
+    def __init__(self, message: str = "External resource type is not supported for clinical ingestion.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INGESTION_RESOURCE_UNSUPPORTED,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class IngestionIdentityUnresolvedException(AppException):
+    """External patient identity cannot be resolved deterministically (HTTP 422)."""
+
+    def __init__(self, message: str = "Patient identity could not be resolved deterministically. Automated integration halted.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INGESTION_IDENTITY_UNRESOLVED,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details=details,
+        )
+
+
+class IngestionIdentityConflictException(AppException):
+    """External patient identity conflicting with existing records (HTTP 409)."""
+
+    def __init__(self, message: str = "Patient identity conflicting with multiple records. Manual review required.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INGESTION_IDENTITY_CONFLICT,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class IngestionIdempotencyConflictException(AppException):
+    """Idempotency key reused with mismatched payload (HTTP 409)."""
+
+    def __init__(self, message: str = "Idempotency key collision with conflicting external payload.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INGESTION_IDEMPOTENCY_CONFLICT,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class IngestionDuplicateDetectedException(AppException):
+    """Duplicate external resource detected (HTTP 409)."""
+
+    def __init__(self, message: str = "Duplicate external resource identified.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INGESTION_DUPLICATE_DETECTED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class IngestionQuarantinedException(AppException):
+    """Inbound resource has been quarantined (HTTP 422)."""
+
+    def __init__(self, message: str = "Inbound resource has been quarantined due to safety or security validation failure.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INGESTION_QUARANTINED,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details=details,
+        )
+
+
+class IngestionReconciliationFailedException(AppException):
+    """Clinical reconciliation failure (HTTP 422)."""
+
+    def __init__(self, message: str = "Clinical reconciliation encountered an unresolvable conflict.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INGESTION_RECONCILIATION_FAILED,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details=details,
+        )
+
+
+class IngestionProviderUnavailableException(AppException):
+    """External ingestion provider unavailable (HTTP 503)."""
+
+    def __init__(self, message: str = "External ingestion provider is currently unavailable.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INGESTION_PROVIDER_UNAVAILABLE,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            details=details,
+        )
+
+
+class IngestionProviderTimeoutException(AppException):
+    """External ingestion provider timed out (HTTP 504)."""
+
+    def __init__(self, message: str = "External ingestion provider timed out.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INGESTION_PROVIDER_TIMEOUT,
+            message=message,
+            status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+            details=details,
+        )
+
+
+class IngestionWebhookSignatureInvalidException(AppException):
+    """Webhook cryptographic signature verification failed (HTTP 401)."""
+
+    def __init__(self, message: str = "Webhook signature verification failed.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INGESTION_WEBHOOK_SIGNATURE_INVALID,
+            message=message,
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            details=details,
+        )
+
+
+class IngestionWebhookReplayDetectedException(AppException):
+    """Webhook event timestamp expired or nonce replayed (HTTP 409)."""
+
+    def __init__(self, message: str = "Webhook event replay detected. Event has expired or nonce was previously consumed.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INGESTION_WEBHOOK_REPLAY_DETECTED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class IngestionAutonomousClinicalProhibitedException(AppException):
+    """Attempting to use external data to diagnose, prescribe, triage, or alter clinical orders (HTTP 403)."""
+
+    def __init__(self, message: str = "External data ingestion cannot diagnose, prescribe, modify medication, triage, or dispatch emergency care.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INGESTION_AUTONOMOUS_CLINICAL_PROHIBITED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class AIIngestionAuthorityProhibitedException(AppException):
+    """AI attempting to verify imported data, approve records, or alter clinical truth (HTTP 403)."""
+
+    def __init__(self, message: str = "AI is not an authorizing authority and cannot verify imported clinical data or declare patient matches.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.AI_INGESTION_AUTHORITY_PROHIBITED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class AIPatientMatchProhibitedException(AppException):
+    """AI attempting to autonomously match or merge patient records (HTTP 403)."""
+
+    def __init__(self, message: str = "AI cannot autonomously declare patient identity matches or merge clinical records.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.AI_PATIENT_MATCH_PROHIBITED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class IngestionCancelledException(AppException):
+    """Ingestion operation was cancelled (HTTP 409)."""
+
+    def __init__(self, message: str = "Ingestion operation was cancelled.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INGESTION_CANCELLED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+# Phase 46: Clinical Record Versioning, Change History & Temporal Data Integrity
+class VersionConflictException(AppException):
+    """Optimistic concurrency conflict: the resource was modified by another actor (HTTP 409)."""
+
+    def __init__(self, message: str = "The resource has changed since it was retrieved. Please reload the current version.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.VERSION_CONFLICT,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class StaleResourceException(AppException):
+    """Stale resource detected during mutation (HTTP 409)."""
+
+    def __init__(self, message: str = "Resource is stale. The provided expected version does not match the current version.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.STALE_RESOURCE,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class ResourceVersionNotFoundException(AppException):
+    """Specific historical version of the resource could not be found (HTTP 404)."""
+
+    def __init__(self, message: str = "The requested resource version could not be found.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.RESOURCE_VERSION_NOT_FOUND,
+            message=message,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details=details,
+        )
+
+
+class HistoryAccessDeniedException(AppException):
+    """Access to historical clinical versions is denied (HTTP 403)."""
+
+    def __init__(self, message: str = "Access to historical clinical records is restricted.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.HISTORY_ACCESS_DENIED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class InvalidVersionException(AppException):
+    """Invalid version number or version specification (HTTP 422)."""
+
+    def __init__(self, message: str = "Invalid version specification provided.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INVALID_VERSION,
+            message=message,
+            status_code=getattr(status, "HTTP_422_UNPROCESSABLE_CONTENT", 422),
+            details=details,
+        )
+
+
+class InvalidStateTransitionException(AppException):
+    """Forbidden or nonsensical state transition attempted on clinical version (HTTP 422)."""
+
+    def __init__(self, message: str = "Invalid version state transition requested.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INVALID_STATE_TRANSITION,
+            message=message,
+            status_code=getattr(status, "HTTP_422_UNPROCESSABLE_CONTENT", 422),
+            details=details,
+        )
+
+
+class HistoricalResourceReadOnlyException(AppException):
+    """Attempted direct modification of a historical/superseded version (HTTP 400)."""
+
+    def __init__(self, message: str = "Historical versions are immutable read-only records and cannot be modified directly.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.HISTORICAL_RESOURCE_READ_ONLY,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class ChangeNotAuthorizedException(AppException):
+    """Actor lacks authorization to modify or supersede the clinical record (HTTP 403)."""
+
+    def __init__(self, message: str = "Actor is not authorized to apply changes to this clinical record.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.CHANGE_NOT_AUTHORIZED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class ChangeReasonRequiredException(AppException):
+    """Clinical modification attempted without mandatory clinical change reason (HTTP 422)."""
+
+    def __init__(self, message: str = "A clear clinical change reason is required for this operation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.CHANGE_REASON_REQUIRED,
+            message=message,
+            status_code=getattr(status, "HTTP_422_UNPROCESSABLE_CONTENT", 422),
+            details=details,
+        )
+
+
+class AIVersioningAuthorityProhibitedException(AppException):
+    """AI attempting to create authoritative clinical versions or approve changes (HTTP 403)."""
+
+    def __init__(self, message: str = "AI cannot create authoritative clinical versions, approve corrections, or modify clinical records.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.AI_VERSIONING_AUTHORITY_PROHIBITED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class VersioningAutonomousClinicalProhibitedException(AppException):
+    """Versioning operation attempting autonomous diagnosis, prescription, triage, or clinical decision (HTTP 403)."""
+
+    def __init__(self, message: str = "Versioning operations cannot autonomously diagnose, prescribe, triage, or modify active clinical truth.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.VERSIONING_AUTONOMOUS_CLINICAL_PROHIBITED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+# Phase 47: Clinical Decision Traceability, Explanation & Human Oversight Management Exceptions
+class DecisionNotFoundException(AppException):
+    """Decision record does not exist (HTTP 404)."""
+
+    def __init__(self, message: str = "Clinical decision record was not found.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.DECISION_NOT_FOUND,
+            message=message,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details=details,
+        )
+
+
+class DecisionAccessDeniedException(AppException):
+    """Actor unauthorized to inspect or review decision record (HTTP 403)."""
+
+    def __init__(self, message: str = "Access to clinical decision record is denied.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.DECISION_ACCESS_DENIED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class DecisionConsentRequiredException(AppException):
+    """Access to decision blocked by lack of active patient consent (HTTP 403)."""
+
+    def __init__(self, message: str = "Patient consent is required to access this decision trace.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.DECISION_CONSENT_REQUIRED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class DecisionInvalidStateException(AppException):
+    """Invalid decision state transition requested (HTTP 422)."""
+
+    def __init__(self, message: str = "Invalid decision lifecycle transition.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.DECISION_INVALID_STATE,
+            message=message,
+            status_code=getattr(status, "HTTP_422_UNPROCESSABLE_CONTENT", 422),
+            details=details,
+        )
+
+
+class DecisionAlreadyReviewedException(AppException):
+    """Decision review already conducted (HTTP 409)."""
+
+    def __init__(self, message: str = "Decision has already been reviewed and cannot be re-decided without modification.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.DECISION_ALREADY_REVIEWED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class DecisionAlreadySupersededException(AppException):
+    """Attempted action on an already superseded decision (HTTP 409)."""
+
+    def __init__(self, message: str = "Decision has already been superseded by a newer decision version.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.DECISION_ALREADY_SUPERSEDED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class DecisionContextStaleException(AppException):
+    """Decision generated against an older clinical version cannot be applied (HTTP 409)."""
+
+    def __init__(self, message: str = "Decision context is stale. The underlying clinical record version has changed.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.DECISION_CONTEXT_STALE,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class DecisionVersionConflictException(AppException):
+    """Version conflict during decision mutation (HTTP 409)."""
+
+    def __init__(self, message: str = "Decision version conflict detected.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.DECISION_VERSION_CONFLICT,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class DecisionExpiredException(AppException):
+    """Decision has passed its time-sensitive expiration window (HTTP 410)."""
+
+    def __init__(self, message: str = "Decision has expired and can no longer be applied.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.DECISION_EXPIRED,
+            message=message,
+            status_code=status.HTTP_410_GONE,
+            details=details,
+        )
+
+
+class DecisionConflictException(AppException):
+    """Contradictory decisions detected requiring clinical reconciliation (HTTP 409)."""
+
+    def __init__(self, message: str = "Contradictory clinical decisions detected.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.DECISION_CONFLICT,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class DecisionReviewRequiredException(AppException):
+    """Decision requires clinician review before downstream application (HTTP 428)."""
+
+    def __init__(self, message: str = "Human clinical review is required before this decision can be applied.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.DECISION_REVIEW_REQUIRED,
+            message=message,
+            status_code=428,
+            details=details,
+        )
+
+
+class DecisionNotApprovedException(AppException):
+    """Attempted to apply decision that has not been approved (HTTP 400)."""
+
+    def __init__(self, message: str = "Decision has not been clinically approved.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.DECISION_NOT_APPROVED,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class DecisionApplicationDeniedException(AppException):
+    """Unauthorized attempt to apply decision to clinical state (HTTP 403)."""
+
+    def __init__(self, message: str = "Application of decision outcome is not authorized.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.DECISION_APPLICATION_DENIED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class DecisionProviderFailureException(AppException):
+    """Decision rule engine, model, or provider failure (HTTP 502)."""
+
+    def __init__(self, message: str = "Decision provider failed during evaluation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.DECISION_PROVIDER_FAILURE,
+            message=message,
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            details=details,
+        )
+
+
+class DecisionProviderTimeoutException(AppException):
+    """Decision provider timed out during evaluation (HTTP 504)."""
+
+    def __init__(self, message: str = "Decision provider timed out.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.DECISION_PROVIDER_TIMEOUT,
+            message=message,
+            status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+            details=details,
+        )
+
+
+class DecisionValidationFailedException(AppException):
+    """Technical or schema validation of decision failed (HTTP 422)."""
+
+    def __init__(self, message: str = "Decision output failed technical validation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.DECISION_VALIDATION_FAILED,
+            message=message,
+            status_code=getattr(status, "HTTP_422_UNPROCESSABLE_CONTENT", 422),
+            details=details,
+        )
+
+
+class DecisionIdempotencyConflictException(AppException):
+    """Idempotency collision during decision operation (HTTP 409)."""
+
+    def __init__(self, message: str = "Conflicting concurrent decision request with same idempotency key.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.DECISION_IDEMPOTENCY_CONFLICT,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class DecisionNotApplicableException(AppException):
+    """Decision output is informational or not applicable to clinical domain mutation (HTTP 400)."""
+
+    def __init__(self, message: str = "Decision cannot be applied to clinical state.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.DECISION_NOT_APPLICABLE,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class AIClinicalActionProhibitedException(AppException):
+    """AI output attempting direct autonomous clinical action, diagnosis, or prescription (HTTP 403)."""
+
+    def __init__(self, message: str = "AI outputs cannot autonomously diagnose, prescribe, triage, or alter clinical records.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.AI_CLINICAL_ACTION_PROHIBITED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class AutonomousDecisionExecutionProhibitedException(AppException):
+    """System recommendation attempting execution without required human oversight (HTTP 403)."""
+
+    def __init__(self, message: str = "System recommendations cannot execute autonomously without required clinician oversight.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.AUTONOMOUS_DECISION_EXECUTION_PROHIBITED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+# Phase 48: Clinical Decision Safety Controls, Guardrails & Fail-Safe Enforcement Exceptions
+
+
+class SafetyCheckRequiredException(AppException):
+    """Operation requires safety-gate evaluation before execution (HTTP 428)."""
+
+    def __init__(self, message: str = "Safety evaluation is required before executing this operation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_CHECK_REQUIRED,
+            message=message,
+            status_code=428,
+            details=details,
+        )
+
+
+class SafetyCheckFailedException(AppException):
+    """Operation failed safety gate evaluation (HTTP 422)."""
+
+    def __init__(self, message: str = "Operation failed clinical safety validation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_CHECK_FAILED,
+            message=message,
+            status_code=getattr(status, "HTTP_422_UNPROCESSABLE_CONTENT", 422),
+            details=details,
+        )
+
+
+class SafetyPolicyBlockedException(AppException):
+    """Operation blocked by clinical safety policy (HTTP 403)."""
+
+    def __init__(self, message: str = "Operation is blocked by active clinical safety policy.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_POLICY_BLOCKED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class InsufficientInformationException(AppException):
+    """Required clinical context or parameters are missing/incomplete (HTTP 422)."""
+
+    def __init__(self, message: str = "Required clinical information is missing or incomplete.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INSUFFICIENT_INFORMATION,
+            message=message,
+            status_code=getattr(status, "HTTP_422_UNPROCESSABLE_CONTENT", 422),
+            details=details,
+        )
+
+
+class ClinicalContextIncompleteException(AppException):
+    """Clinical context lacks mandatory fields (HTTP 422)."""
+
+    def __init__(self, message: str = "Clinical context is incomplete for safety evaluation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.CLINICAL_CONTEXT_INCOMPLETE,
+            message=message,
+            status_code=getattr(status, "HTTP_422_UNPROCESSABLE_CONTENT", 422),
+            details=details,
+        )
+
+
+class ClinicalContextStaleException(AppException):
+    """Clinical context has expired or underlying record has evolved (HTTP 409)."""
+
+    def __init__(self, message: str = "Clinical context is stale. Newer record version exists.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.CLINICAL_CONTEXT_STALE,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class DecisionStaleException(AppException):
+    """Decision evaluated against older record version cannot be applied (HTTP 409)."""
+
+    def __init__(self, message: str = "Decision is stale and cannot be applied.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.DECISION_STALE,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class DecisionConflictedException(AppException):
+    """Contradictory clinical decisions or provider evaluations detected (HTTP 409)."""
+
+    def __init__(self, message: str = "Conflicting clinical recommendations detected. Human resolution required.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.DECISION_CONFLICTED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class HumanReviewMissingException(AppException):
+    """Operation requires human review that has not been performed (HTTP 428)."""
+
+    def __init__(self, message: str = "Mandatory human review is missing for this clinical decision.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.HUMAN_REVIEW_MISSING,
+            message=message,
+            status_code=428,
+            details=details,
+        )
+
+
+class UnauthorizedClinicalActionException(AppException):
+    """Actor lacks clinical privileges to execute this clinical action (HTTP 403)."""
+
+    def __init__(self, message: str = "Actor is not authorized to execute this clinical action.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.UNAUTHORIZED_CLINICAL_ACTION,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class SafetyEvaluationUnavailableException(AppException):
+    """Authoritative safety evaluation provider or rule engine is unavailable (HTTP 503)."""
+
+    def __init__(self, message: str = "Clinical safety evaluation is currently unavailable. Operation fails safe.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_EVALUATION_UNAVAILABLE,
+            message=message,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            details=details,
+        )
+
+
+class UnknownOutcomeException(AppException):
+    """Operation outcome is indeterminate (e.g., timeout). Reconciliation required before retry (HTTP 504)."""
+
+    def __init__(self, message: str = "Operation outcome is unknown due to upstream timeout. Reconciliation required.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.UNKNOWN_OUTCOME,
+            message=message,
+            status_code=status.HTTP_504_GATEWAY_TIMEOUT,
+            details=details,
+        )
+
+
+class ReconciliationRequiredException(AppException):
+    """Operation blocked until manual reconciliation of ambiguous/unknown outcome is performed (HTTP 409)."""
+
+    def __init__(self, message: str = "Clinical reconciliation is required before proceeding.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.RECONCILIATION_REQUIRED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class InvalidClinicalInputException(AppException):
+    """Clinical input fails safety/range/unit validation (HTTP 422)."""
+
+    def __init__(self, message: str = "Clinical input values failed clinical safety validation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INVALID_CLINICAL_INPUT,
+            message=message,
+            status_code=getattr(status, "HTTP_422_UNPROCESSABLE_CONTENT", 422),
+            details=details,
+        )
+
+
+class UnverifiedDataException(AppException):
+    """Patient-reported or external data is unverified and cannot be treated as authoritative (HTTP 422)."""
+
+    def __init__(self, message: str = "Clinical data is unverified and cannot be treated as authoritative truth.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.UNVERIFIED_DATA,
+            message=message,
+            status_code=getattr(status, "HTTP_422_UNPROCESSABLE_CONTENT", 422),
+            details=details,
+        )
+
+
+class AmbiguousDataException(AppException):
+    """Data identity or clinical meaning is ambiguous (HTTP 422)."""
+
+    def __init__(self, message: str = "Clinical data is ambiguous and cannot be processed safely.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.AMBIGUOUS_DATA,
+            message=message,
+            status_code=getattr(status, "HTTP_422_UNPROCESSABLE_CONTENT", 422),
+            details=details,
+        )
+
+
+class UnsafeRetryException(AppException):
+    """Attempted retry of non-idempotent or already executed clinical action (HTTP 409)."""
+
+    def __init__(self, message: str = "Unsafe retry prevented. Operation may have already executed.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.UNSAFE_RETRY,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class SafetyBypassAttemptBlockedException(AppException):
+    """Client attempt to bypass safety controls via request parameters (HTTP 403)."""
+
+    def __init__(self, message: str = "Client-side safety bypass attempts are strictly prohibited.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_BYPASS_ATTEMPT_BLOCKED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
 
 
 
