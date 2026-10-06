@@ -55,6 +55,7 @@ class AuditService(BaseService[AuditRepository]):
         resource_id: str | None = None,
         reason_code: str | None = None,
         metadata: dict | None = None,
+        request_id: str | None = None,
     ) -> None:
         """Record an audit event.
 
@@ -75,7 +76,7 @@ class AuditService(BaseService[AuditRepository]):
             resource_id=resource_id,
             outcome=outcome,
             reason_code=reason_code,
-            request_id=request_id_ctx_var.get(),
+            request_id=request_id or request_id_ctx_var.get(),
             metadata=clean_metadata,
         )
         if self.audit_repo:
@@ -1213,3 +1214,7 @@ class AuditService(BaseService[AuditRepository]):
             resource_id=resource_id,
             metadata=meta,
         )
+
+
+_audit_repository = AuditRepository()
+audit_service = AuditService(audit_repository=_audit_repository)

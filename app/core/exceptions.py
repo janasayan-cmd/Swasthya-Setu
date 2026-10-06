@@ -740,6 +740,25 @@ class ErrorCode(str, Enum):
     UNSAFE_RETRY = "UNSAFE_RETRY"
     SAFETY_BYPASS_ATTEMPT_BLOCKED = "SAFETY_BYPASS_ATTEMPT_BLOCKED"
 
+    # Phase 49: Clinical Safety Incident Management & Investigation
+    INCIDENT_ACCESS_DENIED = "INCIDENT_ACCESS_DENIED"
+    INCIDENT_ALREADY_CLOSED = "INCIDENT_ALREADY_CLOSED"
+    INCIDENT_ALREADY_RESOLVED = "INCIDENT_ALREADY_RESOLVED"
+    INCIDENT_ALREADY_REOPENED = "INCIDENT_ALREADY_REOPENED"
+    INCIDENT_DUPLICATE = "INCIDENT_DUPLICATE"
+    INCIDENT_CONFLICT = "INCIDENT_CONFLICT"
+    INCIDENT_EVIDENCE_ACCESS_DENIED = "INCIDENT_EVIDENCE_ACCESS_DENIED"
+    INCIDENT_INVESTIGATION_REQUIRED = "INCIDENT_INVESTIGATION_REQUIRED"
+    INCIDENT_CONTAINMENT_REQUIRED = "INCIDENT_CONTAINMENT_REQUIRED"
+    INCIDENT_CLOSURE_BLOCKED = "INCIDENT_CLOSURE_BLOCKED"
+    INCIDENT_CORRECTIVE_ACTION_REQUIRED = "INCIDENT_CORRECTIVE_ACTION_REQUIRED"
+    INCIDENT_ROOT_CAUSE_UNCONFIRMED = "INCIDENT_ROOT_CAUSE_UNCONFIRMED"
+    INCIDENT_INVALID_TRANSITION = "INCIDENT_INVALID_TRANSITION"
+    INCIDENT_IDEMPOTENCY_CONFLICT = "INCIDENT_IDEMPOTENCY_CONFLICT"
+    INCIDENT_UNAUTHORIZED_ASSIGNMENT = "INCIDENT_UNAUTHORIZED_ASSIGNMENT"
+    INCIDENT_EXPORT_DENIED = "INCIDENT_EXPORT_DENIED"
+    AI_INCIDENT_AUTHORITY_PROHIBITED = "AI_INCIDENT_AUTHORITY_PROHIBITED"
+
 
 class AppException(Exception):
     """Base application exception for all domain and operational errors."""
@@ -6854,6 +6873,214 @@ class SafetyBypassAttemptBlockedException(AppException):
             status_code=status.HTTP_403_FORBIDDEN,
             details=details,
         )
+
+
+# Phase 49: Clinical Safety Incident Management & Investigation Exceptions
+
+
+class IncidentAccessDeniedException(AppException):
+    """Unauthorized attempt to view or manage safety incident (HTTP 403)."""
+
+    def __init__(self, message: str = "Access to clinical safety incident is denied.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INCIDENT_ACCESS_DENIED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class IncidentAlreadyClosedException(AppException):
+    """Action attempted on already closed safety incident (HTTP 409)."""
+
+    def __init__(self, message: str = "Safety incident is already closed.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INCIDENT_ALREADY_CLOSED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class IncidentAlreadyResolvedException(AppException):
+    """Action attempted on already resolved incident (HTTP 409)."""
+
+    def __init__(self, message: str = "Safety incident is already resolved.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INCIDENT_ALREADY_RESOLVED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class IncidentAlreadyReopenedException(AppException):
+    """Incident is already open/reopened (HTTP 409)."""
+
+    def __init__(self, message: str = "Safety incident is already open.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INCIDENT_ALREADY_REOPENED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class IncidentDuplicateException(AppException):
+    """Attempted creation of duplicate incident signal (HTTP 409)."""
+
+    def __init__(self, message: str = "Duplicate safety incident signal detected.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INCIDENT_DUPLICATE,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class IncidentConflictException(AppException):
+    """Conflicting investigation findings or actions (HTTP 409)."""
+
+    def __init__(self, message: str = "Conflicting safety incident findings detected.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INCIDENT_CONFLICT,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class IncidentEvidenceAccessDeniedException(AppException):
+    """Unauthorized attempt to view sensitive incident evidence (HTTP 403)."""
+
+    def __init__(self, message: str = "Access to sensitive incident evidence is denied.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INCIDENT_EVIDENCE_ACCESS_DENIED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class IncidentInvestigationRequiredException(AppException):
+    """Incident requires investigation before requested action (HTTP 428)."""
+
+    def __init__(self, message: str = "Safety incident investigation is required.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INCIDENT_INVESTIGATION_REQUIRED,
+            message=message,
+            status_code=428,
+            details=details,
+        )
+
+
+class IncidentContainmentRequiredException(AppException):
+    """Operation blocked because containment has not been confirmed (HTTP 428)."""
+
+    def __init__(self, message: str = "Active safety containment is required before proceeding.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INCIDENT_CONTAINMENT_REQUIRED,
+            message=message,
+            status_code=428,
+            details=details,
+        )
+
+
+class IncidentClosureBlockedException(AppException):
+    """Incident closure blocked due to outstanding prerequisites (HTTP 409)."""
+
+    def __init__(self, message: str = "Incident closure blocked. Outstanding corrective actions or reviews remain.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INCIDENT_CLOSURE_BLOCKED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class IncidentCorrectiveActionRequiredException(AppException):
+    """Mandatory corrective actions are required before resolution (HTTP 428)."""
+
+    def __init__(self, message: str = "Corrective action plan is required before resolving safety incident.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INCIDENT_CORRECTIVE_ACTION_REQUIRED,
+            message=message,
+            status_code=428,
+            details=details,
+        )
+
+
+class IncidentRootCauseUnconfirmedException(AppException):
+    """Hypothesis cannot be treated as confirmed root cause without authorized determination (HTTP 409)."""
+
+    def __init__(self, message: str = "Root cause hypothesis cannot be treated as fact without authorized confirmation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INCIDENT_ROOT_CAUSE_UNCONFIRMED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class IncidentInvalidTransitionException(AppException):
+    """Invalid lifecycle transition attempted (HTTP 409)."""
+
+    def __init__(self, message: str = "Invalid incident lifecycle transition.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INCIDENT_INVALID_TRANSITION,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class IncidentIdempotencyConflictException(AppException):
+    """Idempotency conflict on incident submission (HTTP 409)."""
+
+    def __init__(self, message: str = "Incident operation idempotency collision.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INCIDENT_IDEMPOTENCY_CONFLICT,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class IncidentUnauthorizedAssignmentException(AppException):
+    """Unauthorized assignment of safety investigator (HTTP 403)."""
+
+    def __init__(self, message: str = "Unauthorized investigator assignment.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INCIDENT_UNAUTHORIZED_ASSIGNMENT,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class IncidentExportDeniedException(AppException):
+    """Unauthorized export of safety incident records (HTTP 403)."""
+
+    def __init__(self, message: str = "Safety incident export is not authorized.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.INCIDENT_EXPORT_DENIED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class AIIncidentAuthorityProhibitedException(AppException):
+    """AI attempted unauthorized autonomous incident determination or closure (HTTP 403)."""
+
+    def __init__(self, message: str = "AI cannot autonomously confirm root causes, determine clinical harm, or close safety incidents.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.AI_INCIDENT_AUTHORITY_PROHIBITED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
 
 
 

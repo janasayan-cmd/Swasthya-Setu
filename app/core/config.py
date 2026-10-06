@@ -1003,6 +1003,13 @@ class Settings(BaseSettings):
     SAFETY_CIRCUIT_BREAKER_FAILURE_THRESHOLD: int = Field(default=3, description="Failure count threshold to open circuit breaker")
     SAFETY_CIRCUIT_BREAKER_RESET_SECONDS: int = Field(default=60, description="Circuit breaker cooling period before half-open probe")
 
+    # Phase 49: Clinical Safety Incident Management & Investigation
+    INCIDENT_MANAGEMENT_ENABLED: bool = Field(default=True, description="Master toggle for clinical safety incident management")
+    INCIDENT_AUTO_TRIAGE_ENABLED: bool = Field(default=True, description="Enable automatic candidate triage for high-severity signals")
+    INCIDENT_DEDUPLICATION_WINDOW_MINUTES: int = Field(default=60, description="Time window in minutes to group duplicate safety signals")
+    INCIDENT_REQUIRE_CORRECTIVE_ACTION_FOR_CLOSURE: bool = Field(default=True, description="Require verified corrective action before closing incidents")
+    INCIDENT_ALLOW_AI_ASSISTED_INVESTIGATION: bool = Field(default=True, description="Allow AI-assisted summarization and anomaly clustering")
+
 
     @property
     def max_document_size_bytes(self) -> int:

@@ -3218,3 +3218,57 @@ def get_safety_gate_service() -> SafetyGateService:
     """Dependency provider for SafetyGateService."""
     return safety_gate_service
 
+
+# ---------------------------------------------------------------------------
+# Phase 49: Clinical Safety Incident Management & Investigation Dependencies
+# ---------------------------------------------------------------------------
+from app.repositories.safety_incident_repository import SafetyIncidentRepository, safety_incident_repository
+from app.services.safety_incident_service import SafetyIncidentService, safety_incident_service
+from app.services.clinical_incident_service import ClinicalIncidentService, clinical_incident_service
+from app.services.incident_investigation_service import IncidentInvestigationService, incident_investigation_service
+from app.services.incident_evidence_service import IncidentEvidenceService, incident_evidence_service
+from app.services.incident_containment_service import IncidentContainmentService, incident_containment_service
+from app.services.corrective_action_service import CorrectiveActionService, corrective_action_service
+from app.services.incident_closure_service import IncidentClosureService, incident_closure_service
+
+
+def get_safety_incident_repository() -> SafetyIncidentRepository:
+    """Dependency provider for SafetyIncidentRepository."""
+    return safety_incident_repository
+
+
+def get_safety_incident_service() -> SafetyIncidentService:
+    """Dependency provider for SafetyIncidentService."""
+    return safety_incident_service
+
+
+def get_clinical_incident_service() -> ClinicalIncidentService:
+    """Dependency provider for ClinicalIncidentService."""
+    return clinical_incident_service
+
+
+def get_incident_investigation_service() -> IncidentInvestigationService:
+    """Dependency provider for IncidentInvestigationService."""
+    return incident_investigation_service
+
+
+def get_incident_evidence_service() -> IncidentEvidenceService:
+    """Dependency provider for IncidentEvidenceService."""
+    return incident_evidence_service
+
+
+def get_incident_containment_service() -> IncidentContainmentService:
+    """Dependency provider for IncidentContainmentService."""
+    return incident_containment_service
+
+
+def get_corrective_action_service() -> CorrectiveActionService:
+    """Dependency provider for CorrectiveActionService."""
+    return corrective_action_service
+
+
+def get_incident_closure_service() -> IncidentClosureService:
+    """Dependency provider for IncidentClosureService."""
+    return incident_closure_service
+
+
