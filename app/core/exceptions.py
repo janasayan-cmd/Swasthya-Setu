@@ -783,6 +783,41 @@ class ErrorCode(str, Enum):
     SAFETY_LEARNING_RESULT_STALE = "SAFETY_LEARNING_RESULT_STALE"
     AI_SAFETY_LEARNING_AUTHORITY_PROHIBITED = "AI_SAFETY_LEARNING_AUTHORITY_PROHIBITED"
 
+    # Phase 51: Clinical Safety Governance, Risk Acceptance & Controlled Safety Change Management
+    RISK_NOT_FOUND = "RISK_NOT_FOUND"
+    RISK_ACCESS_DENIED = "RISK_ACCESS_DENIED"
+    RISK_INVALID_STATE = "RISK_INVALID_STATE"
+    RISK_ASSESSMENT_REQUIRED = "RISK_ASSESSMENT_REQUIRED"
+    RISK_ASSESSMENT_INVALID = "RISK_ASSESSMENT_INVALID"
+    RISK_ACCEPTANCE_REQUIRED = "RISK_ACCEPTANCE_REQUIRED"
+    RISK_ACCEPTANCE_DENIED = "RISK_ACCEPTANCE_DENIED"
+    RISK_ACCEPTANCE_EXPIRED = "RISK_ACCEPTANCE_EXPIRED"
+    RISK_ALREADY_ACCEPTED = "RISK_ALREADY_ACCEPTED"
+    RISK_ALREADY_CLOSED = "RISK_ALREADY_CLOSED"
+    RISK_REASSESSMENT_REQUIRED = "RISK_REASSESSMENT_REQUIRED"
+    RISK_VERSION_CONFLICT = "RISK_VERSION_CONFLICT"
+    RISK_STALE = "RISK_STALE"
+    RISK_INVALID_TRANSITION = "RISK_INVALID_TRANSITION"
+
+    SAFETY_CHANGE_NOT_FOUND = "SAFETY_CHANGE_NOT_FOUND"
+    SAFETY_CHANGE_ACCESS_DENIED = "SAFETY_CHANGE_ACCESS_DENIED"
+    SAFETY_CHANGE_INVALID_STATE = "SAFETY_CHANGE_INVALID_STATE"
+    SAFETY_CHANGE_APPROVAL_REQUIRED = "SAFETY_CHANGE_APPROVAL_REQUIRED"
+    SAFETY_CHANGE_APPROVAL_DENIED = "SAFETY_CHANGE_APPROVAL_DENIED"
+    SAFETY_CHANGE_STALE = "SAFETY_CHANGE_STALE"
+    SAFETY_CHANGE_SCOPE_INVALID = "SAFETY_CHANGE_SCOPE_INVALID"
+    SAFETY_CHANGE_IMPLEMENTATION_DENIED = "SAFETY_CHANGE_IMPLEMENTATION_DENIED"
+    SAFETY_CHANGE_VALIDATION_REQUIRED = "SAFETY_CHANGE_VALIDATION_REQUIRED"
+    SAFETY_CHANGE_VALIDATION_FAILED = "SAFETY_CHANGE_VALIDATION_FAILED"
+    SAFETY_CHANGE_ROLLBACK_REQUIRED = "SAFETY_CHANGE_ROLLBACK_REQUIRED"
+    SAFETY_CHANGE_ROLLBACK_DENIED = "SAFETY_CHANGE_ROLLBACK_DENIED"
+    SAFETY_CHANGE_VERSION_CONFLICT = "SAFETY_CHANGE_VERSION_CONFLICT"
+    SAFETY_CHANGE_IDEMPOTENCY_CONFLICT = "SAFETY_CHANGE_IDEMPOTENCY_CONFLICT"
+    SAFETY_CHANGE_ALREADY_IMPLEMENTED = "SAFETY_CHANGE_ALREADY_IMPLEMENTED"
+    SAFETY_CHANGE_ALREADY_ROLLED_BACK = "SAFETY_CHANGE_ALREADY_ROLLED_BACK"
+    SAFETY_CHANGE_REASSESSMENT_REQUIRED = "SAFETY_CHANGE_REASSESSMENT_REQUIRED"
+    AI_SAFETY_GOVERNANCE_AUTHORITY_PROHIBITED = "AI_SAFETY_GOVERNANCE_AUTHORITY_PROHIBITED"
+
 
 class AppException(Exception):
     """Base application exception for all domain and operational errors."""
@@ -7235,6 +7270,395 @@ class AISafetyLearningAuthorityProhibitedException(AppException):
     def __init__(self, message: str = "AI cannot autonomously approve safety recommendations, modify safety policies, or change clinical records.", details: Any = None) -> None:
         super().__init__(
             code=ErrorCode.AI_SAFETY_LEARNING_AUTHORITY_PROHIBITED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+# ============================================================================
+# Phase 51: Clinical Safety Governance, Risk Acceptance & Controlled Safety Change Management Exceptions
+# ============================================================================
+
+
+class RiskNotFoundException(AppException):
+    """Requested clinical safety risk entity not found (HTTP 404)."""
+
+    def __init__(self, message: str = "Clinical safety risk not found.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.RISK_NOT_FOUND,
+            message=message,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details=details,
+        )
+
+
+class RiskAccessDeniedException(AppException):
+    """Unauthorized attempt to access or modify a clinical safety risk (HTTP 403)."""
+
+    def __init__(self, message: str = "Access to clinical safety risk is denied.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.RISK_ACCESS_DENIED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class RiskInvalidStateException(AppException):
+    """Risk is in an invalid lifecycle state for the requested operation (HTTP 409)."""
+
+    def __init__(self, message: str = "Risk is in an invalid state for this operation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.RISK_INVALID_STATE,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class RiskAssessmentRequiredException(AppException):
+    """Risk requires an authorized assessment before proceeding (HTTP 422)."""
+
+    def __init__(self, message: str = "Structured risk assessment is required before this action.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.RISK_ASSESSMENT_REQUIRED,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details=details,
+        )
+
+
+class RiskAssessmentInvalidException(AppException):
+    """Risk assessment failed validation rules (HTTP 422)."""
+
+    def __init__(self, message: str = "Risk assessment data is invalid or incomplete.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.RISK_ASSESSMENT_INVALID,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details=details,
+        )
+
+
+class RiskAcceptanceRequiredException(AppException):
+    """Action requires explicit authorized risk acceptance (HTTP 409)."""
+
+    def __init__(self, message: str = "Explicit risk acceptance is required to proceed.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.RISK_ACCEPTANCE_REQUIRED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class RiskAcceptanceDeniedException(AppException):
+    """Actor lacks authority to accept this level of residual risk (HTTP 403)."""
+
+    def __init__(self, message: str = "Actor lacks authority to accept residual clinical risk.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.RISK_ACCEPTANCE_DENIED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class RiskAcceptanceExpiredException(AppException):
+    """Temporary risk acceptance has expired and is no longer valid (HTTP 409)."""
+
+    def __init__(self, message: str = "Risk acceptance has expired. Reassessment is required.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.RISK_ACCEPTANCE_EXPIRED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class RiskAlreadyAcceptedException(AppException):
+    """Risk is already accepted in current version (HTTP 409)."""
+
+    def __init__(self, message: str = "Risk is already accepted.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.RISK_ALREADY_ACCEPTED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class RiskAlreadyClosedException(AppException):
+    """Risk is already closed and cannot be modified without reopening (HTTP 409)."""
+
+    def __init__(self, message: str = "Risk is already closed. Explicit reopening is required.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.RISK_ALREADY_CLOSED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class RiskReassessmentRequiredException(AppException):
+    """A change in conditions necessitates a full risk reassessment (HTTP 409)."""
+
+    def __init__(self, message: str = "Risk conditions have changed; formal reassessment is required.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.RISK_REASSESSMENT_REQUIRED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class RiskVersionConflictException(AppException):
+    """Concurrency collision or version mismatch on risk record (HTTP 409)."""
+
+    def __init__(self, message: str = "Risk record version conflict. Please reload and retry.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.RISK_VERSION_CONFLICT,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class RiskStaleException(AppException):
+    """Risk record or evidence is stale (HTTP 409)."""
+
+    def __init__(self, message: str = "Risk evaluation is stale due to updated evidence or time expiration.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.RISK_STALE,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class RiskInvalidTransitionException(AppException):
+    """Forbidden lifecycle state transition for risk record (HTTP 400)."""
+
+    def __init__(self, message: str = "Invalid risk lifecycle state transition.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.RISK_INVALID_TRANSITION,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class SafetyChangeNotFoundException(AppException):
+    """Requested safety change request not found (HTTP 404)."""
+
+    def __init__(self, message: str = "Safety change request not found.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_CHANGE_NOT_FOUND,
+            message=message,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details=details,
+        )
+
+
+class SafetyChangeAccessDeniedException(AppException):
+    """Unauthorized access or mutation attempt on safety change request (HTTP 403)."""
+
+    def __init__(self, message: str = "Access to safety change request is denied.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_CHANGE_ACCESS_DENIED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class SafetyChangeInvalidStateException(AppException):
+    """Safety change request is in an invalid lifecycle state (HTTP 409)."""
+
+    def __init__(self, message: str = "Safety change is in an invalid state for this operation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_CHANGE_INVALID_STATE,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class SafetyChangeApprovalRequiredException(AppException):
+    """Safety change requires formal authorization before implementation (HTTP 422)."""
+
+    def __init__(self, message: str = "Formal safety change approval is required before implementation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_CHANGE_APPROVAL_REQUIRED,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details=details,
+        )
+
+
+class SafetyChangeApprovalDeniedException(AppException):
+    """Actor lacks authority to approve safety change or separation of duties was violated (HTTP 403)."""
+
+    def __init__(self, message: str = "Approval denied: insufficient authority or separation of duties violation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_CHANGE_APPROVAL_DENIED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class SafetyChangeStaleException(AppException):
+    """Safety change approval or definition is stale due to upstream version shifts (HTTP 409)."""
+
+    def __init__(self, message: str = "Safety change or approval is stale due to upstream version changes.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_CHANGE_STALE,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class SafetyChangeScopeInvalidException(AppException):
+    """Safety change scope exceeds authorized policy or facility boundaries (HTTP 400)."""
+
+    def __init__(self, message: str = "Safety change scope is invalid or exceeds authorization.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_CHANGE_SCOPE_INVALID,
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details,
+        )
+
+
+class SafetyChangeImplementationDeniedException(AppException):
+    """Actor lacks implementation authority or implementation gates failed (HTTP 403)."""
+
+    def __init__(self, message: str = "Implementation denied: prerequisites unfulfilled or unauthorized actor.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_CHANGE_IMPLEMENTATION_DENIED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class SafetyChangeValidationRequiredException(AppException):
+    """Validation is required before safety change can be marked completed or rolled out (HTTP 422)."""
+
+    def __init__(self, message: str = "Formal clinical safety validation is required.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_CHANGE_VALIDATION_REQUIRED,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details=details,
+        )
+
+
+class SafetyChangeValidationFailedException(AppException):
+    """Safety change validation check failed (HTTP 422)."""
+
+    def __init__(self, message: str = "Safety change validation failed. Rollback or remediation required.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_CHANGE_VALIDATION_FAILED,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details=details,
+        )
+
+
+class SafetyChangeRollbackRequiredException(AppException):
+    """Failed change requires rollback to restore stable safety state (HTTP 409)."""
+
+    def __init__(self, message: str = "Rollback is required for this failed safety change.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_CHANGE_ROLLBACK_REQUIRED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class SafetyChangeRollbackDeniedException(AppException):
+    """Actor lacks rollback authority or rollback cannot be safely executed (HTTP 403)."""
+
+    def __init__(self, message: str = "Rollback denied: unauthorized actor or invalid rollback state.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_CHANGE_ROLLBACK_DENIED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class SafetyChangeVersionConflictException(AppException):
+    """Version conflict during safety change operation (HTTP 409)."""
+
+    def __init__(self, message: str = "Safety change version conflict.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_CHANGE_VERSION_CONFLICT,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class SafetyChangeIdempotencyConflictException(AppException):
+    """Duplicate safety change operation with conflicting parameters (HTTP 409)."""
+
+    def __init__(self, message: str = "Idempotency conflict for safety change operation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_CHANGE_IDEMPOTENCY_CONFLICT,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class SafetyChangeAlreadyImplementedException(AppException):
+    """Safety change has already been implemented (HTTP 409)."""
+
+    def __init__(self, message: str = "Safety change is already implemented.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_CHANGE_ALREADY_IMPLEMENTED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class SafetyChangeAlreadyRolledBackException(AppException):
+    """Safety change has already been rolled back (HTTP 409)."""
+
+    def __init__(self, message: str = "Safety change is already rolled back.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_CHANGE_ALREADY_ROLLED_BACK,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class SafetyChangeReassessmentRequiredException(AppException):
+    """Safety change requires reassessment before proceeding (HTTP 409)."""
+
+    def __init__(self, message: str = "Safety change conditions require reassessment.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_CHANGE_REASSESSMENT_REQUIRED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class AISafetyGovernanceAuthorityProhibitedException(AppException):
+    """AI attempted autonomous risk acceptance, change approval, or gate bypass (HTTP 403)."""
+
+    def __init__(self, message: str = "AI agents cannot accept risks, approve safety changes, or bypass governance gates. Human authorization required.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.AI_SAFETY_GOVERNANCE_AUTHORITY_PROHIBITED,
             message=message,
             status_code=status.HTTP_403_FORBIDDEN,
             details=details,

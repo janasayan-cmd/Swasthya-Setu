@@ -1017,6 +1017,13 @@ class Settings(BaseSettings):
     SAFETY_LEARNING_DEFAULT_WINDOW_DAYS: int = Field(default=30, description="Default historical observation window in days")
     SAFETY_LEARNING_STALE_EVALUATION_DAYS: int = Field(default=90, description="Age in days beyond which recommendations require re-validation")
 
+    # Phase 51: Clinical Safety Governance, Risk Acceptance & Controlled Safety Change Management
+    SAFETY_GOVERNANCE_ENABLED: bool = Field(default=True, description="Master toggle for safety governance and risk management")
+    SAFETY_GOVERNANCE_SEPARATION_OF_DUTIES_ENFORCED: bool = Field(default=True, description="Enforce strict separation between author and approver")
+    SAFETY_GOVERNANCE_DEFAULT_ACCEPTANCE_EXPIRY_DAYS: int = Field(default=90, description="Default validity window in days for temporary risk acceptance")
+    SAFETY_GOVERNANCE_EMERGENCY_CHANGES_ALLOWED: bool = Field(default=True, description="Allow expedited emergency changes with retrospective governance")
+    SAFETY_GOVERNANCE_AUTO_MONITORING_WINDOW_DAYS: int = Field(default=30, description="Default post-change observation window in days")
+
 
     @property
     def max_document_size_bytes(self) -> int:

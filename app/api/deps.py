@@ -3313,3 +3313,116 @@ def get_safety_learning_service() -> SafetyLearningService:
     return safety_learning_service
 
 
+# ---------------------------------------------------------------------------
+# Phase 51: Clinical Safety Governance, Risk Acceptance & Change Management Dependencies
+# ---------------------------------------------------------------------------
+from app.repositories.safety_governance_repository import (
+    SafetyGovernanceRepository,
+    safety_governance_repository,
+)
+from app.services.safety_governance_policy_service import (
+    SafetyGovernancePolicyService,
+    safety_governance_policy_service,
+)
+from app.services.risk_governance_service import (
+    RiskGovernanceService,
+    risk_governance_service,
+)
+from app.services.risk_assessment_service import (
+    RiskAssessmentService,
+    risk_assessment_service,
+)
+from app.services.risk_acceptance_service import (
+    RiskAcceptanceService,
+    risk_acceptance_service,
+)
+from app.services.risk_mitigation_service import (
+    RiskMitigationService,
+    risk_mitigation_service,
+)
+from app.services.safety_change_service import (
+    SafetyChangeService,
+    safety_change_service,
+)
+from app.services.safety_change_approval_service import (
+    SafetyChangeApprovalService,
+    safety_change_approval_service,
+)
+from app.services.safety_change_implementation_service import (
+    SafetyChangeImplementationService,
+    safety_change_implementation_service,
+)
+from app.services.safety_change_validation_service import (
+    SafetyChangeValidationService,
+    safety_change_validation_service,
+)
+from app.services.safety_rollback_service import (
+    SafetyRollbackService,
+    safety_rollback_service,
+)
+from app.services.safety_reassessment_service import (
+    SafetyReassessmentService,
+    safety_reassessment_service,
+)
+
+
+def get_safety_governance_repository() -> SafetyGovernanceRepository:
+    """Dependency provider for SafetyGovernanceRepository."""
+    return safety_governance_repository
+
+
+def get_safety_governance_policy_service() -> SafetyGovernancePolicyService:
+    """Dependency provider for SafetyGovernancePolicyService."""
+    return safety_governance_policy_service
+
+
+def get_risk_governance_service() -> RiskGovernanceService:
+    """Dependency provider for RiskGovernanceService."""
+    return risk_governance_service
+
+
+def get_risk_assessment_service() -> RiskAssessmentService:
+    """Dependency provider for RiskAssessmentService."""
+    return risk_assessment_service
+
+
+def get_risk_acceptance_service() -> RiskAcceptanceService:
+    """Dependency provider for RiskAcceptanceService."""
+    return risk_acceptance_service
+
+
+def get_risk_mitigation_service() -> RiskMitigationService:
+    """Dependency provider for RiskMitigationService."""
+    return risk_mitigation_service
+
+
+def get_safety_change_service() -> SafetyChangeService:
+    """Dependency provider for SafetyChangeService."""
+    return safety_change_service
+
+
+def get_safety_change_approval_service() -> SafetyChangeApprovalService:
+    """Dependency provider for SafetyChangeApprovalService."""
+    return safety_change_approval_service
+
+
+def get_safety_change_implementation_service() -> SafetyChangeImplementationService:
+    """Dependency provider for SafetyChangeImplementationService."""
+    return safety_change_implementation_service
+
+
+def get_safety_change_validation_service() -> SafetyChangeValidationService:
+    """Dependency provider for SafetyChangeValidationService."""
+    return safety_change_validation_service
+
+
+def get_safety_rollback_service() -> SafetyRollbackService:
+    """Dependency provider for SafetyRollbackService."""
+    return safety_rollback_service
+
+
+def get_safety_reassessment_service() -> SafetyReassessmentService:
+    """Dependency provider for SafetyReassessmentService."""
+    return safety_reassessment_service
+
+
