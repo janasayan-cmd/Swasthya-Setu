@@ -81,6 +81,7 @@ from app.api.v1.endpoints import (
     action_effectiveness,
     safety_improvements,
     safety_rollouts,
+    safety_verifications,
 )
 
 v1_router = APIRouter()
@@ -268,4 +269,8 @@ v1_router.include_router(safety_improvements.router)
 
 # Register Phase 57 Clinical Safety Change Validation, Controlled Rollout Governance & Post-Deployment Verification endpoints
 v1_router.include_router(safety_rollouts.router)
+
+# Register Phase 58 Clinical Safety Change Verification, Release Evidence & Controlled Post-Rollout Closure endpoints
+v1_router.include_router(safety_verifications.router)
+
 
