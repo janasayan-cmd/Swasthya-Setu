@@ -75,6 +75,8 @@ from app.api.v1.endpoints import (
     incidents,
     safety_learning,
     safety_governance,
+    safety_assurance,
+    safety_reports,
 )
 
 v1_router = APIRouter()
@@ -245,5 +247,9 @@ v1_router.include_router(safety_learning.router)
 # Register Phase 51 Clinical Safety Governance, Risk Acceptance & Controlled Safety Change Management endpoints
 v1_router.include_router(safety_governance.router)
 
+# Register Phase 52 Clinical Safety Assurance, Validation & Continuous Control Effectiveness Management endpoints
+v1_router.include_router(safety_assurance.router)
 
+# Register Phase 53 Clinical Safety Assurance Reporting & Governed Safety Oversight endpoints
+v1_router.include_router(safety_reports.router)
 

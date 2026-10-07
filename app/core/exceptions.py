@@ -818,6 +818,63 @@ class ErrorCode(str, Enum):
     SAFETY_CHANGE_REASSESSMENT_REQUIRED = "SAFETY_CHANGE_REASSESSMENT_REQUIRED"
     AI_SAFETY_GOVERNANCE_AUTHORITY_PROHIBITED = "AI_SAFETY_GOVERNANCE_AUTHORITY_PROHIBITED"
 
+    # Phase 52: Clinical Safety Assurance, Validation & Continuous Control Effectiveness Management
+    SAFETY_ASSURANCE_NOT_FOUND = "SAFETY_ASSURANCE_NOT_FOUND"
+    SAFETY_ASSURANCE_ACCESS_DENIED = "SAFETY_ASSURANCE_ACCESS_DENIED"
+    SAFETY_ASSURANCE_INVALID_STATE = "SAFETY_ASSURANCE_INVALID_STATE"
+    SAFETY_ASSURANCE_ALREADY_RUNNING = "SAFETY_ASSURANCE_ALREADY_RUNNING"
+    SAFETY_ASSURANCE_ALREADY_COMPLETED = "SAFETY_ASSURANCE_ALREADY_COMPLETED"
+    SAFETY_ASSURANCE_EVIDENCE_REQUIRED = "SAFETY_ASSURANCE_EVIDENCE_REQUIRED"
+    SAFETY_ASSURANCE_EVIDENCE_INSUFFICIENT = "SAFETY_ASSURANCE_EVIDENCE_INSUFFICIENT"
+    SAFETY_ASSURANCE_EVIDENCE_STALE = "SAFETY_ASSURANCE_EVIDENCE_STALE"
+    SAFETY_ASSURANCE_EVIDENCE_CONFLICTED = "SAFETY_ASSURANCE_EVIDENCE_CONFLICTED"
+    SAFETY_ASSURANCE_SCOPE_INVALID = "SAFETY_ASSURANCE_SCOPE_INVALID"
+    SAFETY_ASSURANCE_VERSION_CONFLICT = "SAFETY_ASSURANCE_VERSION_CONFLICT"
+    SAFETY_ASSURANCE_STALE = "SAFETY_ASSURANCE_STALE"
+    SAFETY_ASSURANCE_REVIEW_REQUIRED = "SAFETY_ASSURANCE_REVIEW_REQUIRED"
+    SAFETY_ASSURANCE_REVIEW_DENIED = "SAFETY_ASSURANCE_REVIEW_DENIED"
+    SAFETY_ASSURANCE_REASSESSMENT_REQUIRED = "SAFETY_ASSURANCE_REASSESSMENT_REQUIRED"
+    SAFETY_ASSURANCE_CONTROL_NOT_FOUND = "SAFETY_ASSURANCE_CONTROL_NOT_FOUND"
+    SAFETY_ASSURANCE_CONTROL_VERSION_INVALID = "SAFETY_ASSURANCE_CONTROL_VERSION_INVALID"
+    SAFETY_ASSURANCE_CONTROL_UNAVAILABLE = "SAFETY_ASSURANCE_CONTROL_UNAVAILABLE"
+    SAFETY_ASSURANCE_CONTROL_BYPASS_DETECTED = "SAFETY_ASSURANCE_CONTROL_BYPASS_DETECTED"
+    SAFETY_ASSURANCE_CONTROL_DEGRADED = "SAFETY_ASSURANCE_CONTROL_DEGRADED"
+    SAFETY_ASSURANCE_CONTROL_FAILED = "SAFETY_ASSURANCE_CONTROL_FAILED"
+    SAFETY_ASSURANCE_IDEMPOTENCY_CONFLICT = "SAFETY_ASSURANCE_IDEMPOTENCY_CONFLICT"
+    SAFETY_ASSURANCE_UNAUTHORIZED = "SAFETY_ASSURANCE_UNAUTHORIZED"
+    SAFETY_ASSURANCE_PRIVACY_RESTRICTED = "SAFETY_ASSURANCE_PRIVACY_RESTRICTED"
+    SAFETY_ASSURANCE_CONCURRENCY_CONFLICT = "SAFETY_ASSURANCE_CONCURRENCY_CONFLICT"
+    SAFETY_ASSURANCE_PROVIDER_EVIDENCE_INVALID = "SAFETY_ASSURANCE_PROVIDER_EVIDENCE_INVALID"
+    SAFETY_ASSURANCE_CONFIGURATION_DRIFT = "SAFETY_ASSURANCE_CONFIGURATION_DRIFT"
+    SAFETY_ASSURANCE_REGRESSION_DETECTED = "SAFETY_ASSURANCE_REGRESSION_DETECTED"
+    SAFETY_ASSURANCE_ROUTE_REQUIRED = "SAFETY_ASSURANCE_ROUTE_REQUIRED"
+    AI_SAFETY_ASSURANCE_AUTHORITY_PROHIBITED = "AI_SAFETY_ASSURANCE_AUTHORITY_PROHIBITED"
+
+    # Phase 53: Clinical Safety Assurance Reporting & Governed Safety Oversight
+    SAFETY_REPORT_NOT_FOUND = "SAFETY_REPORT_NOT_FOUND"
+    SAFETY_REPORT_ACCESS_DENIED = "SAFETY_REPORT_ACCESS_DENIED"
+    SAFETY_REPORT_INVALID_STATE = "SAFETY_REPORT_INVALID_STATE"
+    SAFETY_REPORT_SCOPE_INVALID = "SAFETY_REPORT_SCOPE_INVALID"
+    SAFETY_REPORT_EVIDENCE_REQUIRED = "SAFETY_REPORT_EVIDENCE_REQUIRED"
+    SAFETY_REPORT_EVIDENCE_INSUFFICIENT = "SAFETY_REPORT_EVIDENCE_INSUFFICIENT"
+    SAFETY_REPORT_EVIDENCE_CONFLICTED = "SAFETY_REPORT_EVIDENCE_CONFLICTED"
+    SAFETY_REPORT_EVIDENCE_STALE = "SAFETY_REPORT_EVIDENCE_STALE"
+    SAFETY_REPORT_VERSION_CONFLICT = "SAFETY_REPORT_VERSION_CONFLICT"
+    SAFETY_REPORT_STALE = "SAFETY_REPORT_STALE"
+    SAFETY_REPORT_NOT_COMPARABLE = "SAFETY_REPORT_NOT_COMPARABLE"
+    SAFETY_REPORT_REVIEW_REQUIRED = "SAFETY_REPORT_REVIEW_REQUIRED"
+    SAFETY_REPORT_REVIEW_DENIED = "SAFETY_REPORT_REVIEW_DENIED"
+    SAFETY_REPORT_APPROVAL_DENIED = "SAFETY_REPORT_APPROVAL_DENIED"
+    SAFETY_REPORT_ALREADY_PUBLISHED = "SAFETY_REPORT_ALREADY_PUBLISHED"
+    SAFETY_REPORT_ALREADY_SUPERSEDED = "SAFETY_REPORT_ALREADY_SUPERSEDED"
+    SAFETY_REPORT_IDEMPOTENCY_CONFLICT = "SAFETY_REPORT_IDEMPOTENCY_CONFLICT"
+    SAFETY_REPORT_GENERATION_FAILED = "SAFETY_REPORT_GENERATION_FAILED"
+    SAFETY_REPORT_SOURCE_UNAVAILABLE = "SAFETY_REPORT_SOURCE_UNAVAILABLE"
+    SAFETY_REPORT_SOURCE_INVALID = "SAFETY_REPORT_SOURCE_INVALID"
+    SAFETY_REPORT_PRIVACY_RESTRICTED = "SAFETY_REPORT_PRIVACY_RESTRICTED"
+    SAFETY_REPORT_UNAUTHORIZED = "SAFETY_REPORT_UNAUTHORIZED"
+    SAFETY_REPORT_ESCALATION_REQUIRED = "SAFETY_REPORT_ESCALATION_REQUIRED"
+
 
 class AppException(Exception):
     """Base application exception for all domain and operational errors."""
@@ -7659,6 +7716,191 @@ class AISafetyGovernanceAuthorityProhibitedException(AppException):
     def __init__(self, message: str = "AI agents cannot accept risks, approve safety changes, or bypass governance gates. Human authorization required.", details: Any = None) -> None:
         super().__init__(
             code=ErrorCode.AI_SAFETY_GOVERNANCE_AUTHORITY_PROHIBITED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+# ---------------------------------------------------------------------------
+# Phase 52: Clinical Safety Assurance Exceptions
+# ---------------------------------------------------------------------------
+
+
+class SafetyAssuranceNotFoundException(AppException):
+    """Assurance evaluation not found (HTTP 404)."""
+
+    def __init__(self, message: str = "Assurance evaluation not found.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_ASSURANCE_NOT_FOUND,
+            message=message,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details=details,
+        )
+
+
+class SafetyAssuranceAccessDeniedException(AppException):
+    """Assurance access denied (HTTP 403)."""
+
+    def __init__(self, message: str = "Access denied to assurance evaluation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_ASSURANCE_ACCESS_DENIED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class SafetyAssuranceInvalidStateException(AppException):
+    """Assurance evaluation invalid lifecycle state transition (HTTP 409)."""
+
+    def __init__(self, message: str = "Invalid assurance evaluation state transition.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_ASSURANCE_INVALID_STATE,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class SafetyAssuranceAlreadyRunningException(AppException):
+    """Assurance evaluation already in progress (HTTP 409)."""
+
+    def __init__(self, message: str = "An assurance evaluation for this control is already in progress.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_ASSURANCE_ALREADY_RUNNING,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class SafetyAssuranceEvidenceInsufficientException(AppException):
+    """Insufficient evidence to determine control effectiveness (HTTP 422)."""
+
+    def __init__(self, message: str = "Insufficient evidence. MISSING != PASS. Cannot determine control effectiveness.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_ASSURANCE_EVIDENCE_INSUFFICIENT,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details=details,
+        )
+
+
+class SafetyAssuranceScopeInvalidException(AppException):
+    """Invalid assurance scope or observation window (HTTP 422)."""
+
+    def __init__(self, message: str = "Invalid assurance evaluation scope.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_ASSURANCE_SCOPE_INVALID,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details=details,
+        )
+
+
+class SafetyAssuranceConcurrencyConflictException(AppException):
+    """Concurrency conflict on assurance evaluation (HTTP 409)."""
+
+    def __init__(self, message: str = "Concurrency conflict: assurance evaluation was modified by another operation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_ASSURANCE_CONCURRENCY_CONFLICT,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class SafetyAssuranceControlNotFoundException(AppException):
+    """Safety control not found or unknown (HTTP 404)."""
+
+    def __init__(self, message: str = "Safety control not found. Cannot evaluate unknown control as successful.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_ASSURANCE_CONTROL_NOT_FOUND,
+            message=message,
+            status_code=status.HTTP_404_NOT_FOUND,
+            details=details,
+        )
+
+
+class SafetyAssuranceControlVersionInvalidException(AppException):
+    """Safety control version is invalid or unknown (HTTP 422)."""
+
+    def __init__(self, message: str = "Control version invalid. Cannot evaluate control with unknown version.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_ASSURANCE_CONTROL_VERSION_INVALID,
+            message=message,
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details=details,
+        )
+
+
+class SafetyAssuranceControlBypassDetectedException(AppException):
+    """Control bypass detected — safety signal requiring review (HTTP 409)."""
+
+    def __init__(self, message: str = "Control bypass detected. This is a safety signal — not automatically a clinical incident.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_ASSURANCE_CONTROL_BYPASS_DETECTED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class SafetyAssuranceReviewRequiredException(AppException):
+    """Human review is required before assurance can proceed (HTTP 409)."""
+
+    def __init__(self, message: str = "Human assurance review required. AI cannot approve assurance decisions.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_ASSURANCE_REVIEW_REQUIRED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class SafetyAssuranceReviewDeniedException(AppException):
+    """Assurance review denied — separation of duties or authorization failure (HTTP 403)."""
+
+    def __init__(self, message: str = "Assurance review denied.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_ASSURANCE_REVIEW_DENIED,
+            message=message,
+            status_code=status.HTTP_403_FORBIDDEN,
+            details=details,
+        )
+
+
+class SafetyAssuranceIdempotencyConflictException(AppException):
+    """Duplicate assurance operation with conflicting parameters (HTTP 409)."""
+
+    def __init__(self, message: str = "Idempotency conflict for assurance evaluation.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_ASSURANCE_IDEMPOTENCY_CONFLICT,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class SafetyAssuranceRegressionDetectedException(AppException):
+    """Control regression detected — previously effective control has degraded (HTTP 409)."""
+
+    def __init__(self, message: str = "Control regression detected. Historical effectiveness does not guarantee current effectiveness.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.SAFETY_ASSURANCE_REGRESSION_DETECTED,
+            message=message,
+            status_code=status.HTTP_409_CONFLICT,
+            details=details,
+        )
+
+
+class AISafetyAssuranceAuthorityProhibitedException(AppException):
+    """AI attempted to autonomously approve assurance, declare effectiveness, or disable controls (HTTP 403)."""
+
+    def __init__(self, message: str = "AI agents cannot approve assurance decisions, declare controls effective, close incidents, or disable safety controls. Human authorization required.", details: Any = None) -> None:
+        super().__init__(
+            code=ErrorCode.AI_SAFETY_ASSURANCE_AUTHORITY_PROHIBITED,
             message=message,
             status_code=status.HTTP_403_FORBIDDEN,
             details=details,
