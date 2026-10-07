@@ -125,6 +125,16 @@ class SafetyActionRepository:
             results.sort(key=lambda r: r.created_at, reverse=True)
             return results[offset : offset + limit]
 
+    # Aliases for compatibility
+    get = get_action
+    save = save_action
+    clear = reset
+
 
 # Global singleton repository
 safety_action_repository = SafetyActionRepository()
+
+
+def get_safety_action_repository() -> SafetyActionRepository:
+    """Retrieve global singleton safety action repository instance."""
+    return safety_action_repository
