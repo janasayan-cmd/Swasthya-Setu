@@ -85,6 +85,7 @@ from app.api.v1.endpoints import (
     safety_monitoring,
     safety_triage,
     safety_analytics,
+    safety_risk_assessments,
 )
 
 v1_router = APIRouter()
@@ -284,5 +285,8 @@ v1_router.include_router(safety_triage.router)
 
 # Register Phase 61 Clinical Safety Surveillance Analytics, Signal Correlation & Governed Risk Intelligence endpoints
 v1_router.include_router(safety_analytics.router)
+
+# Register Phase 62 Clinical Safety Risk Signal Consolidation, Cross-Domain Correlation & Governed Risk Assessment endpoints
+v1_router.include_router(safety_risk_assessments.router)
 
 
