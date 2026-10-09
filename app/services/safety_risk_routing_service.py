@@ -6,7 +6,7 @@ Phase 54 Action, Phase 60 Reassessment, Phase 61 Reanalysis).
 """
 
 from datetime import datetime, timezone
-from typing import List, Optional
+from typing import Any, List, Optional
 
 from app.core.exceptions import AppException, ErrorCode
 from app.schemas.safety_risk_assessment import (
@@ -81,6 +81,59 @@ class SafetyRiskRoutingService:
 
         return records
 
+    def route_review(
+        self,
+        review: Any,
+        destinations: List[Any],
+        actor_id: str,
+        reason: str,
+        target_reference: Optional[str] = None,
+    ) -> List[Any]:
+        """Dispatch governed risk review to one or multiple authoritative downstream phases (Phase 63)."""
+        from app.schemas.safety_risk_review import ReviewLifecycleState
+        from app.schemas.safety_routing import RiskRoutingRecord, RoutingDestination
+
+        if not destinations:
+            raise AppException(
+                code=ErrorCode.ROUTING_FAILED,
+                message="At least one valid routing destination must be provided.",
+                status_code=400,
+            )
+
+        if not reason or len(reason.strip()) < 5:
+            raise AppException(
+                code=ErrorCode.INSUFFICIENT_EVIDENCE,
+                message="A substantive clinical reasoning must be provided for risk review routing.",
+                status_code=400,
+            )
+
+        records: List[RiskRoutingRecord] = []
+        now = datetime.now(timezone.utc)
+
+        for dst in destinations:
+            rec = RiskRoutingRecord(
+                review_id=review.review_id,
+                destination=dst if isinstance(dst, RoutingDestination) else RoutingDestination(str(dst)),
+                reason=reason,
+                target_reference=target_reference or review.review_id,
+                routed_by=actor_id,
+                routed_at=now,
+                status="ROUTED",
+            )
+            review.routings.append(rec)
+            records.append(rec)
+
+        # Update review lifecycle state
+        if any(d in (RoutingDestination.PHASE_59_SURVEILLANCE, "PHASE_59_SURVEILLANCE") for d in destinations):
+            review.state = ReviewLifecycleState.MONITORING
+        elif any(d in (RoutingDestination.PHASE_62_REASSESSMENT, "PHASE_62_REASSESSMENT") for d in destinations):
+            review.state = ReviewLifecycleState.REASSESSMENT_REQUIRED
+            review.requires_reassessment = True
+        else:
+            review.state = ReviewLifecycleState.ROUTED
+
+        return records
+
 
 _risk_routing_service: Optional[SafetyRiskRoutingService] = None
 
@@ -90,3 +143,4 @@ def get_safety_risk_routing_service() -> SafetyRiskRoutingService:
     if _risk_routing_service is None:
         _risk_routing_service = SafetyRiskRoutingService()
     return _risk_routing_service
+
