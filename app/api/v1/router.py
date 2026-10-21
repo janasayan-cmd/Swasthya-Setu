@@ -88,6 +88,7 @@ from app.api.v1.endpoints import (
     safety_risk_assessments,
     safety_risk_reviews,
     safety_risk_handoffs,
+    safety_workflow_completions,
 )
 
 v1_router = APIRouter()
@@ -296,5 +297,8 @@ v1_router.include_router(safety_risk_reviews.router)
 
 # Register Phase 64 Clinical Safety Risk Disposition Implementation, Governed Action Handoff & Outcome Reconciliation endpoints
 v1_router.include_router(safety_risk_handoffs.router)
+
+# Register Phase 65 Clinical Safety Handoff Completion Governance, Cross-Phase Outcome Verification & Controlled Follow-Up Closure endpoints
+v1_router.include_router(safety_workflow_completions.router)
 
 
