@@ -91,6 +91,7 @@ from app.api.v1.endpoints import (
     safety_workflow_completions,
     safety_post_closure_verifications,
     governance_escalations,
+    governance_decision_assurance,
 )
 
 v1_router = APIRouter()
@@ -308,6 +309,9 @@ v1_router.include_router(safety_post_closure_verifications.router)
 
 # Register Phase 67 Clinical Safety Governance Escalation, Cross-Workflow Exception Resolution & Controlled Decision Coordination endpoints
 v1_router.include_router(governance_escalations.router)
+
+# Register Phase 68 Clinical Safety Governance Decision Assurance, Authorization Integrity & Cross-Workflow Decision Traceability endpoints
+v1_router.include_router(governance_decision_assurance.router)
 
 
 
