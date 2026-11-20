@@ -1,7 +1,7 @@
 """Centralized error handling and exception definitions."""
 
 from enum import Enum
-from typing import Any
+from typing import Any, Optional
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -1221,6 +1221,23 @@ class ErrorCode(str, Enum):
     REFERRAL_DISPATCH_FAILED = "REFERRAL_DISPATCH_FAILED"
     ANALYTICS_CALCULATION_FAILED = "ANALYTICS_CALCULATION_FAILED"
 
+    # Phase 72: Clinical Safety Governance Management Review, Executive Oversight & Decision Follow-Through
+    MANAGEMENT_REVIEW_PROGRAMME_NOT_FOUND = "MANAGEMENT_REVIEW_PROGRAMME_NOT_FOUND"
+    MANAGEMENT_REVIEW_NOT_FOUND = "MANAGEMENT_REVIEW_NOT_FOUND"
+    REVIEW_PARTICIPANT_NOT_FOUND = "REVIEW_PARTICIPANT_NOT_FOUND"
+    AGENDA_ITEM_NOT_FOUND = "AGENDA_ITEM_NOT_FOUND"
+    REVIEW_PACKAGE_NOT_FOUND = "REVIEW_PACKAGE_NOT_FOUND"
+    DISCUSSION_RECORD_NOT_FOUND = "DISCUSSION_RECORD_NOT_FOUND"
+    MANAGEMENT_DECISION_NOT_FOUND = "MANAGEMENT_DECISION_NOT_FOUND"
+    MANAGEMENT_COMMITMENT_NOT_FOUND = "MANAGEMENT_COMMITMENT_NOT_FOUND"
+    COMMITMENT_ESCALATION_NOT_FOUND = "COMMITMENT_ESCALATION_NOT_FOUND"
+    MANAGEMENT_REVIEW_REPORT_NOT_FOUND = "MANAGEMENT_REVIEW_REPORT_NOT_FOUND"
+    INVALID_MANAGEMENT_REVIEW_STATE = "INVALID_MANAGEMENT_REVIEW_STATE"
+    READINESS_VALIDATION_FAILED = "READINESS_VALIDATION_FAILED"
+    DECISION_AUTHORIZATION_FAILED = "DECISION_AUTHORIZATION_FAILED"
+    REVIEW_CLOSURE_CONDITIONS_UNMET = "REVIEW_CLOSURE_CONDITIONS_UNMET"
+    COMMITMENT_VERIFICATION_FAILED = "COMMITMENT_VERIFICATION_FAILED"
+
 
 class AppException(Exception):
     """Base application exception for all domain and operational errors."""
@@ -1231,9 +1248,11 @@ class AppException(Exception):
         message: str = "An unexpected error occurred.",
         status_code: int = status.HTTP_500_INTERNAL_SERVER_ERROR,
         details: Any = None,
+        error_code: Optional[ErrorCode | str] = None,
     ) -> None:
+        actual_code = error_code if error_code is not None else code
         super().__init__(message)
-        self.code = code if isinstance(code, str) else code.value
+        self.code = actual_code if isinstance(actual_code, str) else actual_code.value
         self.message = message
         self.status_code = status_code
         self.details = details
