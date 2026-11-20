@@ -40,6 +40,11 @@ class AuthenticatedUserContext(BaseModel):
         return self.user_id
 
     @property
+    def tenant_id(self) -> Optional[str]:
+        """Tenant identifier alias for organization_id."""
+        return self.organization_id
+
+    @property
     def is_active(self) -> bool:
         """Check if caller account is in active status."""
         return self.account_status == AccountStatus.ACTIVE
