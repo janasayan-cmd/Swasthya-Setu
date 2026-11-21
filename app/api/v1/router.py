@@ -99,6 +99,7 @@ from app.api.v1.endpoints import (
     governance_decision_implementations,
     governance_change_adoptions,
     governance_change_portfolios,
+    governance_benefit_assurance,
 )
 
 v1_router = APIRouter()
@@ -340,6 +341,9 @@ v1_router.include_router(governance_change_adoptions.router)
 
 # Register Phase 75 Governance Change Portfolio Oversight, Cross-Initiative Dependency Management & Cumulative Impact Coordination endpoints
 v1_router.include_router(governance_change_portfolios.router)
+
+# Register Phase 76 Governance Change Portfolio Performance Assurance, Benefit Realization & Strategic Outcome Review endpoints
+v1_router.include_router(governance_benefit_assurance.router)
 
 
 
