@@ -103,6 +103,7 @@ from app.api.v1.endpoints import (
     governance_strategic_assurance,
     governance_strategy,
     governance_strategy_execution,
+    governance_continuity,
 )
 
 v1_router = APIRouter()
@@ -356,6 +357,9 @@ v1_router.include_router(governance_strategy.router)
 
 # Register Phase 79 Clinical Safety Governance Strategic Execution Monitoring, Cross-Roadmap Coordination & Long-Term Strategy Adaptation endpoints
 v1_router.include_router(governance_strategy_execution.router)
+
+# Register Phase 80 Clinical Safety Governance Strategic Resilience, Continuity Planning & Recovery Assurance endpoints
+v1_router.include_router(governance_continuity.router)
 
 
 
