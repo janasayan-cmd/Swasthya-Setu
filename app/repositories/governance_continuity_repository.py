@@ -421,6 +421,10 @@ class GovernanceContinuityRepository:
         with self._lock:
             return self._recovery_records.get(recovery_id)
 
+    # Aliases for flexible integration
+    save_recovery = save_recovery_record
+    get_recovery = get_recovery_record
+
     def list_recovery_records(
         self,
         tenant_id: str,
@@ -516,8 +520,10 @@ class GovernanceContinuityRepository:
 
 
 _governance_continuity_repo = GovernanceContinuityRepository()
+governance_continuity_repository = _governance_continuity_repo
 
 
 def get_governance_continuity_repository() -> GovernanceContinuityRepository:
     """Returns the singleton instance of the Governance Continuity repository."""
     return _governance_continuity_repo
+
