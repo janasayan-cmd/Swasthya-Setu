@@ -107,6 +107,7 @@ from app.api.v1.endpoints import (
     governance_continuity_assurance,
     governance_resilience_knowledge,
     governance_resilience_capability,
+    governance_role_coverage,
 )
 
 v1_router = APIRouter()
@@ -372,6 +373,9 @@ v1_router.include_router(governance_resilience_knowledge.router)
 
 # Register Phase 84 Clinical Safety Governance Organizational Resilience Capability Assessment, Competency Assurance & Operational Readiness Verification endpoints
 v1_router.include_router(governance_resilience_capability.router)
+
+# Register Phase 85 Clinical Safety Governance Resilience Role-Coverage Continuity, Succession Readiness & Authorized Backup Coordination endpoints
+v1_router.include_router(governance_role_coverage.router)
 
 
 
