@@ -110,6 +110,7 @@ from app.api.v1.endpoints import (
     governance_role_coverage,
     governance_resource_dependencies,
     governance_disruption_impact,
+    governance_response_strategies,
 )
 
 v1_router = APIRouter()
@@ -384,6 +385,10 @@ v1_router.include_router(governance_resource_dependencies.router)
 
 # Register Phase 87 Clinical Safety Governance Resilience Disruption Impact Analysis, Cascading Failure Assessment & Cross-Dependency Scenario Intelligence endpoints
 v1_router.include_router(governance_disruption_impact.router)
+
+# Register Phase 88 Clinical Safety Governance Resilience Response Strategy Optimization, Recovery Option Evaluation & Continuity Decision Support endpoints
+v1_router.include_router(governance_response_strategies.router)
+
 
 
 
